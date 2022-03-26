@@ -69,7 +69,7 @@
     "webpack": "5.70.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,css}": [
+    "*.{js,ts,md}": [
       "prettier --write"
     ]
   },
