@@ -21,12 +21,11 @@
   "files": [
     "dist"
   ],
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "typings": "dist/esm/index.d.ts",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "homepage": "https://github.com/birchill/jpdict-idb#readme",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=16.0.0"
   },
   "dependencies": {
     "@birchill/json-equalish": "^1.1.2",
@@ -60,6 +59,8 @@
     "prettier": "2.6.1",
     "process": "0.11.10",
     "rollup": "2.70.1",
+    "rollup-plugin-cleaner": "^1.0.0",
+    "rollup-plugin-dts": "^4.2.0",
     "sinon": "13.0.1",
     "standard-version": "9.3.2",
     "ts-loader": "9.2.8",

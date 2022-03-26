@@ -15,8 +15,8 @@ Currently you need to decide once when you create the database which version you
 need. There is no facility to switch between the two.
 
 The reason is that the indices for searching for glosses / kanji are expensive to
-create and take up disk space, and some applications (e.g. Rikaichamp) simply don't
-need them.
+create and take up disk space, and some applications (e.g. 10ten Japanese
+Reader) simply don't need them.
 
 Furthermore, hopefully the project is structured such that if you only use
 `JpdictDatabase` then after tree-shaking your final bundle should not include all
