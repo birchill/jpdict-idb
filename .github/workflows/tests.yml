@@ -1,5 +1,7 @@
 name: Automated tests
 on: [push]
+env:
+  CI: true
 
 jobs:
   build:
@@ -10,9 +12,9 @@ jobs:
       - uses: actions/setup-node@v3.0.0
         with:
           node-version: '16.x'
-      - name: yarn install, test
-        run: |
-          yarn install
-          yarn test
-        env:
-          CI: true
+      # - name: yarn install, test
+      #   run: |
+      #     yarn install
+      #     yarn test
+      # - name: yarn build
+      #   run: yarn build

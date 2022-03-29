@@ -15,6 +15,7 @@ export default [
       '@birchill/normal-jp',
       'idb/with-async-ittr',
       'safari-14-idb-fix',
+      'superstruct',
     ],
     plugins: [cleaner({ targets: ['dist/'] }), typescript({ outDir: 'dist' })],
   },

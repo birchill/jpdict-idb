@@ -19,8 +19,8 @@
     "pretty": true,
     "rootDir": "./src",
     "sourceMap": true,
-    "strictNullChecks": true,
-    "target": "es2018"
+    "strict": true,
+    "target": "es2019"
   },
   "exclude": ["node_modules", "dist"]
 }
