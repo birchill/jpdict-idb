@@ -263,7 +263,7 @@ async function doUpdate({
         console.log(`Scheduling retry of update in ${retryIntervalMs}ms`);
       }
 
-      const setTimeoutHandle = (setTimeout(() => {
+      const setTimeoutHandle = setTimeout(() => {
         if (db.verbose) {
           console.log('Running automatic retry of update...');
         }
@@ -275,7 +275,7 @@ async function doUpdate({
           onUpdateComplete,
           onUpdateError,
         });
-      }, retryIntervalMs) as unknown) as number;
+      }, retryIntervalMs) as unknown as number;
 
       nextRetry = new Date(Date.now() + retryIntervalMs);
 
@@ -450,11 +450,8 @@ export function cancelUpdateWithRetry({
     return;
   }
 
-  const {
-    setTimeoutHandle,
-    requestIdleCallbackHandle,
-    onlineCallback,
-  } = currentRetryStatus;
+  const { setTimeoutHandle, requestIdleCallbackHandle, onlineCallback } =
+    currentRetryStatus;
 
   if (setTimeoutHandle) {
     clearTimeout(setTimeoutHandle);

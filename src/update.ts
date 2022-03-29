@@ -214,7 +214,7 @@ async function update<
           //   https://stackoverflow.com/questions/57815891/how-to-define-an-object-type-that-does-not-include-a-specific-member
           //
           const recordToPut = toRecord(
-            (stripFields(event, ['type']) as unknown) as EntryLine
+            stripFields(event, ['type']) as unknown as EntryLine
           );
           recordsToPut.push(recordToPut);
         }
