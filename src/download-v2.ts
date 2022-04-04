@@ -38,14 +38,26 @@ const DOWNLOAD_TIMEOUT = 20_000;
 // How many percentage should change before we dispatch a new progress event.
 const DEFAULT_MAX_PROGRESS_RESOLUTION = 0.05;
 
+export type CurrentVersion =
+  | {
+      major: number;
+      minor: number;
+      patch: number;
+      part?: undefined;
+      totalParts?: undefined;
+    }
+  | {
+      major: number;
+      minor: number;
+      patch: number;
+      part: number;
+      totalParts: number;
+    };
+
 export type DownloadOptions = {
   series: DataSeries;
   majorVersion: number;
-  currentVersion?: {
-    major: number;
-    minor: number;
-    patch: number;
-  };
+  currentVersion?: CurrentVersion;
   lang: string;
   signal: AbortSignal;
   maxProgressResolution?: number;
@@ -98,31 +110,82 @@ export async function* download({
     forceFetch,
   });
 
+  // TODO: Use the returned `type` to produce a suitable `downloadstart` event
+  // etc.
+  const { files } = getDownloadList({
+    currentVersion,
+    latestVersion: versionInfo,
+  });
+
+  for (const file of files) {
+    yield* getEvents({
+      baseUrl: BASE_URL,
+      series,
+      lang,
+      maxProgressResolution,
+      version: file.version,
+      signal,
+      format: file.format,
+      part: file.part,
+    });
+    yield { type: 'versionend' };
+  }
+}
+
+type DownloadFileSpec =
+  | {
+      format: 'full';
+      version: VersionNumber;
+      part?: number;
+    }
+  | {
+      format: 'patch';
+      version: VersionNumber;
+      part?: undefined;
+    };
+
+function getDownloadList({
+  currentVersion,
+  latestVersion,
+}: {
+  currentVersion?: CurrentVersion;
+  latestVersion: {
+    major: number;
+    minor: number;
+    patch: number;
+    parts?: number;
+  };
+}): {
+  type: 'reset' | 'update';
+  files: Array<DownloadFileSpec>;
+} {
   // Check the local database is not ahead of what we're about to download
   //
   // This can happen when the version file gets cached because we can
   // download a more recent version (e.g. we have DevTools open with "skip
   // cache" ticked) and then try again to fetch the file but get the older
   // version.
-  if (currentVersion && compareVersions(currentVersion, versionInfo) > 0) {
+  if (currentVersion && compareVersions(currentVersion, latestVersion) > 0) {
     const versionToString = ({ major, minor, patch }: VersionNumber) =>
       `${major}.${minor}.${patch}`;
     throw new DownloadError(
       { code: 'DatabaseTooOld' },
       `Database version (${versionToString(
-        versionInfo
+        latestVersion
       )}) is older than the current version (${versionToString(
         currentVersion
       )})`
     );
   }
 
-  const fullDownload =
+  const downloadType =
     !currentVersion ||
     // Check for a change in minor version
-    compareVersions(currentVersion, { ...versionInfo, patch: 0 }) < 0;
+    compareVersions(currentVersion, { ...latestVersion, patch: 0 }) < 0
+      ? 'reset'
+      : 'update';
 
-  // There are three cases below:
+  // There are four cases to consider:
   //
   // 1. We are doing a full download of a partitioned data series
   //    i.e. we need to download all the parts from 0 to `parts - 1`.
@@ -131,93 +194,100 @@ export async function* download({
   //    i.e. we simply need to download the data file for the current patch
   //    level.
   //
-  // 3. We are patching an existing series
+  // 3. We are resuming a full download
+  //    i.e. we need to download all the remaining parts _and_ the any
+  //    subsequent patches.
+  //
+  // 4. We are patching an existing series
   //    i.e. we need to download each patch from the one after the current
   //    version up to and including the latest patch.
 
-  if (fullDownload) {
-    if (versionInfo.parts) {
-      // Partitioned series
-      let nextPart = 0;
-      while (nextPart < versionInfo.parts) {
-        yield* getEvents({
-          baseUrl: BASE_URL,
-          series,
-          lang,
-          maxProgressResolution,
-          version: {
-            major: versionInfo.major,
-            minor: versionInfo.minor,
-            patch: versionInfo.patch,
-          },
-          signal,
-          part: nextPart,
-          isPatch: false,
-        });
-        yield { type: 'versionend' };
+  // Case 1: Partitioned series
+  if (downloadType === 'reset' && latestVersion.parts) {
+    const files: Array<DownloadFileSpec> = [];
+    let nextPart = 0;
 
-        nextPart++;
-      }
-    } else {
-      // Unpartitioned series
-      yield* getEvents({
-        baseUrl: BASE_URL,
-        series,
-        lang,
-        maxProgressResolution,
+    while (nextPart < latestVersion.parts) {
+      files.push({
+        format: 'full',
         version: {
-          major: versionInfo.major,
-          minor: versionInfo.minor,
-          patch: versionInfo.patch,
+          major: latestVersion.major,
+          minor: latestVersion.minor,
+          patch: latestVersion.patch,
         },
-        signal,
-        isPatch: false,
+        part: nextPart,
       });
-      yield { type: 'versionend' };
+      nextPart++;
     }
-  } else {
-    let nextPatch = currentVersion.patch + 1;
-    while (nextPatch <= versionInfo.patch) {
-      yield* getEvents({
-        baseUrl: BASE_URL,
-        series,
-        lang,
-        maxProgressResolution,
-        version: {
-          major: versionInfo.major,
-          minor: versionInfo.minor,
-          patch: nextPatch,
-        },
-        signal,
-        isPatch: true,
-      });
-      yield { type: 'versionend' };
 
-      nextPatch++;
+    return { type: downloadType, files };
+  }
+
+  // Case 2: Unpartitioned series
+  if (downloadType === 'reset') {
+    return {
+      type: downloadType,
+      files: [
+        {
+          format: 'full',
+          version: {
+            major: latestVersion.major,
+            minor: latestVersion.minor,
+            patch: latestVersion.patch,
+          },
+        },
+      ],
+    };
+  }
+
+  // Case 3 (part 1): Resumed partitioned series
+  const files: Array<DownloadFileSpec> = [];
+  // TODO: Get our typings to understand that currentVersion must be defined by
+  // this point.
+  if (typeof currentVersion!.part === 'number') {
+    let nextPart = currentVersion!.part + 1;
+
+    while (nextPart < currentVersion!.totalParts!) {
+      files.push({
+        format: 'full',
+        version: {
+          major: latestVersion.major,
+          minor: latestVersion.minor,
+          patch: latestVersion.patch,
+        },
+        part: nextPart,
+      });
+      nextPart++;
     }
   }
+
+  // Case 3 (part 2) and case 4: Updating a series
+  let nextPatch = currentVersion!.patch + 1;
+  while (nextPatch <= latestVersion.patch) {
+    files.push({
+      format: 'patch',
+      version: {
+        major: latestVersion.major,
+        minor: latestVersion.minor,
+        patch: latestVersion.patch,
+      },
+    });
+    nextPatch++;
+  }
+
+  return { type: downloadType, files };
 }
 
-type CommonGetEventsOptions = {
+type GetEventsOptions = {
   baseUrl: string;
   series: DataSeries;
   lang: string;
   maxProgressResolution: number;
   version: VersionNumber;
   signal: AbortSignal;
+  format: 'full' | 'patch';
+  part?: number;
 };
-
-type GetEventsOptions = CommonGetEventsOptions &
-  (
-    | {
-        part?: undefined;
-        isPatch: true;
-      }
-    | {
-        part?: number;
-        isPatch: false;
-      }
-  );
 
 const HeaderLineStruct = s.type({
   type: s.literal('header'),
@@ -244,16 +314,17 @@ async function* getEvents({
   maxProgressResolution,
   version,
   part,
-  isPatch,
+  format: type,
   signal,
 }: GetEventsOptions): AsyncIterableIterator<DownloadEvent> {
   const dottedVersion = `${version.major}.${version.minor}.${version.patch}`;
   const commonUrlStart = `${baseUrl}reader/${series}/${lang}/${dottedVersion}`;
-  const url = isPatch
-    ? `${commonUrlStart}-patch.jsonl`
-    : typeof part === 'number'
-    ? `${commonUrlStart}-${part}.jsonl`
-    : `${commonUrlStart}.jsonl`;
+  const url =
+    type === 'patch'
+      ? `${commonUrlStart}-patch.jsonl`
+      : typeof part === 'number'
+      ? `${commonUrlStart}-${part}.jsonl`
+      : `${commonUrlStart}.jsonl`;
 
   let response;
   try {
@@ -325,12 +396,10 @@ async function* getEvents({
         );
       }
 
-      if (line.format !== (isPatch ? 'patch' : 'full')) {
+      if (line.format !== type) {
         throw new DownloadError(
           { code: 'DatabaseFileVersionMismatch', url },
-          `Expected to get a data file in ${
-            isPatch ? 'patch' : 'full'
-          } format but got '${line.format}' format instead`
+          `Expected to get a data file in ${type} format but got '${line.format}' format instead`
         );
       }
 
@@ -342,7 +411,7 @@ async function* getEvents({
 
       totalRecords = line.records;
       headerRead = true;
-    } else if (isPatch && s.is(line, PatchLineStruct)) {
+    } else if (type === 'patch' && s.is(line, PatchLineStruct)) {
       if (!headerRead) {
         throw new DownloadError(
           { code: 'DatabaseFileHeaderMissing', url },
@@ -354,7 +423,7 @@ async function* getEvents({
       const mode =
         line._ === '+' ? 'add' : line._ === '-' ? 'delete' : 'change';
       yield { type: 'record', mode, ...stripFields(line, ['_']) };
-    } else if (!isPatch && isObject(line)) {
+    } else if (type === 'full' && isObject(line)) {
       if (!headerRead) {
         throw new DownloadError(
           { code: 'DatabaseFileHeaderMissing', url },
