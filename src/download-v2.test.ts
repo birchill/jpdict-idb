@@ -43,14 +43,14 @@ describe('download', () => {
 
     assert.deepEqual(events, [
       {
-        type: 'version',
+        type: 'filestart',
         major: 1,
         minor: 0,
         patch: 0,
         databaseVersion: '2019-173',
         dateOfCreation: '2019-06-22',
       },
-      { type: 'versionend' },
+      { type: 'fileend' },
     ]);
   });
 });

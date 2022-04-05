@@ -4,7 +4,10 @@ export type VersionNumber = {
   patch: number;
 };
 
-export function compareVersions(a: VersionNumber, b: VersionNumber): number {
+export function compareVersions(
+  a: Readonly<VersionNumber>,
+  b: Readonly<VersionNumber>
+): number {
   if (a.major < b.major) {
     return -1;
   }

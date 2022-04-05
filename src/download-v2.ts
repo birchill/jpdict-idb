@@ -2,7 +2,7 @@ import * as s from 'superstruct';
 
 import { DataSeries } from './data-series';
 import { DownloadError } from './download-error';
-import { getVersionInfo, VersionInfo } from './download-version-info';
+import { getVersionInfo } from './download-version-info';
 import {
   getErrorMessage,
   isAbortError,
@@ -17,42 +17,56 @@ import { compareVersions, VersionNumber } from './version-number';
 
 // Produces an async interator of DownloadEvents
 
+//
+// Event types
+//
+
+export type DownloadEvent =
+  | ResetEvent
+  | RecordEvent
+  | FileStartEvent
+  | FileEndEvent
+  | ProgressEvent;
+
+export type ResetEvent = { type: 'reset' };
 export type RecordEvent = {
   type: 'record';
   mode: 'add' | 'change' | 'delete';
 } & Record<string, unknown>;
-export type VersionEvent = { type: 'version' } & VersionInfo;
-export type VersionEndEvent = { type: 'versionend' };
+export type FileStartEvent = { type: 'filestart' } & FileInfo;
+export type FileEndEvent = { type: 'fileend' };
 export type ProgressEvent = { type: 'progress'; loaded: number; total: number };
 
-export type DownloadEvent =
-  | RecordEvent
-  | VersionEvent
-  | VersionEndEvent
-  | ProgressEvent;
+//
+// Helper types
+//
+
+export type PartInfo = { part: number; parts: number };
+
+export type FileInfo = {
+  major: number;
+  minor: number;
+  patch: number;
+  databaseVersion?: string;
+  dateOfCreation: string;
+  partInfo?: PartInfo;
+};
+
+export type CurrentVersion = VersionNumber & {
+  partInfo?: PartInfo;
+};
+
+//
+// Configuration constants
+//
 
 const BASE_URL = 'https://data.10ten.study/';
 
 const DOWNLOAD_TIMEOUT = 20_000;
 
-// How many percentage should change before we dispatch a new progress event.
+// How many percentage points within a file should change before we dispatch a
+// new progress event.
 const DEFAULT_MAX_PROGRESS_RESOLUTION = 0.05;
-
-export type CurrentVersion =
-  | {
-      major: number;
-      minor: number;
-      patch: number;
-      part?: undefined;
-      totalParts?: undefined;
-    }
-  | {
-      major: number;
-      minor: number;
-      patch: number;
-      part: number;
-      totalParts: number;
-    };
 
 export type DownloadOptions = {
   series: DataSeries;
@@ -110,12 +124,14 @@ export async function* download({
     forceFetch,
   });
 
-  // TODO: Use the returned `type` to produce a suitable `downloadstart` event
-  // etc.
-  const { files } = getDownloadList({
+  const { files, type } = getDownloadList({
     currentVersion,
     latestVersion: versionInfo,
   });
+
+  if (type === 'reset' && currentVersion) {
+    yield { type: 'reset' };
+  }
 
   for (const file of files) {
     yield* getEvents({
@@ -126,9 +142,8 @@ export async function* download({
       version: file.version,
       signal,
       format: file.format,
-      part: file.part,
+      partInfo: file.partInfo,
     });
-    yield { type: 'versionend' };
   }
 }
 
@@ -136,12 +151,12 @@ type DownloadFileSpec =
   | {
       format: 'full';
       version: VersionNumber;
-      part?: number;
+      partInfo?: PartInfo;
     }
   | {
       format: 'patch';
       version: VersionNumber;
-      part?: undefined;
+      partInfo?: never;
     };
 
 function getDownloadList({
@@ -178,12 +193,29 @@ function getDownloadList({
     );
   }
 
-  const downloadType =
+  // If there's no current version or if there's been a change in major/minor
+  // version, reset any existing data.
+  let downloadType =
     !currentVersion ||
-    // Check for a change in minor version
     compareVersions(currentVersion, { ...latestVersion, patch: 0 }) < 0
-      ? 'reset'
-      : 'update';
+      ? ('reset' as const)
+      : ('update' as const);
+
+  // Furthermore, if we're resuming a multi-part initial download but there have
+  // since been more than 10 new patches to that minor version, we should just
+  // start over.
+  //
+  // This will probably be faster and, more importantly, it means we can archive
+  // the full (i.e. non-patch) version files of any minor version that is more
+  // than 10 patches old without having to worry about really out-of-date
+  // clients later requesting those parts.
+  if (
+    downloadType === 'update' &&
+    currentVersion?.partInfo &&
+    latestVersion.patch - currentVersion.patch > 10
+  ) {
+    downloadType = 'reset';
+  }
 
   // There are four cases to consider:
   //
@@ -215,7 +247,10 @@ function getDownloadList({
           minor: latestVersion.minor,
           patch: latestVersion.patch,
         },
-        part: nextPart,
+        partInfo: {
+          part: nextPart,
+          parts: latestVersion.parts,
+        },
       });
       nextPart++;
     }
@@ -240,14 +275,20 @@ function getDownloadList({
     };
   }
 
+  // The following is just to help TypeScript realise that `currentVersion` must
+  // be defined if `downloadType` is 'update'.
+  if (!currentVersion) {
+    throw new Error(
+      'We should have already dealt with the initial download case'
+    );
+  }
+
   // Case 3 (part 1): Resumed partitioned series
   const files: Array<DownloadFileSpec> = [];
-  // TODO: Get our typings to understand that currentVersion must be defined by
-  // this point.
-  if (typeof currentVersion!.part === 'number') {
-    let nextPart = currentVersion!.part + 1;
+  if (currentVersion.partInfo) {
+    let nextPart = currentVersion.partInfo.part + 1;
 
-    while (nextPart < currentVersion!.totalParts!) {
+    while (nextPart < currentVersion.partInfo.parts) {
       files.push({
         format: 'full',
         version: {
@@ -255,14 +296,17 @@ function getDownloadList({
           minor: latestVersion.minor,
           patch: latestVersion.patch,
         },
-        part: nextPart,
+        partInfo: {
+          part: nextPart,
+          parts: currentVersion.partInfo.parts,
+        },
       });
       nextPart++;
     }
   }
 
   // Case 3 (part 2) and case 4: Updating a series
-  let nextPatch = currentVersion!.patch + 1;
+  let nextPatch = currentVersion.patch + 1;
   while (nextPatch <= latestVersion.patch) {
     files.push({
       format: 'patch',
@@ -286,7 +330,7 @@ type GetEventsOptions = {
   version: VersionNumber;
   signal: AbortSignal;
   format: 'full' | 'patch';
-  part?: number;
+  partInfo?: PartInfo;
 };
 
 const HeaderLineStruct = s.type({
@@ -313,7 +357,7 @@ async function* getEvents({
   lang,
   maxProgressResolution,
   version,
-  part,
+  partInfo,
   format: type,
   signal,
 }: GetEventsOptions): AsyncIterableIterator<DownloadEvent> {
@@ -322,8 +366,8 @@ async function* getEvents({
   const url =
     type === 'patch'
       ? `${commonUrlStart}-patch.jsonl`
-      : typeof part === 'number'
-      ? `${commonUrlStart}-${part}.jsonl`
+      : partInfo
+      ? `${commonUrlStart}-${partInfo.part}.jsonl`
       : `${commonUrlStart}.jsonl`;
 
   let response;
@@ -389,10 +433,10 @@ async function* getEvents({
         );
       }
 
-      if (line.part !== part) {
+      if (line.part !== partInfo?.part) {
         throw new DownloadError(
           { code: 'DatabaseFileVersionMismatch', url },
-          `Got mismatched database part number (Expected: ${part}, got: ${line.part})`
+          `Got mismatched database part number (Expected: ${partInfo?.part}, got: ${line.part})`
         );
       }
 
@@ -403,11 +447,24 @@ async function* getEvents({
         );
       }
 
-      const versionEvent: VersionEvent = {
-        ...line.version,
-        type: 'version',
-      };
-      yield versionEvent;
+      let fileStartEvent: FileStartEvent;
+      if (line.part) {
+        fileStartEvent = {
+          ...line.version,
+          partInfo: {
+            part: line.part,
+            parts: partInfo!.parts,
+          },
+          type: 'filestart',
+        };
+      } else {
+        fileStartEvent = {
+          ...line.version,
+          type: 'filestart',
+        };
+      }
+
+      yield fileStartEvent;
 
       totalRecords = line.records;
       headerRead = true;
@@ -467,4 +524,6 @@ async function* getEvents({
       yield { type: 'progress', loaded: recordsRead, total: totalRecords };
     }
   }
+
+  yield { type: 'fileend' };
 }
