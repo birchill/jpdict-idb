@@ -39,7 +39,13 @@ export type RecordEvent = {
   type: 'record';
   mode: 'add' | 'change' | 'delete';
 } & Record<string, unknown>;
-export type ProgressEvent = { type: 'progress'; loaded: number; total: number };
+export type ProgressEvent = {
+  type: 'progress';
+  read: number;
+  total: number;
+  file: number;
+  totalFiles: number;
+};
 
 //
 // Helper types
@@ -139,7 +145,7 @@ export async function* download({
 
   yield { type: 'downloadstart', files: files.length };
 
-  for (const file of files) {
+  for (const [i, file] of files.entries()) {
     yield* getEvents({
       baseUrl: BASE_URL,
       series,
@@ -149,6 +155,10 @@ export async function* download({
       signal,
       format: file.format,
       partInfo: file.partInfo,
+      fileProgress: {
+        file: i,
+        totalFiles: files.length,
+      },
     });
   }
 
@@ -339,6 +349,7 @@ type GetEventsOptions = {
   signal: AbortSignal;
   format: 'full' | 'patch';
   partInfo?: PartInfo;
+  fileProgress: { file: number; totalFiles: number };
 };
 
 const HeaderLineStruct = s.type({
@@ -365,14 +376,15 @@ async function* getEvents({
   lang,
   maxProgressResolution,
   version,
-  partInfo,
-  format: type,
   signal,
+  format,
+  partInfo,
+  fileProgress,
 }: GetEventsOptions): AsyncIterableIterator<DownloadEvent> {
   const dottedVersion = `${version.major}.${version.minor}.${version.patch}`;
   const commonUrlStart = `${baseUrl}reader/${series}/${lang}/${dottedVersion}`;
   const url =
-    type === 'patch'
+    format === 'patch'
       ? `${commonUrlStart}-patch.jsonl`
       : partInfo
       ? `${commonUrlStart}-${partInfo.part}.jsonl`
@@ -448,10 +460,10 @@ async function* getEvents({
         );
       }
 
-      if (line.format !== type) {
+      if (line.format !== format) {
         throw new DownloadError(
           { code: 'DatabaseFileVersionMismatch', url },
-          `Expected to get a data file in ${type} format but got '${line.format}' format instead`
+          `Expected to get a data file in ${format} format but got '${line.format}' format instead`
         );
       }
 
@@ -476,7 +488,7 @@ async function* getEvents({
 
       totalRecords = line.records;
       headerRead = true;
-    } else if (type === 'patch' && s.is(line, PatchLineStruct)) {
+    } else if (format === 'patch' && s.is(line, PatchLineStruct)) {
       if (!headerRead) {
         throw new DownloadError(
           { code: 'DatabaseFileHeaderMissing', url },
@@ -488,7 +500,7 @@ async function* getEvents({
       const mode =
         line._ === '+' ? 'add' : line._ === '-' ? 'delete' : 'change';
       yield { type: 'record', mode, ...stripFields(line, ['_']) };
-    } else if (type === 'full' && isObject(line)) {
+    } else if (format === 'full' && isObject(line)) {
       if (!headerRead) {
         throw new DownloadError(
           { code: 'DatabaseFileHeaderMissing', url },
@@ -529,8 +541,24 @@ async function* getEvents({
       recordsRead / totalRecords - lastProgressPercent > maxProgressResolution
     ) {
       lastProgressPercent = recordsRead / totalRecords;
-      yield { type: 'progress', loaded: recordsRead, total: totalRecords };
+      yield {
+        ...fileProgress,
+        type: 'progress',
+        read: recordsRead,
+        total: totalRecords,
+      };
     }
+  }
+
+  // Dispatch a final progress event. This is useful so that the progress can
+  // be updated while we are waiting for the next file to start downloading.
+  if (lastProgressPercent !== 1) {
+    yield {
+      ...fileProgress,
+      type: 'progress',
+      read: recordsRead,
+      total: totalRecords,
+    };
   }
 
   yield { type: 'fileend' };
