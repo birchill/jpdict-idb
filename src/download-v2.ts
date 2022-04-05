@@ -23,18 +23,22 @@ import { compareVersions, VersionNumber } from './version-number';
 
 export type DownloadEvent =
   | ResetEvent
-  | RecordEvent
+  | DownloadStartEvent
+  | DownloadEndEvent
   | FileStartEvent
   | FileEndEvent
+  | RecordEvent
   | ProgressEvent;
 
 export type ResetEvent = { type: 'reset' };
+export type DownloadStartEvent = { type: 'downloadstart'; files: number };
+export type DownloadEndEvent = { type: 'downloadend' };
+export type FileStartEvent = { type: 'filestart' } & FileInfo;
+export type FileEndEvent = { type: 'fileend' };
 export type RecordEvent = {
   type: 'record';
   mode: 'add' | 'change' | 'delete';
 } & Record<string, unknown>;
-export type FileStartEvent = { type: 'filestart' } & FileInfo;
-export type FileEndEvent = { type: 'fileend' };
 export type ProgressEvent = { type: 'progress'; loaded: number; total: number };
 
 //
@@ -133,6 +137,8 @@ export async function* download({
     yield { type: 'reset' };
   }
 
+  yield { type: 'downloadstart', files: files.length };
+
   for (const file of files) {
     yield* getEvents({
       baseUrl: BASE_URL,
@@ -145,6 +151,8 @@ export async function* download({
       partInfo: file.partInfo,
     });
   }
+
+  yield { type: 'downloadend' };
 }
 
 type DownloadFileSpec =

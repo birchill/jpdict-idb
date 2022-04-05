@@ -42,6 +42,7 @@ describe('download', () => {
     );
 
     assert.deepEqual(events, [
+      { type: 'downloadstart', files: 1 },
       {
         type: 'filestart',
         major: 1,
@@ -51,6 +52,7 @@ describe('download', () => {
         dateOfCreation: '2019-06-22',
       },
       { type: 'fileend' },
+      { type: 'downloadend' },
     ]);
   });
 });
