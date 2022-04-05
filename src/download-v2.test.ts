@@ -1,8 +1,10 @@
 import chai, { assert } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import fetchMock from 'fetch-mock';
+import { DownloadError } from './download-error';
 
 import { download, DownloadEvent } from './download-v2';
+import { isObject } from './is-object';
 
 mocha.setup('bdd');
 chai.use(chaiAsPromised);
@@ -55,6 +57,79 @@ describe('download', () => {
       { type: 'downloadend' },
     ]);
   });
+
+  it('should fail if there is no version file available', async () => {
+    fetchMock.mock('end:version-en.json', 404);
+
+    const abortController = new AbortController();
+
+    try {
+      await drainEvents(
+        download({
+          lang: 'en',
+          forceFetch: true,
+          majorVersion: 1,
+          series: 'kanji',
+          signal: abortController.signal,
+        }),
+        { wrapError: true }
+      );
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError, events] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'VersionFileNotFound');
+      assert.isDefined(downloadError.url);
+      assert.match(downloadError.url!, /version-en.json$/);
+      assert.strictEqual(events.length, 0);
+    }
+  });
+
+  function parseDrainError(
+    err: unknown
+  ): [DownloadError, Array<DownloadEvent>] {
+    if (isObject(err) && err.name === 'AssertionError') {
+      throw err;
+    }
+    assert.instanceOf(err, DrainError, 'Should be a DrainError');
+    assert.instanceOf(
+      (err as DrainError).error,
+      DownloadError,
+      'Should be a DownloadError'
+    );
+    return [
+      (err as DrainError).error as DownloadError,
+      (err as DrainError).events,
+    ];
+  }
+
+  // TODO: should fail if the version file is corrupt
+  // TODO: should fail if the version file is missing required fields
+  // TODO: should fail if the version file has invalid fields
+  // TODO: should fail if the requested major version is not available
+  // TODO: should fail if the first file is not available
+  // TODO: should fail if the first file does not match
+  // TODO: should download the first file
+  // TODO: should fail if no header record appears
+  // TODO: should fail if the version appears mid-stream
+  // TODO: should fail if multiple header records appear
+  // TODO: should fail if an entry is invalid (e.g. patch missing _ field)
+  // TODO: should fetch all parts of an initial multi-part download
+  // TODO: should fetch the single file for a non-multi-part download
+  // TODO: should fetch all patches when updating a complete current version
+  // TODO: should fail if one of the patches is missing
+  // TODO: should fail if one of the patches is corrupt
+  // TODO: should fail if one of the patches has a mismatched header
+  // TODO: should report deletions
+  // TODO: should report modifications
+  // TODO: should resume a multi-part initial download
+  // TODO: should NOT resume a multi-part initial download if there are more than 10 patches since
+  // TODO: should fail when the latest version is less than the current version
+  // TODO: should do nothing when the latest version equals the current version
+  // TODO: should reset and fetch the latest version when there is a new minor version
+  // TODO: should reset and fetch the latest version when there is a new major version we support
+  // TODO: should request the appropriate language
+  // TODO: should cancel any fetches if the download is canceled
+  // TODO: should produce progress events
 });
 
 async function drainEvents(
