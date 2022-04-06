@@ -21,6 +21,17 @@ const VERSION_1_0_0 = {
   },
 };
 
+const downloadKanjiV1 = () => {
+  const abortController = new AbortController();
+  return download({
+    lang: 'en',
+    forceFetch: true,
+    majorVersion: 1,
+    series: 'kanji',
+    signal: abortController.signal,
+  });
+};
+
 describe('download', () => {
   afterEach(() => fetchMock.restore());
 
@@ -32,16 +43,7 @@ describe('download', () => {
 `
     );
 
-    const abortController = new AbortController();
-    const events = await drainEvents(
-      download({
-        lang: 'en',
-        forceFetch: true,
-        majorVersion: 1,
-        series: 'kanji',
-        signal: abortController.signal,
-      })
-    );
+    const events = await drainEvents(downloadKanjiV1());
 
     assert.deepEqual(events, [
       { type: 'downloadstart', files: 1 },
@@ -61,48 +63,30 @@ describe('download', () => {
   it('should fail if there is no version file available', async () => {
     fetchMock.mock('end:version-en.json', 404);
 
-    const abortController = new AbortController();
-
     try {
-      await drainEvents(
-        download({
-          lang: 'en',
-          forceFetch: true,
-          majorVersion: 1,
-          series: 'kanji',
-          signal: abortController.signal,
-        }),
-        { wrapError: true }
-      );
+      await drainEvents(downloadKanjiV1(), { wrapError: true });
       assert.fail('Should have thrown an exception');
     } catch (e) {
       const [downloadError, events] = parseDrainError(e);
       assert.strictEqual(downloadError.code, 'VersionFileNotFound');
-      assert.isDefined(downloadError.url);
-      assert.match(downloadError.url!, /version-en.json$/);
+      assert.match(downloadError.url || '', /version-en.json$/);
       assert.strictEqual(events.length, 0);
     }
   });
 
-  function parseDrainError(
-    err: unknown
-  ): [DownloadError, Array<DownloadEvent>] {
-    if (isObject(err) && err.name === 'AssertionError') {
-      throw err;
-    }
-    assert.instanceOf(err, DrainError, 'Should be a DrainError');
-    assert.instanceOf(
-      (err as DrainError).error,
-      DownloadError,
-      'Should be a DownloadError'
-    );
-    return [
-      (err as DrainError).error as DownloadError,
-      (err as DrainError).events,
-    ];
-  }
+  it('should fail if the version file is corrupt', async () => {
+    fetchMock.mock('end:version-en.json', 'yer');
 
-  // TODO: should fail if the version file is corrupt
+    try {
+      await drainEvents(downloadKanjiV1(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError, events] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'VersionFileInvalid');
+      assert.strictEqual(events.length, 0);
+    }
+  });
+
   // TODO: should fail if the version file is missing required fields
   // TODO: should fail if the version file has invalid fields
   // TODO: should fail if the requested major version is not available
@@ -176,4 +160,20 @@ class DrainError extends Error {
     this.error = error;
     this.events = events;
   }
+}
+
+function parseDrainError(err: unknown): [DownloadError, Array<DownloadEvent>] {
+  if (isObject(err) && err.name === 'AssertionError') {
+    throw err;
+  }
+  assert.instanceOf(err, DrainError, 'Should be a DrainError');
+  assert.instanceOf(
+    (err as DrainError).error,
+    DownloadError,
+    'Should be a DownloadError'
+  );
+  return [
+    (err as DrainError).error as DownloadError,
+    (err as DrainError).events,
+  ];
 }
