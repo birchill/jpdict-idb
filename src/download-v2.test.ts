@@ -87,7 +87,28 @@ describe('download', () => {
     }
   });
 
-  // TODO: should fail if the version file is missing required fields
+  it('should fail if the version file is missing required fields', async () => {
+    fetchMock.mock('end:version-en.json', {
+      kanji: {
+        '1': {
+          major: 1,
+          patch: 0,
+          databaseVersion: '175',
+          dateOfCreation: '2019-07-09',
+        },
+      },
+    });
+
+    try {
+      await drainEvents(downloadKanjiV1(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError, events] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'VersionFileInvalid');
+      assert.strictEqual(events.length, 0);
+    }
+  });
+
   // TODO: should fail if the version file has invalid fields
   // TODO: should fail if the requested major version is not available
   // TODO: should fail if the first file is not available
