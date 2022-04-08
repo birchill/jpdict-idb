@@ -469,14 +469,14 @@ async function* getEvents({
       }
 
       let fileStartEvent: FileStartEvent;
-      if (line.part) {
+      if (line.part !== undefined) {
         fileStartEvent = {
+          type: 'filestart',
           ...line.version,
           partInfo: {
             part: line.part,
             parts: partInfo!.parts,
           },
-          type: 'filestart',
         };
       } else {
         fileStartEvent = {

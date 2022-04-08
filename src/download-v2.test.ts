@@ -9,7 +9,7 @@ import { isObject } from './is-object';
 mocha.setup('bdd');
 chai.use(chaiAsPromised);
 
-const VERSION_1_0_0 = {
+const KANJI_VERSION_1_0_0 = {
   kanji: {
     '1': {
       major: 1,
@@ -32,11 +32,34 @@ const downloadKanjiV1 = () => {
   });
 };
 
+const WORDS_VERSION_1_1_2_PARTS_3 = {
+  words: {
+    '1': {
+      major: 1,
+      minor: 1,
+      patch: 2,
+      parts: 3,
+      dateOfCreation: '2022-04-05',
+    },
+  },
+};
+
+const downloadWordsV1 = () => {
+  const abortController = new AbortController();
+  return download({
+    lang: 'en',
+    forceFetch: true,
+    majorVersion: 1,
+    series: 'words',
+    signal: abortController.signal,
+  });
+};
+
 describe('download', () => {
   afterEach(() => fetchMock.restore());
 
   it('should download the initial version information', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_1_0_0);
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.mock(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":0,"format":"full"}
@@ -111,7 +134,7 @@ describe('download', () => {
 
   it('should fail if the version file has invalid fields', async () => {
     fetchMock.mock('end:version-en.json', {
-      kanji: { '1': { ...VERSION_1_0_0.kanji['1'], major: 0 } },
+      kanji: { '1': { ...KANJI_VERSION_1_0_0.kanji['1'], major: 0 } },
     });
 
     try {
@@ -128,7 +151,7 @@ describe('download', () => {
     fetchMock.mock('end:version-en.json', {
       kanji: {
         '2': {
-          ...VERSION_1_0_0.kanji['1'],
+          ...KANJI_VERSION_1_0_0.kanji['1'],
           major: 2,
           minor: 0,
           patch: 1,
@@ -146,7 +169,7 @@ describe('download', () => {
   });
 
   it('should fail if the first file is not available', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_1_0_0);
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.mock('end:kanji/en/1.0.0.jsonl', 404);
 
     try {
@@ -159,7 +182,7 @@ describe('download', () => {
   });
 
   it('should fail if the first file does not match', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_1_0_0);
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.mock(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":1,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":0,"format":"full"}
@@ -176,7 +199,7 @@ describe('download', () => {
   });
 
   it('should fail if the format of the first file does not match', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_1_0_0);
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.mock(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":1,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":0,"format":"patch"}
@@ -193,7 +216,7 @@ describe('download', () => {
   });
 
   it('should fail if the part specification of the first file does not match', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_1_0_0);
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.mock(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":1,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":0,"format":"full","part":1}
@@ -210,7 +233,7 @@ describe('download', () => {
   });
 
   it('should download the first file', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_1_0_0);
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.mock(
       'end:kanji/en/1.0.0.jsonl',
       `
@@ -280,7 +303,7 @@ describe('download', () => {
   });
 
   it('should fail if not header record appears', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_1_0_0);
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.mock(
       'end:kanji/en/1.0.0.jsonl',
       `
@@ -299,12 +322,12 @@ describe('download', () => {
   });
 
   it('should fail if the header appears mid-stream', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_1_0_0);
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.mock(
       'end:kanji/en/1.0.0.jsonl',
       `
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
-{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":2,"format":"full"}
+{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
 {"c":"㐆","r":{},"m":["to follow","to trust to","to put confidence in","to depend on","to turn around","to turn the body"],"rad":{"x":4},"refs":{},"misc":{"sc":6}}
 `
     );
@@ -319,7 +342,7 @@ describe('download', () => {
   });
 
   it('should fail if multiple header records appear', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_1_0_0);
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.mock(
       'end:kanji/en/1.0.0.jsonl',
       `
@@ -339,13 +362,243 @@ describe('download', () => {
     }
   });
 
-  // TODO: should fail if a record in a full file has a patch-type ('_') field
-  // TODO: should fail if a line is not a record (string)
-  // TODO: should fail if a line is not a record (array)
-  // TODO: should fail if a line is not a record (invalid object)
-  // TODO: should fetch all parts of an initial multi-part download
+  it('should fail if a record in a full file has a patch type (_) field', async () => {
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.mock(
+      'end:kanji/en/1.0.0.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
+{"_":"~","c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
+`
+    );
 
-  // TODO: should fetch the single file for a non-multi-part download
+    try {
+      await drainEvents(downloadKanjiV1(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseFileInvalidRecord');
+    }
+  });
+
+  it('should fail if a line is not an object (string)', async () => {
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.mock(
+      'end:kanji/en/1.0.0.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
+"I'm just stringing you along"
+`
+    );
+
+    try {
+      await drainEvents(downloadKanjiV1(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseFileInvalidRecord');
+    }
+  });
+
+  it('should fail if a line is not an object (array)', async () => {
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.mock(
+      'end:kanji/en/1.0.0.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
+[{"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}]
+`
+    );
+
+    try {
+      await drainEvents(downloadKanjiV1(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseFileInvalidRecord');
+    }
+  });
+
+  it('should fail if a line is not an object (invalid object)', async () => {
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.mock(
+      'end:kanji/en/1.0.0.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
+{"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}
+`
+    );
+
+    try {
+      await drainEvents(downloadKanjiV1(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseFileInvalidJSON');
+    }
+  });
+
+  it('should fetch all parts of an initial multi-part download', async () => {
+    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.mock(
+      'end:words/en/1.1.2-0.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":2,"part":0,"format":"full"}
+{"id":1000000,"r":["ヽ"],"s":[{"g":["repetition mark in katakana"],"pos":["unc"],"xref":[{"k":"一の字点"}],"gt":1}]}
+{"id":1000010,"r":["ヾ"],"s":[{"g":["voiced repetition mark in katakana"],"pos":["unc"],"gt":1}]}
+`
+    );
+    fetchMock.mock(
+      'end:words/en/1.1.2-1.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":2,"part":1,"format":"full"}
+{"id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+{"id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+`
+    );
+    fetchMock.mock(
+      'end:words/en/1.1.2-2.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":1,"part":2,"format":"full"}
+{"id":1000040,"k":["〃"],"r":["おなじ","おなじく"],"s":[{"g":["ditto mark"],"pos":["n"]}]}
+`
+    );
+
+    const events = await drainEvents(downloadWordsV1());
+
+    assert.deepEqual(events, [
+      {
+        type: 'downloadstart',
+        files: 3,
+      },
+      {
+        type: 'filestart',
+        major: 1,
+        minor: 1,
+        patch: 2,
+        partInfo: {
+          part: 0,
+          parts: 3,
+        },
+        dateOfCreation: '2022-04-05',
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000000,
+          r: ['ヽ'],
+          s: [
+            {
+              g: ['repetition mark in katakana'],
+              pos: ['unc'],
+              xref: [
+                {
+                  k: '一の字点',
+                },
+              ],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000010,
+          r: ['ヾ'],
+          s: [
+            {
+              g: ['voiced repetition mark in katakana'],
+              pos: ['unc'],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'fileend',
+      },
+      {
+        type: 'filestart',
+        major: 1,
+        minor: 1,
+        patch: 2,
+        partInfo: {
+          part: 1,
+          parts: 3,
+        },
+        dateOfCreation: '2022-04-05',
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000020,
+          r: ['ゝ'],
+          s: [
+            {
+              g: ['repetition mark in hiragana'],
+              pos: ['unc'],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000030,
+          r: ['ゞ'],
+          s: [
+            {
+              g: ['voiced repetition mark in hiragana'],
+              pos: ['unc'],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'fileend',
+      },
+      {
+        type: 'filestart',
+        major: 1,
+        minor: 1,
+        patch: 2,
+        partInfo: {
+          part: 2,
+          parts: 3,
+        },
+        dateOfCreation: '2022-04-05',
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000040,
+          k: ['〃'],
+          r: ['おなじ', 'おなじく'],
+          s: [
+            {
+              g: ['ditto mark'],
+              pos: ['n'],
+            },
+          ],
+        },
+      },
+      {
+        type: 'fileend',
+      },
+      {
+        type: 'downloadend',
+      },
+    ]);
+  });
+
   // TODO: should fetch all patches when updating a complete current version
   // TODO: should fail if a record in a patch file does NOT have a patch-type ('_') field
   // TODO: should fail if a record in a patch file has an unrecognized patch-type ('_') field
