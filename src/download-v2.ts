@@ -38,7 +38,8 @@ export type FileEndEvent = { type: 'fileend' };
 export type RecordEvent = {
   type: 'record';
   mode: 'add' | 'change' | 'delete';
-} & Record<string, unknown>;
+  record: Record<string, unknown>;
+};
 export type ProgressEvent = {
   type: 'progress';
   read: number;
@@ -499,7 +500,7 @@ async function* getEvents({
       recordsRead++;
       const mode =
         line._ === '+' ? 'add' : line._ === '-' ? 'delete' : 'change';
-      yield { type: 'record', mode, ...stripFields(line, ['_']) };
+      yield { type: 'record', mode, record: stripFields(line, ['_']) };
     } else if (format === 'full' && isObject(line)) {
       if (!headerRead) {
         throw new DownloadError(
@@ -518,7 +519,7 @@ async function* getEvents({
       }
 
       recordsRead++;
-      yield { type: 'record', mode: 'add', line };
+      yield { type: 'record', mode: 'add', record: line };
     } else {
       // If we encounter anything unexpected we should fail.
       //
