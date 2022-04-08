@@ -311,9 +311,9 @@ function getDownloadList({
       files.push({
         format: 'full',
         version: {
-          major: latestVersion.major,
-          minor: latestVersion.minor,
-          patch: latestVersion.patch,
+          major: currentVersion.major,
+          minor: currentVersion.minor,
+          patch: currentVersion.patch,
         },
         partInfo: {
           part: nextPart,

@@ -779,11 +779,257 @@ describe('download', () => {
     }
   });
 
-  // TODO: should fail if one of the patches is corrupt
-  // TODO: should fail if one of the patches has a mismatched header
-  // TODO: should report deletions
-  // TODO: should report modifications
-  // TODO: should resume a multi-part initial download including subsequent patches
+  it('should fail if one of the patches is corrupt', async () => {
+    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.mock(
+      'end:words/en/1.1.1-patch.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":1,"format":"patch"}
+{"_":"!","id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+`
+    );
+
+    try {
+      await drainEvents(downloadWordsV1From110(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseFileInvalidRecord');
+    }
+  });
+
+  it('should fail if one of the patches is corrupt', async () => {
+    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.mock(
+      'end:words/en/1.1.1-patch.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":1,"format":"full"}
+{"_":"!","id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+`
+    );
+
+    try {
+      await drainEvents(downloadWordsV1From110(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseFileVersionMismatch');
+    }
+  });
+
+  it('should resume a multi-part initial download including subsequent patches', async () => {
+    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.mock(
+      'end:words/en/1.1.0-1.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":0,"dateOfCreation":"2022-04-05"},"records":2,"part":1,"format":"full"}
+{"id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+{"id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+`
+    );
+    fetchMock.mock(
+      'end:words/en/1.1.0-2.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":0,"dateOfCreation":"2022-04-05"},"records":2,"part":2,"format":"full"}
+{"id":1000040,"k":["〃"],"r":["おなじ","おなじく"],"s":[{"g":["ditto mark"],"pos":["n"]}]}
+{"id":1000050,"k":["仝"],"r":["どうじょう"],"s":[{"g":["\\"as above\\" mark"],"pos":["n"]}]}
+`
+    );
+    fetchMock.mock(
+      'end:words/en/1.1.1-patch.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":2,"format":"patch"}
+{"_":"+","id":1000060,"k":["々"],"r":["のま","ノマ"],"rm":[0,{"app":0}],"s":[{"g":["kanji repetition mark"],"pos":["unc"],"xref":[{"k":"同の字点"}],"gt":1}]}
+{"_":"+","id":1000090,"k":["○","〇"],"r":["まる"],"s":[{"g":["circle"],"pos":["n"],"xref":[{"k":"丸","r":"まる","sense":1}],"inf":"sometimes used for zero"},{"g":["\\"correct\\"","\\"good\\""],"pos":["n"],"xref":[{"k":"二重丸"}],"inf":"when marking a test, homework, etc."},{"g":["*","_"],"pos":["unc"],"xref":[{"k":"〇〇","sense":1}],"inf":"placeholder used to censor individual characters or indicate a space to be filled in"},{"g":["period","full stop"],"pos":["n"],"xref":[{"k":"句点"}]},{"g":["maru mark","semivoiced sound","p-sound"],"pos":["n"],"xref":[{"k":"半濁点"}]}]}
+`
+    );
+    fetchMock.mock(
+      'end:words/en/1.1.2-patch.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":2,"format":"patch"}
+{"_":"+","id":1000100,"k":["ＡＢＣ順"],"r":["エービーシーじゅん"],"s":[{"g":["alphabetical order"],"pos":["n"]}]}
+{"_":"+","id":1000110,"k":["ＣＤプレーヤー","ＣＤプレイヤー"],"km":[{"p":["s1"]}],"r":["シーディープレーヤー","シーディープレイヤー"],"rm":[{"app":1,"p":["s1"]},{"app":2}],"s":[{"g":["CD player"],"pos":["n"]},{"g":["lecteur CD"],"lang":"fr"}]}
+`
+    );
+
+    const abortController = new AbortController();
+    const events = await drainEvents(
+      download({
+        lang: 'en',
+        forceFetch: true,
+        majorVersion: 1,
+        series: 'words',
+        signal: abortController.signal,
+        currentVersion: {
+          major: 1,
+          minor: 1,
+          patch: 0,
+          partInfo: {
+            part: 0,
+            parts: 3,
+          },
+        },
+      }),
+      { wrapError: true }
+    );
+
+    assert.deepEqual(events, [
+      { type: 'downloadstart', files: 4 },
+      {
+        type: 'filestart',
+        major: 1,
+        minor: 1,
+        patch: 0,
+        dateOfCreation: '2022-04-05',
+        partInfo: { part: 1, parts: 3 },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000020,
+          r: ['ゝ'],
+          s: [{ g: ['repetition mark in hiragana'], pos: ['unc'], gt: 1 }],
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000030,
+          r: ['ゞ'],
+          s: [
+            { g: ['voiced repetition mark in hiragana'], pos: ['unc'], gt: 1 },
+          ],
+        },
+      },
+      { type: 'fileend' },
+      {
+        type: 'filestart',
+        major: 1,
+        minor: 1,
+        patch: 0,
+        dateOfCreation: '2022-04-05',
+        partInfo: { part: 2, parts: 3 },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000040,
+          k: ['〃'],
+          r: ['おなじ', 'おなじく'],
+          s: [{ g: ['ditto mark'], pos: ['n'] }],
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000050,
+          k: ['仝'],
+          r: ['どうじょう'],
+          s: [{ g: ['"as above" mark'], pos: ['n'] }],
+        },
+      },
+      { type: 'fileend' },
+      {
+        major: 1,
+        minor: 1,
+        patch: 1,
+        dateOfCreation: '2022-04-05',
+        type: 'filestart',
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000060,
+          k: ['々'],
+          r: ['のま', 'ノマ'],
+          rm: [0, { app: 0 }],
+          s: [
+            {
+              g: ['kanji repetition mark'],
+              pos: ['unc'],
+              xref: [{ k: '同の字点' }],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000090,
+          k: ['○', '〇'],
+          r: ['まる'],
+          s: [
+            {
+              g: ['circle'],
+              pos: ['n'],
+              xref: [{ k: '丸', r: 'まる', sense: 1 }],
+              inf: 'sometimes used for zero',
+            },
+            {
+              g: ['"correct"', '"good"'],
+              pos: ['n'],
+              xref: [{ k: '二重丸' }],
+              inf: 'when marking a test, homework, etc.',
+            },
+            {
+              g: ['*', '_'],
+              pos: ['unc'],
+              xref: [{ k: '〇〇', sense: 1 }],
+              inf: 'placeholder used to censor individual characters or indicate a space to be filled in',
+            },
+            { g: ['period', 'full stop'], pos: ['n'], xref: [{ k: '句点' }] },
+            {
+              g: ['maru mark', 'semivoiced sound', 'p-sound'],
+              pos: ['n'],
+              xref: [{ k: '半濁点' }],
+            },
+          ],
+        },
+      },
+      { type: 'fileend' },
+      {
+        major: 1,
+        minor: 1,
+        patch: 2,
+        dateOfCreation: '2022-04-05',
+        type: 'filestart',
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000100,
+          k: ['ＡＢＣ順'],
+          r: ['エービーシーじゅん'],
+          s: [{ g: ['alphabetical order'], pos: ['n'] }],
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000110,
+          k: ['ＣＤプレーヤー', 'ＣＤプレイヤー'],
+          km: [{ p: ['s1'] }],
+          r: ['シーディープレーヤー', 'シーディープレイヤー'],
+          rm: [{ app: 1, p: ['s1'] }, { app: 2 }],
+          s: [
+            { g: ['CD player'], pos: ['n'] },
+            { g: ['lecteur CD'], lang: 'fr' },
+          ],
+        },
+      },
+      { type: 'fileend' },
+      { type: 'downloadend' },
+    ]);
+  });
 
   // TODO: should NOT resume a multi-part initial download if there are more than 10 patches since
   // TODO: should fail when the latest version is less than the current version
