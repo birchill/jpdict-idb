@@ -332,7 +332,7 @@ function getDownloadList({
       version: {
         major: latestVersion.major,
         minor: latestVersion.minor,
-        patch: latestVersion.patch,
+        patch: nextPatch,
       },
     });
     nextPatch++;

@@ -55,6 +55,22 @@ const downloadWordsV1 = () => {
   });
 };
 
+const downloadWordsV1From110 = () => {
+  const abortController = new AbortController();
+  return download({
+    lang: 'en',
+    forceFetch: true,
+    majorVersion: 1,
+    series: 'words',
+    signal: abortController.signal,
+    currentVersion: {
+      major: 1,
+      minor: 1,
+      patch: 0,
+    },
+  });
+};
+
 describe('download', () => {
   afterEach(() => fetchMock.restore());
 
@@ -599,16 +615,175 @@ describe('download', () => {
     ]);
   });
 
-  // TODO: should fetch all patches when updating a complete current version
-  // TODO: should fail if a record in a patch file does NOT have a patch-type ('_') field
-  // TODO: should fail if a record in a patch file has an unrecognized patch-type ('_') field
-  // TODO: should fail if one of the patches is missing
+  it('should fetch all patches when updating a complete current version', async () => {
+    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.mock(
+      'end:words/en/1.1.1-patch.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":3,"format":"patch"}
+{"_":"+","id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+{"_":"~","id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+{"_":"-","id":1000050}
+`
+    );
+    fetchMock.mock(
+      'end:words/en/1.1.2-patch.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":1,"format":"patch"}
+{"_":"+","id":1000040,"k":["〃"],"r":["おなじ","おなじく"],"s":[{"g":["ditto mark"],"pos":["n"]}]}
+`
+    );
+
+    const events = await drainEvents(downloadWordsV1From110());
+
+    assert.deepEqual(events, [
+      {
+        type: 'downloadstart',
+        files: 2,
+      },
+      {
+        major: 1,
+        minor: 1,
+        patch: 1,
+        dateOfCreation: '2022-04-05',
+        type: 'filestart',
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000020,
+          r: ['ゝ'],
+          s: [
+            {
+              g: ['repetition mark in hiragana'],
+              pos: ['unc'],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'record',
+        mode: 'change',
+        record: {
+          id: 1000030,
+          r: ['ゞ'],
+          s: [
+            {
+              g: ['voiced repetition mark in hiragana'],
+              pos: ['unc'],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'record',
+        mode: 'delete',
+        record: {
+          id: 1000050,
+        },
+      },
+      {
+        type: 'fileend',
+      },
+      {
+        major: 1,
+        minor: 1,
+        patch: 2,
+        dateOfCreation: '2022-04-05',
+        type: 'filestart',
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000040,
+          k: ['〃'],
+          r: ['おなじ', 'おなじく'],
+          s: [
+            {
+              g: ['ditto mark'],
+              pos: ['n'],
+            },
+          ],
+        },
+      },
+      {
+        type: 'fileend',
+      },
+      {
+        type: 'downloadend',
+      },
+    ]);
+  });
+
+  it('should fail in a record in a patch file does NOT have a patch-type (_) field', async () => {
+    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.mock(
+      'end:words/en/1.1.1-patch.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":2,"format":"patch"}
+{"_":"+","id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+{"id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+`
+    );
+
+    try {
+      await drainEvents(downloadWordsV1From110(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseFileInvalidRecord');
+    }
+  });
+
+  it('should fail in a record in a patch file has an unrecognized patch-type (_) field', async () => {
+    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.mock(
+      'end:words/en/1.1.1-patch.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":2,"format":"patch"}
+{"_":"+","id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+{"_":"!","id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+`
+    );
+
+    try {
+      await drainEvents(downloadWordsV1From110(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseFileInvalidRecord');
+    }
+  });
+
+  it('should fail if one of the patches is missing', async () => {
+    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.mock(
+      'end:words/en/1.1.1-patch.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":1,"format":"patch"}
+{"_":"+","id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+`
+    );
+    fetchMock.mock('end:words/en/1.1.2-patch.jsonl', 404);
+
+    try {
+      await drainEvents(downloadWordsV1From110(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseFileNotFound');
+    }
+  });
 
   // TODO: should fail if one of the patches is corrupt
   // TODO: should fail if one of the patches has a mismatched header
   // TODO: should report deletions
   // TODO: should report modifications
-  // TODO: should resume a multi-part initial download
+  // TODO: should resume a multi-part initial download including subsequent patches
 
   // TODO: should NOT resume a multi-part initial download if there are more than 10 patches since
   // TODO: should fail when the latest version is less than the current version
