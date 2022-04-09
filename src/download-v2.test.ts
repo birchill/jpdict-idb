@@ -44,6 +44,18 @@ const WORDS_VERSION_1_1_2_PARTS_3 = {
   },
 };
 
+const WORDS_VERSION_1_1_20_PARTS_3 = {
+  words: {
+    '1': {
+      major: 1,
+      minor: 1,
+      patch: 20,
+      parts: 3,
+      dateOfCreation: '2022-04-05',
+    },
+  },
+};
+
 const downloadWordsV1 = () => {
   const abortController = new AbortController();
   return download({
@@ -1031,7 +1043,188 @@ describe('download', () => {
     ]);
   });
 
-  // TODO: should NOT resume a multi-part initial download if there are more than 10 patches since
+  it('should NOT resume a multi-part initial download if there are more than 10 patches since', async () => {
+    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_20_PARTS_3);
+    fetchMock.mock(
+      'end:words/en/1.1.20-0.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":2,"part":0,"format":"full"}
+{"id":1000000,"r":["ヽ"],"s":[{"g":["repetition mark in katakana"],"pos":["unc"],"xref":[{"k":"一の字点"}],"gt":1}]}
+{"id":1000010,"r":["ヾ"],"s":[{"g":["voiced repetition mark in katakana"],"pos":["unc"],"gt":1}]}
+`
+    );
+    fetchMock.mock(
+      'end:words/en/1.1.20-1.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":2,"part":1,"format":"full"}
+{"id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+{"id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
+`
+    );
+    fetchMock.mock(
+      'end:words/en/1.1.20-2.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":1,"part":2,"format":"full"}
+{"id":1000040,"k":["〃"],"r":["おなじ","おなじく"],"s":[{"g":["ditto mark"],"pos":["n"]}]}
+`
+    );
+
+    const abortController = new AbortController();
+    const events = await drainEvents(
+      download({
+        lang: 'en',
+        forceFetch: true,
+        majorVersion: 1,
+        series: 'words',
+        signal: abortController.signal,
+        currentVersion: {
+          major: 1,
+          minor: 1,
+          patch: 0,
+          partInfo: {
+            part: 0,
+            parts: 3,
+          },
+        },
+      })
+    );
+
+    assert.deepEqual(events, [
+      {
+        type: 'reset',
+      },
+      {
+        type: 'downloadstart',
+        files: 3,
+      },
+      {
+        type: 'filestart',
+        major: 1,
+        minor: 1,
+        patch: 20,
+        dateOfCreation: '2022-04-05',
+        partInfo: {
+          part: 0,
+          parts: 3,
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000000,
+          r: ['ヽ'],
+          s: [
+            {
+              g: ['repetition mark in katakana'],
+              pos: ['unc'],
+              xref: [
+                {
+                  k: '一の字点',
+                },
+              ],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000010,
+          r: ['ヾ'],
+          s: [
+            {
+              g: ['voiced repetition mark in katakana'],
+              pos: ['unc'],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'fileend',
+      },
+      {
+        type: 'filestart',
+        major: 1,
+        minor: 1,
+        patch: 20,
+        dateOfCreation: '2022-04-05',
+        partInfo: {
+          part: 1,
+          parts: 3,
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000020,
+          r: ['ゝ'],
+          s: [
+            {
+              g: ['repetition mark in hiragana'],
+              pos: ['unc'],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000030,
+          r: ['ゞ'],
+          s: [
+            {
+              g: ['voiced repetition mark in hiragana'],
+              pos: ['unc'],
+              gt: 1,
+            },
+          ],
+        },
+      },
+      {
+        type: 'fileend',
+      },
+      {
+        type: 'filestart',
+        major: 1,
+        minor: 1,
+        patch: 20,
+        dateOfCreation: '2022-04-05',
+        partInfo: {
+          part: 2,
+          parts: 3,
+        },
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: {
+          id: 1000040,
+          k: ['〃'],
+          r: ['おなじ', 'おなじく'],
+          s: [
+            {
+              g: ['ditto mark'],
+              pos: ['n'],
+            },
+          ],
+        },
+      },
+      {
+        type: 'fileend',
+      },
+      {
+        type: 'downloadend',
+      },
+    ]);
+  });
+
   // TODO: should fail when the latest version is less than the current version
   // TODO: should do nothing when the latest version equals the current version
   // TODO: should reset and fetch the latest version when there is a new minor version
