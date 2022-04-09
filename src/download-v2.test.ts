@@ -1,5 +1,6 @@
 import chai, { assert } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import chaiLike from 'chai-like';
 import fetchMock from 'fetch-mock';
 import { DownloadError } from './download-error';
 
@@ -7,7 +8,26 @@ import { download, DownloadEvent } from './download-v2';
 import { isObject } from './is-object';
 
 mocha.setup('bdd');
+chai.use(chaiLike);
 chai.use(chaiAsPromised);
+
+declare global {
+  /* eslint @typescript-eslint/no-namespace: 0 */
+  namespace Chai {
+    interface Assert {
+      likeEqual(expected: any, actual: any): void;
+    }
+  }
+}
+
+chai.assert.likeEqual = function (
+  actual: any,
+  expected: any,
+  message?: string | undefined
+) {
+  const test = new chai.Assertion(actual, message, chai.assert, true);
+  test.like(expected);
+};
 
 const KANJI_VERSION_1_0_0 = {
   kanji: {
@@ -648,11 +668,8 @@ describe('download', () => {
 
     const events = await drainEvents(downloadWordsV1From110());
 
-    assert.deepEqual(events, [
-      {
-        type: 'downloadstart',
-        files: 2,
-      },
+    assert.likeEqual(events, [
+      { type: 'downloadstart', files: 2 },
       {
         major: 1,
         minor: 1,
@@ -663,43 +680,19 @@ describe('download', () => {
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000020,
-          r: ['ゝ'],
-          s: [
-            {
-              g: ['repetition mark in hiragana'],
-              pos: ['unc'],
-              gt: 1,
-            },
-          ],
-        },
+        record: { id: 1000020 },
       },
       {
         type: 'record',
         mode: 'change',
-        record: {
-          id: 1000030,
-          r: ['ゞ'],
-          s: [
-            {
-              g: ['voiced repetition mark in hiragana'],
-              pos: ['unc'],
-              gt: 1,
-            },
-          ],
-        },
+        record: { id: 1000030 },
       },
       {
         type: 'record',
         mode: 'delete',
-        record: {
-          id: 1000050,
-        },
+        record: { id: 1000050 },
       },
-      {
-        type: 'fileend',
-      },
+      { type: 'fileend' },
       {
         major: 1,
         minor: 1,
@@ -710,24 +703,10 @@ describe('download', () => {
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000040,
-          k: ['〃'],
-          r: ['おなじ', 'おなじく'],
-          s: [
-            {
-              g: ['ditto mark'],
-              pos: ['n'],
-            },
-          ],
-        },
+        record: { id: 1000040 },
       },
-      {
-        type: 'fileend',
-      },
-      {
-        type: 'downloadend',
-      },
+      { type: 'fileend' },
+      { type: 'downloadend' },
     ]);
   });
 
@@ -885,35 +864,24 @@ describe('download', () => {
       { wrapError: true }
     );
 
-    assert.deepEqual(events, [
+    assert.likeEqual(events, [
       { type: 'downloadstart', files: 4 },
       {
         type: 'filestart',
         major: 1,
         minor: 1,
         patch: 0,
-        dateOfCreation: '2022-04-05',
         partInfo: { part: 1, parts: 3 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000020,
-          r: ['ゝ'],
-          s: [{ g: ['repetition mark in hiragana'], pos: ['unc'], gt: 1 }],
-        },
+        record: { id: 1000020 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000030,
-          r: ['ゞ'],
-          s: [
-            { g: ['voiced repetition mark in hiragana'], pos: ['unc'], gt: 1 },
-          ],
-        },
+        record: { id: 1000030 },
       },
       { type: 'fileend' },
       {
@@ -921,122 +889,51 @@ describe('download', () => {
         major: 1,
         minor: 1,
         patch: 0,
-        dateOfCreation: '2022-04-05',
         partInfo: { part: 2, parts: 3 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000040,
-          k: ['〃'],
-          r: ['おなじ', 'おなじく'],
-          s: [{ g: ['ditto mark'], pos: ['n'] }],
-        },
+        record: { id: 1000040 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000050,
-          k: ['仝'],
-          r: ['どうじょう'],
-          s: [{ g: ['"as above" mark'], pos: ['n'] }],
-        },
+        record: { id: 1000050 },
       },
       { type: 'fileend' },
       {
         major: 1,
         minor: 1,
         patch: 1,
-        dateOfCreation: '2022-04-05',
         type: 'filestart',
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000060,
-          k: ['々'],
-          r: ['のま', 'ノマ'],
-          rm: [0, { app: 0 }],
-          s: [
-            {
-              g: ['kanji repetition mark'],
-              pos: ['unc'],
-              xref: [{ k: '同の字点' }],
-              gt: 1,
-            },
-          ],
-        },
+        record: { id: 1000060 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000090,
-          k: ['○', '〇'],
-          r: ['まる'],
-          s: [
-            {
-              g: ['circle'],
-              pos: ['n'],
-              xref: [{ k: '丸', r: 'まる', sense: 1 }],
-              inf: 'sometimes used for zero',
-            },
-            {
-              g: ['"correct"', '"good"'],
-              pos: ['n'],
-              xref: [{ k: '二重丸' }],
-              inf: 'when marking a test, homework, etc.',
-            },
-            {
-              g: ['*', '_'],
-              pos: ['unc'],
-              xref: [{ k: '〇〇', sense: 1 }],
-              inf: 'placeholder used to censor individual characters or indicate a space to be filled in',
-            },
-            { g: ['period', 'full stop'], pos: ['n'], xref: [{ k: '句点' }] },
-            {
-              g: ['maru mark', 'semivoiced sound', 'p-sound'],
-              pos: ['n'],
-              xref: [{ k: '半濁点' }],
-            },
-          ],
-        },
+        record: { id: 1000090 },
       },
       { type: 'fileend' },
       {
         major: 1,
         minor: 1,
         patch: 2,
-        dateOfCreation: '2022-04-05',
         type: 'filestart',
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000100,
-          k: ['ＡＢＣ順'],
-          r: ['エービーシーじゅん'],
-          s: [{ g: ['alphabetical order'], pos: ['n'] }],
-        },
+        record: { id: 1000100 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000110,
-          k: ['ＣＤプレーヤー', 'ＣＤプレイヤー'],
-          km: [{ p: ['s1'] }],
-          r: ['シーディープレーヤー', 'シーディープレイヤー'],
-          rm: [{ app: 1, p: ['s1'] }, { app: 2 }],
-          s: [
-            { g: ['CD player'], pos: ['n'] },
-            { g: ['lecteur CD'], lang: 'fr' },
-          ],
-        },
+        record: { id: 1000110 },
       },
       { type: 'fileend' },
       { type: 'downloadend' },
@@ -1089,139 +986,59 @@ describe('download', () => {
       })
     );
 
-    assert.deepEqual(events, [
-      {
-        type: 'reset',
-      },
-      {
-        type: 'downloadstart',
-        files: 3,
-      },
+    assert.likeEqual(events, [
+      { type: 'reset' },
+      { type: 'downloadstart', files: 3 },
       {
         type: 'filestart',
         major: 1,
         minor: 1,
         patch: 20,
-        dateOfCreation: '2022-04-05',
-        partInfo: {
-          part: 0,
-          parts: 3,
-        },
+        partInfo: { part: 0, parts: 3 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000000,
-          r: ['ヽ'],
-          s: [
-            {
-              g: ['repetition mark in katakana'],
-              pos: ['unc'],
-              xref: [
-                {
-                  k: '一の字点',
-                },
-              ],
-              gt: 1,
-            },
-          ],
-        },
+        record: { id: 1000000 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000010,
-          r: ['ヾ'],
-          s: [
-            {
-              g: ['voiced repetition mark in katakana'],
-              pos: ['unc'],
-              gt: 1,
-            },
-          ],
-        },
+        record: { id: 1000010 },
       },
-      {
-        type: 'fileend',
-      },
+      { type: 'fileend' },
       {
         type: 'filestart',
         major: 1,
         minor: 1,
         patch: 20,
-        dateOfCreation: '2022-04-05',
-        partInfo: {
-          part: 1,
-          parts: 3,
-        },
+        partInfo: { part: 1, parts: 3 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000020,
-          r: ['ゝ'],
-          s: [
-            {
-              g: ['repetition mark in hiragana'],
-              pos: ['unc'],
-              gt: 1,
-            },
-          ],
-        },
+        record: { id: 1000020 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000030,
-          r: ['ゞ'],
-          s: [
-            {
-              g: ['voiced repetition mark in hiragana'],
-              pos: ['unc'],
-              gt: 1,
-            },
-          ],
-        },
+        record: { id: 1000030 },
       },
-      {
-        type: 'fileend',
-      },
+      { type: 'fileend' },
       {
         type: 'filestart',
         major: 1,
         minor: 1,
         patch: 20,
-        dateOfCreation: '2022-04-05',
-        partInfo: {
-          part: 2,
-          parts: 3,
-        },
+        partInfo: { part: 2, parts: 3 },
       },
       {
         type: 'record',
         mode: 'add',
-        record: {
-          id: 1000040,
-          k: ['〃'],
-          r: ['おなじ', 'おなじく'],
-          s: [
-            {
-              g: ['ditto mark'],
-              pos: ['n'],
-            },
-          ],
-        },
+        record: { id: 1000040 },
       },
-      {
-        type: 'fileend',
-      },
-      {
-        type: 'downloadend',
-      },
+      { type: 'fileend' },
+      { type: 'downloadend' },
     ]);
   });
 
