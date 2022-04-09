@@ -1202,7 +1202,44 @@ describe('download', () => {
     ]);
   });
 
-  // TODO: should request the appropriate language
+  it('should request the appropriate language', async () => {
+    fetchMock.mock('end:version-fr.json', KANJI_VERSION_1_0_0);
+    fetchMock.mock(
+      'end:kanji/fr/1.0.0.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"176","dateOfCreation":"2020-07-09"},"records":1,"format":"full"}
+`
+    );
+
+    const abortController = new AbortController();
+    await drainEvents(
+      download({
+        lang: 'fr',
+        forceFetch: true,
+        majorVersion: 1,
+        series: 'kanji',
+        signal: abortController.signal,
+      })
+    );
+
+    assert.isFalse(
+      fetchMock.called('end:version-en.json'),
+      'Should NOT get en version'
+    );
+    assert.isTrue(
+      fetchMock.called('end:version-fr.json'),
+      'Should get fr version'
+    );
+    assert.isFalse(
+      fetchMock.called('end:kanji/en/1.0.0.jsonl'),
+      'Should NOT get en database file'
+    );
+    assert.isTrue(
+      fetchMock.called('end:kanji/fr/1.0.0.jsonl'),
+      'Should get fr database file'
+    );
+  });
+
   // TODO: should cancel any fetches if the download is canceled
   // TODO: should produce progress events
 });
