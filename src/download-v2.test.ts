@@ -2,6 +2,7 @@ import chai, { assert } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import chaiLike from 'chai-like';
 import fetchMock from 'fetch-mock';
+import { AbortError } from './abort-error';
 import { DownloadError } from './download-error';
 
 import { download, DownloadEvent } from './download-v2';
@@ -1240,7 +1241,33 @@ describe('download', () => {
     );
   });
 
-  // TODO: should cancel any fetches if the download is canceled
+  it('should cancel any fetches if the download is canceled', async () => {
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.mock(
+      'end:kanji/en/1.0.0.jsonl',
+      `{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":2,"format":"full"}
+{"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
+{"c":"㐆","r":{},"m":["to follow","to trust to","to put confidence in","to depend on","to turn around","to turn the body"],"rad":{"x":4},"refs":{},"misc":{"sc":6}}`
+    );
+
+    const abortController = new AbortController();
+    const downloader = download({
+      lang: 'en',
+      forceFetch: true,
+      majorVersion: 1,
+      series: 'kanji',
+      signal: abortController.signal,
+    });
+
+    // Read version event
+    const readResult = await downloader.next();
+    assert.isFalse(readResult.done, 'Iterator should not have finished yet');
+
+    abortController.abort();
+
+    await assert.isRejected(downloader.next(), AbortError);
+  });
+
   // TODO: should produce progress events
 });
 
