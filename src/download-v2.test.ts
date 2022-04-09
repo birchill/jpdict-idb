@@ -1042,10 +1042,165 @@ describe('download', () => {
     ]);
   });
 
-  // TODO: should fail when the latest version is less than the current version
-  // TODO: should do nothing when the latest version equals the current version
-  // TODO: should reset and fetch the latest version when there is a new minor version
-  // TODO: should reset and fetch the latest version when there is a new major version we support
+  it('should fail when the latest version is less than the current version', async () => {
+    // Set the latest version to 1.0.1
+    fetchMock.mock('end:version-en.json', {
+      kanji: { '1': { ...KANJI_VERSION_1_0_0.kanji['1'], patch: 1 } },
+    });
+
+    try {
+      const abortController = new AbortController();
+      // But fetch using a current version of 1.0.2
+      await drainEvents(
+        download({
+          lang: 'en',
+          forceFetch: true,
+          majorVersion: 1,
+          series: 'kanji',
+          signal: abortController.signal,
+          currentVersion: {
+            major: 1,
+            minor: 0,
+            patch: 2,
+          },
+        }),
+        { wrapError: true }
+      );
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseTooOld');
+    }
+  });
+
+  it('should do nothing when the latest version equals the current version', async () => {
+    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
+
+    const abortController = new AbortController();
+    const events = await drainEvents(
+      download({
+        lang: 'en',
+        forceFetch: true,
+        majorVersion: 1,
+        series: 'kanji',
+        signal: abortController.signal,
+        currentVersion: { major: 1, minor: 0, patch: 0 },
+      })
+    );
+
+    assert.deepEqual(events, [
+      { type: 'downloadstart', files: 0 },
+      { type: 'downloadend' },
+    ]);
+  });
+
+  it('should reset and fetch the latest version when there is a new minor version', async () => {
+    fetchMock.mock('end:version-en.json', {
+      kanji: { '1': { ...KANJI_VERSION_1_0_0.kanji['1'], minor: 2, patch: 3 } },
+    });
+    fetchMock.mock(
+      'end:kanji/en/1.2.3.jsonl',
+      `
+{"type":"header","version":{"major":1,"minor":2,"patch":3,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
+{"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
+`
+    );
+
+    const abortController = new AbortController();
+    const events = await drainEvents(
+      download({
+        lang: 'en',
+        forceFetch: true,
+        majorVersion: 1,
+        series: 'kanji',
+        signal: abortController.signal,
+        currentVersion: { major: 1, minor: 0, patch: 0 },
+      })
+    );
+
+    assert.likeEqual(events, [
+      { type: 'reset' },
+      { type: 'downloadstart', files: 1 },
+      {
+        major: 1,
+        minor: 2,
+        patch: 3,
+        type: 'filestart',
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: { c: '㐂' },
+      },
+      { type: 'fileend' },
+      { type: 'downloadend' },
+    ]);
+  });
+
+  it('should reset and fetch the latest version when there is a new major version we support', async () => {
+    fetchMock.mock('end:version-en.json', {
+      kanji: {
+        '1': {
+          major: 1,
+          minor: 0,
+          patch: 0,
+          databaseVersion: '175',
+          dateOfCreation: '2019-07-09',
+        },
+        '2': {
+          major: 2,
+          minor: 3,
+          patch: 4,
+          databaseVersion: '176',
+          dateOfCreation: '2020-07-09',
+        },
+        '3': {
+          major: 3,
+          minor: 4,
+          patch: 5,
+          databaseVersion: '177',
+          dateOfCreation: '2021-07-09',
+        },
+      },
+    });
+    fetchMock.mock(
+      'end:kanji/en/2.3.4.jsonl',
+      `
+{"type":"header","version":{"major":2,"minor":3,"patch":4,"databaseVersion":"176","dateOfCreation":"2020-07-09"},"records":1,"format":"full"}
+{"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
+`
+    );
+
+    const abortController = new AbortController();
+    const events = await drainEvents(
+      download({
+        lang: 'en',
+        forceFetch: true,
+        majorVersion: 2,
+        series: 'kanji',
+        signal: abortController.signal,
+        currentVersion: { major: 1, minor: 0, patch: 0 },
+      })
+    );
+
+    assert.likeEqual(events, [
+      { type: 'reset' },
+      { type: 'downloadstart', files: 1 },
+      {
+        major: 2,
+        minor: 3,
+        patch: 4,
+        type: 'filestart',
+      },
+      {
+        type: 'record',
+        mode: 'add',
+        record: { c: '㐂' },
+      },
+      { type: 'fileend' },
+      { type: 'downloadend' },
+    ]);
+  });
 
   // TODO: should request the appropriate language
   // TODO: should cancel any fetches if the download is canceled
