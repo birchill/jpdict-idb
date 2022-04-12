@@ -11,6 +11,7 @@ import {
 import { fetchWithTimeout } from './fetch';
 import { isObject } from './is-object';
 import { ljsonStreamIterator } from './ljson-stream';
+import { PartInfo } from './part-info';
 import { stripFields } from './utils';
 import { safeInteger } from './validation-helpers';
 import { compareVersions, VersionNumber } from './version-number';
@@ -51,8 +52,6 @@ export type ProgressEvent = {
 //
 // Helper types
 //
-
-export type PartInfo = { part: number; parts: number };
 
 export type FileInfo = {
   major: number;
