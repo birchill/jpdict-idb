@@ -61,7 +61,7 @@
     "rollup": "2.70.1",
     "rollup-plugin-cleaner": "1.0.0",
     "rollup-plugin-dts": "4.2.1",
-    "sinon": "13.0.1",
+    "sinon": "13.0.2",
     "standard-version": "9.3.2",
     "ts-loader": "9.2.8",
     "typescript": "4.6.3",
