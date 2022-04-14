@@ -2,8 +2,8 @@ import { MajorDataSeries } from './data-series';
 import { ChangeCallback, ChangeTopic, JpdictDatabase } from './database';
 import { DownloadError } from './download';
 import {
-  requestIdleCallback,
   cancelIdleCallback,
+  requestIdleCallback,
 } from './request-idle-callback';
 import { getUpdateKey } from './update-key';
 
@@ -42,7 +42,7 @@ export type UpdateErrorCallback = (params: {
 // Updates the passed-in database and retries in the case of failure due to
 // network failures or being offline.
 //
-// Note that if there is an existing calling to this function in action
+// Note that if there is an existing call to this function in motion
 // (including waiting to retry) the existing call will be re-used.
 // As a result, if the passed-in callback functions differ between invocations,
 // only the originally passed-in callback functions will be called.
@@ -242,7 +242,7 @@ async function doUpdate({
     let retryIntervalMs: number | undefined;
     let retryCount: number | undefined;
     let nextRetry: Date | undefined;
-    let suppressError: boolean = false;
+    let suppressError = false;
 
     if (isNetworkError && !wasCanceled) {
       if (currentRetryStatus) {

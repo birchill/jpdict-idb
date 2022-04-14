@@ -1,6 +1,7 @@
 import * as s from 'superstruct';
 
 import { DataSeries } from './data-series';
+import { DataVersion } from './data-version';
 import { DownloadError } from './download-error';
 import { getVersionInfo } from './download-version-info';
 import {
@@ -34,7 +35,11 @@ export type DownloadEvent =
 export type ResetEvent = { type: 'reset' };
 export type DownloadStartEvent = { type: 'downloadstart'; files: number };
 export type DownloadEndEvent = { type: 'downloadend' };
-export type FileStartEvent = { type: 'filestart' } & FileInfo;
+export type FileStartEvent = {
+  type: 'filestart';
+  version: DataVersion;
+  totalRecords: number;
+};
 export type FileEndEvent = { type: 'fileend' };
 export type RecordEvent = {
   type: 'record';
@@ -52,15 +57,6 @@ export type ProgressEvent = {
 //
 // Helper types
 //
-
-export type FileInfo = {
-  major: number;
-  minor: number;
-  patch: number;
-  databaseVersion?: string;
-  dateOfCreation: string;
-  partInfo?: PartInfo;
-};
 
 export type CurrentVersion = VersionNumber & {
   partInfo?: PartInfo;
@@ -122,6 +118,8 @@ export async function* download({
   lang,
   signal,
   maxProgressResolution = DEFAULT_MAX_PROGRESS_RESOLUTION,
+  // TODO: We might not need this flag anymore. It looks like we always set it
+  // to true?
   forceFetch = false,
 }: DownloadOptions): AsyncIterableIterator<DownloadEvent> {
   const versionInfo = await getVersionInfo({
@@ -471,16 +469,24 @@ async function* getEvents({
       if (line.part !== undefined) {
         fileStartEvent = {
           type: 'filestart',
-          ...line.version,
-          partInfo: {
-            part: line.part,
-            parts: partInfo!.parts,
+          totalRecords: line.records,
+          version: {
+            ...line.version,
+            partInfo: {
+              part: line.part,
+              parts: partInfo!.parts,
+            },
+            lang,
           },
         };
       } else {
         fileStartEvent = {
-          ...line.version,
           type: 'filestart',
+          totalRecords: line.records,
+          version: {
+            ...line.version,
+            lang,
+          },
         };
       }
 

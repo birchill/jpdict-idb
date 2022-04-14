@@ -121,11 +121,15 @@ describe('download', () => {
       { type: 'downloadstart', files: 1 },
       {
         type: 'filestart',
-        major: 1,
-        minor: 0,
-        patch: 0,
-        databaseVersion: '2019-173',
-        dateOfCreation: '2019-06-22',
+        totalRecords: 0,
+        version: {
+          major: 1,
+          minor: 0,
+          patch: 0,
+          databaseVersion: '2019-173',
+          dateOfCreation: '2019-06-22',
+          lang: 'en',
+        },
       },
       { type: 'fileend' },
       { type: 'downloadend' },
@@ -298,11 +302,15 @@ describe('download', () => {
       { type: 'downloadstart', files: 1 },
       {
         type: 'filestart',
-        major: 1,
-        minor: 0,
-        patch: 0,
-        databaseVersion: '2019-173',
-        dateOfCreation: '2019-06-22',
+        totalRecords: 2,
+        version: {
+          major: 1,
+          minor: 0,
+          patch: 0,
+          databaseVersion: '2019-173',
+          dateOfCreation: '2019-06-22',
+          lang: 'en',
+        },
       },
       {
         type: 'record',
@@ -522,14 +530,18 @@ describe('download', () => {
       },
       {
         type: 'filestart',
-        major: 1,
-        minor: 1,
-        patch: 2,
-        partInfo: {
-          part: 0,
-          parts: 3,
+        totalRecords: 2,
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 2,
+          partInfo: {
+            part: 0,
+            parts: 3,
+          },
+          dateOfCreation: '2022-04-05',
+          lang: 'en',
         },
-        dateOfCreation: '2022-04-05',
       },
       {
         type: 'record',
@@ -571,14 +583,18 @@ describe('download', () => {
       },
       {
         type: 'filestart',
-        major: 1,
-        minor: 1,
-        patch: 2,
-        partInfo: {
-          part: 1,
-          parts: 3,
+        totalRecords: 2,
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 2,
+          partInfo: {
+            part: 1,
+            parts: 3,
+          },
+          dateOfCreation: '2022-04-05',
+          lang: 'en',
         },
-        dateOfCreation: '2022-04-05',
       },
       {
         type: 'record',
@@ -615,14 +631,18 @@ describe('download', () => {
       },
       {
         type: 'filestart',
-        major: 1,
-        minor: 1,
-        patch: 2,
-        partInfo: {
-          part: 2,
-          parts: 3,
+        totalRecords: 1,
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 2,
+          partInfo: {
+            part: 2,
+            parts: 3,
+          },
+          dateOfCreation: '2022-04-05',
+          lang: 'en',
         },
-        dateOfCreation: '2022-04-05',
       },
       {
         type: 'record',
@@ -672,11 +692,13 @@ describe('download', () => {
     assert.likeEqual(events, [
       { type: 'downloadstart', files: 2 },
       {
-        major: 1,
-        minor: 1,
-        patch: 1,
-        dateOfCreation: '2022-04-05',
         type: 'filestart',
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 1,
+          dateOfCreation: '2022-04-05',
+        },
       },
       {
         type: 'record',
@@ -695,11 +717,13 @@ describe('download', () => {
       },
       { type: 'fileend' },
       {
-        major: 1,
-        minor: 1,
-        patch: 2,
-        dateOfCreation: '2022-04-05',
         type: 'filestart',
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 2,
+          dateOfCreation: '2022-04-05',
+        },
       },
       {
         type: 'record',
@@ -869,10 +893,12 @@ describe('download', () => {
       { type: 'downloadstart', files: 4 },
       {
         type: 'filestart',
-        major: 1,
-        minor: 1,
-        patch: 0,
-        partInfo: { part: 1, parts: 3 },
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 0,
+          partInfo: { part: 1, parts: 3 },
+        },
       },
       {
         type: 'record',
@@ -887,10 +913,12 @@ describe('download', () => {
       { type: 'fileend' },
       {
         type: 'filestart',
-        major: 1,
-        minor: 1,
-        patch: 0,
-        partInfo: { part: 2, parts: 3 },
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 0,
+          partInfo: { part: 2, parts: 3 },
+        },
       },
       {
         type: 'record',
@@ -904,10 +932,12 @@ describe('download', () => {
       },
       { type: 'fileend' },
       {
-        major: 1,
-        minor: 1,
-        patch: 1,
         type: 'filestart',
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 1,
+        },
       },
       {
         type: 'record',
@@ -921,10 +951,12 @@ describe('download', () => {
       },
       { type: 'fileend' },
       {
-        major: 1,
-        minor: 1,
-        patch: 2,
         type: 'filestart',
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 2,
+        },
       },
       {
         type: 'record',
@@ -992,10 +1024,12 @@ describe('download', () => {
       { type: 'downloadstart', files: 3 },
       {
         type: 'filestart',
-        major: 1,
-        minor: 1,
-        patch: 20,
-        partInfo: { part: 0, parts: 3 },
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 20,
+          partInfo: { part: 0, parts: 3 },
+        },
       },
       {
         type: 'record',
@@ -1010,10 +1044,12 @@ describe('download', () => {
       { type: 'fileend' },
       {
         type: 'filestart',
-        major: 1,
-        minor: 1,
-        patch: 20,
-        partInfo: { part: 1, parts: 3 },
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 20,
+          partInfo: { part: 1, parts: 3 },
+        },
       },
       {
         type: 'record',
@@ -1028,10 +1064,12 @@ describe('download', () => {
       { type: 'fileend' },
       {
         type: 'filestart',
-        major: 1,
-        minor: 1,
-        patch: 20,
-        partInfo: { part: 2, parts: 3 },
+        version: {
+          major: 1,
+          minor: 1,
+          patch: 20,
+          partInfo: { part: 2, parts: 3 },
+        },
       },
       {
         type: 'record',
@@ -1123,10 +1161,12 @@ describe('download', () => {
       { type: 'reset' },
       { type: 'downloadstart', files: 1 },
       {
-        major: 1,
-        minor: 2,
-        patch: 3,
         type: 'filestart',
+        version: {
+          major: 1,
+          minor: 2,
+          patch: 3,
+        },
       },
       {
         type: 'record',
@@ -1188,10 +1228,12 @@ describe('download', () => {
       { type: 'reset' },
       { type: 'downloadstart', files: 1 },
       {
-        major: 2,
-        minor: 3,
-        patch: 4,
         type: 'filestart',
+        version: {
+          major: 2,
+          minor: 3,
+          patch: 4,
+        },
       },
       {
         type: 'record',

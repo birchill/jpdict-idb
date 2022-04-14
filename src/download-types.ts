@@ -1,4 +1,5 @@
 import * as s from 'superstruct';
+import { DataSeries } from './data-series';
 
 import { KanjiRecord, Misc, Radical, Readings } from './kanji-v2';
 import { NameRecord, NameTranslation } from './names-v2';
@@ -137,7 +138,7 @@ export type WordDownloadRecord = Overwrite<
   }
 >;
 
-export const WordDownloadRecordSchema: s.Describe<WordDownloadRecord> = s.type({
+const WordDownloadRecordSchema: s.Describe<WordDownloadRecord> = s.type({
   id: WordIdSchema,
   k: s.optional(s.nonempty(s.array(s.string()))),
   km: s.optional(s.nonempty(s.array(s.union([s.literal(0), KanjiMetaSchema])))),
@@ -148,12 +149,26 @@ export const WordDownloadRecordSchema: s.Describe<WordDownloadRecord> = s.type({
   s: s.array(WordSenseSchema),
 });
 
+export function validateWordDownloadRecord(
+  record: unknown
+): [Error, undefined] | [undefined, WordDownloadRecord] {
+  return s.validate(record, WordDownloadRecordSchema);
+}
+
+// -- Delete variant --
+
 export type WordDownloadDeleteRecord = Pick<WordDownloadRecord, 'id'>;
 
-export const WordDownloadDeleteRecordSchema: s.Describe<WordDownloadDeleteRecord> =
+const WordDownloadDeleteRecordSchema: s.Describe<WordDownloadDeleteRecord> =
   s.type({
     id: WordIdSchema,
   });
+
+export function validateWordDownloadDeleteRecord(
+  record: unknown
+): [Error, undefined] | [undefined, WordDownloadDeleteRecord] {
+  return s.validate(record, WordDownloadDeleteRecordSchema);
+}
 
 // ----------------------------------------------------------------------------
 //
@@ -191,19 +206,33 @@ export type NameDownloadRecord = Overwrite<
   }
 >;
 
-export const NameDownloadRecordSchema: s.Describe<NameDownloadRecord> = s.type({
+const NameDownloadRecordSchema: s.Describe<NameDownloadRecord> = s.type({
   id: NameIdSchema,
   k: s.optional(s.nonempty(s.array(s.nonempty(s.string())))),
   r: s.nonempty(s.array(s.nonempty(s.string()))),
   tr: s.array(NameTranslationSchema),
 });
 
+export function validateNameDownloadRecord(
+  record: unknown
+): [Error, undefined] | [undefined, NameDownloadRecord] {
+  return s.validate(record, NameDownloadRecordSchema);
+}
+
+// -- Delete variant --
+
 export type NameDownloadDeleteRecord = Pick<NameDownloadRecord, 'id'>;
 
-export const NameDownloadDeleteRecordSchema: s.Describe<NameDownloadDeleteRecord> =
+const NameDownloadDeleteRecordSchema: s.Describe<NameDownloadDeleteRecord> =
   s.type({
     id: NameIdSchema,
   });
+
+export function validateNameDownloadDeleteRecord(
+  record: unknown
+): [Error, undefined] | [undefined, NameDownloadDeleteRecord] {
+  return s.validate(record, NameDownloadDeleteRecordSchema);
+}
 
 // ----------------------------------------------------------------------------
 //
@@ -239,7 +268,7 @@ const KanjiIdSchema = s.nonempty(s.string());
 
 export type KanjiDownloadRecord = KanjiRecord;
 
-export const KanjiRecordSchema: s.Describe<KanjiDownloadRecord> = s.type({
+const KanjiDownloadRecordSchema: s.Describe<KanjiDownloadRecord> = s.type({
   c: KanjiIdSchema,
   r: ReadingsStruct,
   m: s.array(s.string()),
@@ -252,12 +281,26 @@ export const KanjiRecordSchema: s.Describe<KanjiDownloadRecord> = s.type({
   cf: s.optional(s.nonempty(s.string())),
 });
 
+export function validateKanjiDownloadRecord(
+  record: unknown
+): [Error, undefined] | [undefined, KanjiDownloadRecord] {
+  return s.validate(record, KanjiDownloadRecordSchema);
+}
+
+// -- Delete variant --
+
 export type KanjiDownloadDeleteRecord = Pick<KanjiDownloadRecord, 'c'>;
 
-export const KanjiDownloadDeleteRecordSchema: s.Describe<KanjiDownloadDeleteRecord> =
+const KanjiDownloadDeleteRecordSchema: s.Describe<KanjiDownloadDeleteRecord> =
   s.type({
     c: KanjiIdSchema,
   });
+
+export function validateKanjiDownloadDeleteRecord(
+  record: unknown
+): [Error, undefined] | [undefined, KanjiDownloadDeleteRecord] {
+  return s.validate(record, KanjiDownloadDeleteRecordSchema);
+}
 
 // ----------------------------------------------------------------------------
 //
@@ -276,23 +319,105 @@ export type RadicalDownloadRecord = Overwrite<
   }
 >;
 
-export const RadicalDownloadRecordSchema: s.Describe<RadicalDownloadRecord> =
-  s.type({
-    id: RadicalIdSchema,
-    r: s.min(safeInteger(), 1),
-    b: s.optional(s.nonempty(s.string())),
-    k: s.optional(s.nonempty(s.string())),
-    pua: s.optional(safeInteger()),
-    s: safeInteger(),
-    na: s.array(s.nonempty(s.string())),
-    posn: s.optional(s.nonempty(s.string())),
-    m: s.array(s.nonempty(s.string())),
-    m_lang: s.optional(s.nonempty(s.string())),
-  });
+const RadicalDownloadRecordSchema: s.Describe<RadicalDownloadRecord> = s.type({
+  id: RadicalIdSchema,
+  r: s.min(safeInteger(), 1),
+  b: s.optional(s.nonempty(s.string())),
+  k: s.optional(s.nonempty(s.string())),
+  pua: s.optional(safeInteger()),
+  s: safeInteger(),
+  na: s.array(s.nonempty(s.string())),
+  posn: s.optional(s.nonempty(s.string())),
+  m: s.array(s.nonempty(s.string())),
+  m_lang: s.optional(s.nonempty(s.string())),
+});
+
+export function validateRadicalDownloadRecord(
+  record: unknown
+): [Error, undefined] | [undefined, RadicalDownloadRecord] {
+  return s.validate(record, RadicalDownloadRecordSchema);
+}
+
+// -- Delete variant --
 
 export type RadicalDownloadDeleteRecord = Pick<RadicalDownloadRecord, 'id'>;
 
-export const RadicalDownloadDeleteRecordSchema: s.Describe<RadicalDownloadDeleteRecord> =
+const RadicalDownloadDeleteRecordSchema: s.Describe<RadicalDownloadDeleteRecord> =
   s.type({
     id: RadicalIdSchema,
   });
+
+export function validateRadicalDownloadDeleteRecord(
+  record: unknown
+): [Error, undefined] | [undefined, RadicalDownloadDeleteRecord] {
+  return s.validate(record, RadicalDownloadDeleteRecordSchema);
+}
+
+// ----------------------------------------------------------------------------
+//
+// Combined types
+//
+// ----------------------------------------------------------------------------
+
+type DownloadRecordMapping = {
+  words: WordDownloadRecord;
+  names: NameDownloadRecord;
+  kanji: KanjiDownloadRecord;
+  radicals: RadicalDownloadRecord;
+};
+
+export type DownloadRecord<T extends DataSeries> = DownloadRecordMapping[T];
+
+const validateDownloadRecordMapping: {
+  [Series in DataSeries]: (
+    record: unknown
+  ) => [Error, undefined] | [undefined, DownloadRecord<Series>];
+} = {
+  words: validateWordDownloadRecord,
+  names: validateNameDownloadRecord,
+  kanji: validateKanjiDownloadRecord,
+  radicals: validateRadicalDownloadRecord,
+};
+
+export function validateDownloadRecord<Series extends DataSeries>({
+  series,
+  record,
+}: {
+  series: Series;
+  record: unknown;
+}) {
+  return validateDownloadRecordMapping[series](record);
+}
+
+// -- Delete variant --
+
+type DownloadDeleteRecordMapping = {
+  words: WordDownloadDeleteRecord;
+  names: NameDownloadDeleteRecord;
+  kanji: KanjiDownloadDeleteRecord;
+  radicals: RadicalDownloadDeleteRecord;
+};
+
+export type DownloadDeleteRecord<T extends DataSeries> =
+  DownloadDeleteRecordMapping[T];
+
+const validateDownloadDeleteRecordMapping: {
+  [Series in DataSeries]: (
+    record: unknown
+  ) => [Error, undefined] | [undefined, DownloadDeleteRecord<Series>];
+} = {
+  words: validateWordDownloadDeleteRecord,
+  names: validateNameDownloadDeleteRecord,
+  kanji: validateKanjiDownloadDeleteRecord,
+  radicals: validateRadicalDownloadDeleteRecord,
+};
+
+export function validateDownloadDeleteRecord<Series extends DataSeries>({
+  series,
+  record,
+}: {
+  series: Series;
+  record: unknown;
+}) {
+  return validateDownloadDeleteRecordMapping[series](record);
+}

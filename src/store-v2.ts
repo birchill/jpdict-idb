@@ -10,16 +10,7 @@ import idbReady from 'safari-14-idb-fix';
 
 import { DataSeries } from './data-series';
 import { DataVersion } from './data-version';
-import {
-  KanjiDownloadDeleteRecord,
-  KanjiDownloadRecord,
-  NameDownloadDeleteRecord,
-  NameDownloadRecord,
-  RadicalDownloadDeleteRecord,
-  RadicalDownloadRecord,
-  WordDownloadDeleteRecord,
-  WordDownloadRecord,
-} from './download-types';
+import { DownloadDeleteRecord, DownloadRecord } from './download-types';
 import { QuotaExceededError } from './quota-exceeded-error';
 import {
   getStoreIdForKanjiRecord,
@@ -103,42 +94,23 @@ export interface JpdictSchema extends DBSchema {
   };
 }
 
-type DownloadRecordMapping = {
-  words: WordDownloadRecord;
-  names: NameDownloadRecord;
-  kanji: KanjiDownloadRecord;
-  radicals: RadicalDownloadRecord;
-};
-
-type DownloadRecordForSeries<T extends DataSeries> = DownloadRecordMapping[T];
-
-type DownloadDeleteRecordMapping = {
-  words: WordDownloadDeleteRecord;
-  names: NameDownloadDeleteRecord;
-  kanji: KanjiDownloadDeleteRecord;
-  radicals: RadicalDownloadDeleteRecord;
-};
-
-type DownloadDeleteRecordForSeries<T extends DataSeries> =
-  DownloadDeleteRecordMapping[T];
-
 export type RecordUpdate<T extends DataSeries> =
   | {
       mode: 'add';
-      record: DownloadRecordForSeries<T>;
+      record: DownloadRecord<T>;
     }
   | {
       mode: 'change';
-      record: DownloadRecordForSeries<T>;
+      record: DownloadRecord<T>;
     }
   | {
       mode: 'delete';
-      record: DownloadDeleteRecordForSeries<T>;
+      record: DownloadDeleteRecord<T>;
     };
 
 const toStoreRecord: {
   [series in DataSeries]: (
-    record: DownloadRecordForSeries<series>
+    record: DownloadRecord<series>
   ) => JpdictSchema[series]['value'];
 } = {
   words: toWordStoreRecord,
@@ -149,7 +121,7 @@ const toStoreRecord: {
 
 const getStoreId: {
   [series in DataSeries]: (
-    record: DownloadDeleteRecordForSeries<series>
+    record: DownloadDeleteRecord<series>
   ) => JpdictSchema[series]['key'];
 } = {
   words: getStoreIdForWordRecord,
