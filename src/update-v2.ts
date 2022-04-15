@@ -117,12 +117,6 @@ async function doUpdate<Series extends DataSeries>({
       case 'downloadstart':
         totalFiles = event.files;
         callback({ type: 'updatestart', series });
-        callback({
-          type: 'progress',
-          series,
-          fileProgress: 0,
-          totalProgress: 0,
-        });
         break;
 
       case 'downloadend':
@@ -135,6 +129,15 @@ async function doUpdate<Series extends DataSeries>({
         totalRecords = event.totalRecords;
         currentFileVersion = event.version;
         callback({ type: 'filestart', series, version: event.version });
+        if (currentFile === 1) {
+          callback({
+            type: 'progress',
+            series,
+            fileProgress: 0,
+            totalProgress: 0,
+          });
+          lastReportedTotalProgress = 0;
+        }
         break;
 
       case 'fileend':
@@ -201,8 +204,13 @@ async function doUpdate<Series extends DataSeries>({
           const fileProgress = currentRecord / totalRecords;
           const totalProgress = (currentFile - 1 + fileProgress) / totalFiles;
           if (
-            lastReportedTotalProgress === undefined ||
-            totalProgress - lastReportedTotalProgress > MAX_PROGRESS_RESOLUTION
+            // Don't dispatch a 100% file progress event until after we've
+            // updated the version database (as part of processing the 'fileend'
+            // event.)
+            fileProgress < 1 &&
+            (lastReportedTotalProgress === undefined ||
+              totalProgress - lastReportedTotalProgress >
+                MAX_PROGRESS_RESOLUTION)
           ) {
             callback({ type: 'progress', series, fileProgress, totalProgress });
             lastReportedTotalProgress = totalProgress;

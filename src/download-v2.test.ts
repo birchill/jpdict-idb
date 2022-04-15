@@ -735,7 +735,7 @@ describe('download', () => {
     ]);
   });
 
-  it('should fail in a record in a patch file does NOT have a patch-type (_) field', async () => {
+  it('should fail if a record in a patch file does NOT have a patch-type (_) field', async () => {
     fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
     fetchMock.mock(
       'end:words/en/1.1.1-patch.jsonl',
