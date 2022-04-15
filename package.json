@@ -58,7 +58,7 @@
     "pinst": "3.0.0",
     "prettier": "2.6.2",
     "process": "0.11.10",
-    "rollup": "2.70.1",
+    "rollup": "2.70.2",
     "rollup-plugin-cleaner": "1.0.0",
     "rollup-plugin-dts": "4.2.1",
     "sinon": "13.0.2",
