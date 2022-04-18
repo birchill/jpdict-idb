@@ -61,7 +61,7 @@ export type DownloadOptions<EntryLine, DeletionLine> = {
   lang: string;
   signal: AbortSignal;
   maxProgressResolution?: number;
-  forceFetch?: boolean;
+  forceFetch: boolean;
   isEntryLine: (a: any) => a is EntryLine;
   isDeletionLine: (a: any) => a is DeletionLine;
 };
@@ -140,7 +140,7 @@ export async function* download<EntryLine, DeletionLine>({
   lang,
   signal,
   maxProgressResolution = DEFAULT_MAX_PROGRESS_RESOLUTION,
-  forceFetch = false,
+  forceFetch,
   isEntryLine,
   isDeletionLine,
 }: DownloadOptions<EntryLine, DeletionLine>): AsyncIterableIterator<
@@ -267,14 +267,14 @@ async function getVersionInfo({
   series,
   lang,
   signal,
-  forceFetch = false,
+  forceFetch,
 }: {
   baseUrl: string;
   majorVersion: number;
   series: string;
   lang: string;
   signal?: AbortSignal;
-  forceFetch?: boolean;
+  forceFetch: boolean;
 }): Promise<VersionInfo> {
   let versionInfo;
 

@@ -12,13 +12,6 @@ import { safeInteger } from './validation-helpers';
 
 export type VersionInfo = s.Infer<typeof VersionInfoStruct>;
 
-let cachedVersionFile:
-  | {
-      contents: any;
-      lang: string;
-    }
-  | undefined;
-
 export async function getVersionInfo({
   baseUrl,
   series,
@@ -26,7 +19,6 @@ export async function getVersionInfo({
   majorVersion,
   timeout,
   signal,
-  forceFetch = false,
 }: {
   baseUrl: string;
   series: string;
@@ -34,53 +26,48 @@ export async function getVersionInfo({
   majorVersion: number;
   timeout: number;
   signal?: AbortSignal;
-  forceFetch?: boolean;
 }): Promise<VersionInfo> {
   let versionInfo;
 
   // Get the file if needed
-  if (forceFetch || cachedVersionFile?.lang !== lang) {
-    const url = `${baseUrl}jpdict/reader/version-${lang}.json`;
+  const url = `${baseUrl}jpdict/reader/version-${lang}.json`;
 
-    let response;
-    try {
-      response = await fetchWithTimeout(url, { signal, timeout });
-    } catch (e) {
-      if (isAbortError(e) || isDownloadError(e)) {
-        throw e;
-      }
-
-      throw new DownloadError(
-        { code: 'VersionFileNotAccessible', url },
-        `Version file ${url} not accessible (${getErrorMessage(e)})`
-      );
+  let response;
+  try {
+    response = await fetchWithTimeout(url, { signal, timeout });
+  } catch (e) {
+    if (isAbortError(e) || isDownloadError(e)) {
+      throw e;
     }
 
-    // Fetch rejects the promise for network errors, but not for HTTP errors :(
-    if (!response.ok) {
-      const code =
-        response.status === 404
-          ? 'VersionFileNotFound'
-          : 'VersionFileNotAccessible';
-      throw new DownloadError(
-        { code, url },
-        `Version file ${url} not accessible (status: ${response.status})`
-      );
-    }
+    throw new DownloadError(
+      { code: 'VersionFileNotAccessible', url },
+      `Version file ${url} not accessible (${getErrorMessage(e)})`
+    );
+  }
 
-    // Try to parse it
-    try {
-      versionInfo = await response.json();
-    } catch (e) {
-      throw new DownloadError(
-        { code: 'VersionFileInvalid', url },
-        `Invalid version object: ${
-          getErrorMessage(e) || '(No detailed error message)'
-        }`
-      );
-    }
-  } else {
-    versionInfo = cachedVersionFile.contents;
+  // Fetch rejects the promise for network errors, but not for HTTP errors :(
+  if (!response.ok) {
+    const code =
+      response.status === 404
+        ? 'VersionFileNotFound'
+        : 'VersionFileNotAccessible';
+    throw new DownloadError(
+      { code, url },
+      `Version file ${url} not accessible (status: ${response.status})`
+    );
+  }
+
+  // Try to parse it
+  try {
+    versionInfo = await response.json();
+  } catch (e) {
+    throw new DownloadError(
+      { code: 'VersionFileInvalid', url },
+      `Invalid version object: ${
+        getErrorMessage(e) || '(No detailed error message)'
+      }`
+    );
   }
 
   if (signal?.aborted) {
@@ -99,12 +86,6 @@ export async function getVersionInfo({
       'Invalid version object: Did not match expected structure or requested series was not available in this language'
     );
   }
-
-  // Cache the file contents
-  cachedVersionFile = {
-    contents: versionInfo,
-    lang,
-  };
 
   return dbVersionInfo;
 }

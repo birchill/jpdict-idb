@@ -1,22 +1,22 @@
 import { jsonEqualish } from '@birchill/json-equalish';
 
 import { AbortError } from './abort-error';
-import { DataSeries, MajorDataSeries, allDataSeries } from './data-series';
+import { allDataSeries, DataSeries, MajorDataSeries } from './data-series';
 import { DataVersion } from './data-version';
-import { hasLanguage, download } from './download';
-import { isKanjiEntryLine, isKanjiDeletionLine } from './kanji';
-import { isRadicalEntryLine, isRadicalDeletionLine } from './radicals';
-import { isNameEntryLine, isNameDeletionLine } from './names';
+import { download, hasLanguage } from './download';
+import { isKanjiDeletionLine, isKanjiEntryLine } from './kanji';
+import { isRadicalDeletionLine, isRadicalEntryLine } from './radicals';
+import { isNameDeletionLine, isNameEntryLine } from './names';
 import { JpdictStore } from './store';
 import { UpdateAction } from './update-actions';
 import { UpdateState } from './update-state';
 import { reducer as updateReducer } from './update-reducer';
 import {
   updateKanji,
-  updateRadicals,
   updateNames,
-  updateWords,
   UpdateOptions,
+  updateRadicals,
+  updateWords,
 } from './update';
 import { isWordDeletionLine, isWordEntryLine } from './words';
 
@@ -77,7 +77,7 @@ export class JpdictDatabase {
   };
 
   store: JpdictStore;
-  verbose: boolean = false;
+  verbose = false;
 
   private readyPromise: Promise<any>;
   private inProgressUpdates: {
@@ -266,14 +266,14 @@ export class JpdictDatabase {
   private async doUpdate<EntryLine, DeletionLine>({
     series,
     lang: requestedLang,
-    forceFetch = false,
+    forceFetch,
     isEntryLine,
     isDeletionLine,
     update,
   }: {
     series: DataSeries;
     lang: string;
-    forceFetch?: boolean;
+    forceFetch: boolean;
     isEntryLine: (a: any) => a is EntryLine;
     isDeletionLine: (a: any) => a is DeletionLine;
     update: (options: UpdateOptions<EntryLine, DeletionLine>) => Promise<void>;

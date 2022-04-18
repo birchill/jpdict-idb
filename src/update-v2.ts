@@ -103,7 +103,6 @@ async function doUpdate<Series extends DataSeries>({
     currentVersion,
     lang,
     signal,
-    forceFetch: true,
   })) {
     if (signal.aborted) {
       throw new AbortError();

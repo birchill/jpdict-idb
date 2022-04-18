@@ -68,7 +68,6 @@ export type DownloadOptions = {
   currentVersion?: CurrentVersion;
   lang: string;
   signal: AbortSignal;
-  forceFetch?: boolean;
 };
 
 export async function hasLanguage({
@@ -104,9 +103,6 @@ export async function* download({
   currentVersion,
   lang,
   signal,
-  // TODO: We might not need this flag anymore. It looks like we always set it
-  // to true?
-  forceFetch = false,
 }: DownloadOptions): AsyncIterableIterator<DownloadEvent> {
   const versionInfo = await getVersionInfo({
     baseUrl: BASE_URL,
@@ -115,7 +111,6 @@ export async function* download({
     majorVersion,
     timeout: DOWNLOAD_TIMEOUT,
     signal,
-    forceFetch,
   });
 
   const { files, type } = getDownloadList({

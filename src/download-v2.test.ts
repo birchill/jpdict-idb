@@ -46,7 +46,6 @@ const downloadKanjiV1 = () => {
   const abortController = new AbortController();
   return download({
     lang: 'en',
-    forceFetch: true,
     majorVersion: 1,
     series: 'kanji',
     signal: abortController.signal,
@@ -81,7 +80,6 @@ const downloadWordsV1 = () => {
   const abortController = new AbortController();
   return download({
     lang: 'en',
-    forceFetch: true,
     majorVersion: 1,
     series: 'words',
     signal: abortController.signal,
@@ -92,7 +90,6 @@ const downloadWordsV1From110 = () => {
   const abortController = new AbortController();
   return download({
     lang: 'en',
-    forceFetch: true,
     majorVersion: 1,
     series: 'words',
     signal: abortController.signal,
@@ -872,7 +869,6 @@ describe('download', () => {
     const events = await drainEvents(
       download({
         lang: 'en',
-        forceFetch: true,
         majorVersion: 1,
         series: 'words',
         signal: abortController.signal,
@@ -1003,7 +999,6 @@ describe('download', () => {
     const events = await drainEvents(
       download({
         lang: 'en',
-        forceFetch: true,
         majorVersion: 1,
         series: 'words',
         signal: abortController.signal,
@@ -1093,7 +1088,6 @@ describe('download', () => {
       await drainEvents(
         download({
           lang: 'en',
-          forceFetch: true,
           majorVersion: 1,
           series: 'kanji',
           signal: abortController.signal,
@@ -1119,7 +1113,6 @@ describe('download', () => {
     const events = await drainEvents(
       download({
         lang: 'en',
-        forceFetch: true,
         majorVersion: 1,
         series: 'kanji',
         signal: abortController.signal,
@@ -1149,7 +1142,6 @@ describe('download', () => {
     const events = await drainEvents(
       download({
         lang: 'en',
-        forceFetch: true,
         majorVersion: 1,
         series: 'kanji',
         signal: abortController.signal,
@@ -1216,7 +1208,6 @@ describe('download', () => {
     const events = await drainEvents(
       download({
         lang: 'en',
-        forceFetch: true,
         majorVersion: 2,
         series: 'kanji',
         signal: abortController.signal,
@@ -1258,7 +1249,6 @@ describe('download', () => {
     await drainEvents(
       download({
         lang: 'fr',
-        forceFetch: true,
         majorVersion: 1,
         series: 'kanji',
         signal: abortController.signal,
@@ -1295,7 +1285,6 @@ describe('download', () => {
     const abortController = new AbortController();
     const downloader = download({
       lang: 'en',
-      forceFetch: true,
       majorVersion: 1,
       series: 'kanji',
       signal: abortController.signal,
