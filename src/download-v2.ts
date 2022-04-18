@@ -29,8 +29,7 @@ export type DownloadEvent =
   | DownloadEndEvent
   | FileStartEvent
   | FileEndEvent
-  | RecordEvent
-  | ProgressEvent;
+  | RecordEvent;
 
 export type ResetEvent = { type: 'reset' };
 export type DownloadStartEvent = { type: 'downloadstart'; files: number };
@@ -45,13 +44,6 @@ export type RecordEvent = {
   type: 'record';
   mode: 'add' | 'change' | 'delete';
   record: Record<string, unknown>;
-};
-export type ProgressEvent = {
-  type: 'progress';
-  read: number;
-  total: number;
-  file: number;
-  totalFiles: number;
 };
 
 //
@@ -70,17 +62,12 @@ const BASE_URL = 'https://data.10ten.study/';
 
 const DOWNLOAD_TIMEOUT = 20_000;
 
-// How many percentage points within a file should change before we dispatch a
-// new progress event.
-const DEFAULT_MAX_PROGRESS_RESOLUTION = 0.05;
-
 export type DownloadOptions = {
   series: DataSeries;
   majorVersion: number;
   currentVersion?: CurrentVersion;
   lang: string;
   signal: AbortSignal;
-  maxProgressResolution?: number;
   forceFetch?: boolean;
 };
 
@@ -117,7 +104,6 @@ export async function* download({
   currentVersion,
   lang,
   signal,
-  maxProgressResolution = DEFAULT_MAX_PROGRESS_RESOLUTION,
   // TODO: We might not need this flag anymore. It looks like we always set it
   // to true?
   forceFetch = false,
@@ -143,20 +129,15 @@ export async function* download({
 
   yield { type: 'downloadstart', files: files.length };
 
-  for (const [i, file] of files.entries()) {
+  for (const file of files) {
     yield* getEvents({
       baseUrl: BASE_URL,
       series,
       lang,
-      maxProgressResolution,
       version: file.version,
       signal,
       format: file.format,
       partInfo: file.partInfo,
-      fileProgress: {
-        file: i,
-        totalFiles: files.length,
-      },
     });
   }
 
@@ -342,12 +323,10 @@ type GetEventsOptions = {
   baseUrl: string;
   series: DataSeries;
   lang: string;
-  maxProgressResolution: number;
   version: VersionNumber;
   signal: AbortSignal;
   format: 'full' | 'patch';
   partInfo?: PartInfo;
-  fileProgress: { file: number; totalFiles: number };
 };
 
 const HeaderLineStruct = s.type({
@@ -372,12 +351,10 @@ async function* getEvents({
   baseUrl,
   series,
   lang,
-  maxProgressResolution,
   version,
   signal,
   format,
   partInfo,
-  fileProgress,
 }: GetEventsOptions): AsyncIterableIterator<DownloadEvent> {
   const dottedVersion = `${version.major}.${version.minor}.${version.patch}`;
   const commonUrlStart = `${baseUrl}reader/${series}/${lang}/${dottedVersion}`;
@@ -424,9 +401,6 @@ async function* getEvents({
   }
 
   let headerRead = false;
-  let lastProgressPercent = 0;
-  let recordsRead = 0;
-  let totalRecords = 0;
 
   for await (const line of ljsonStreamIterator({
     stream: response.body,
@@ -492,7 +466,6 @@ async function* getEvents({
 
       yield fileStartEvent;
 
-      totalRecords = line.records;
       headerRead = true;
     } else if (format === 'patch' && s.is(line, PatchLineStruct)) {
       if (!headerRead) {
@@ -502,7 +475,6 @@ async function* getEvents({
         );
       }
 
-      recordsRead++;
       const mode =
         line._ === '+' ? 'add' : line._ === '-' ? 'delete' : 'change';
       yield { type: 'record', mode, record: stripFields(line, ['_']) };
@@ -523,7 +495,6 @@ async function* getEvents({
         );
       }
 
-      recordsRead++;
       yield { type: 'record', mode: 'add', record: line };
     } else {
       // If we encounter anything unexpected we should fail.
@@ -540,31 +511,6 @@ async function* getEvents({
         `Got unexpected record: ${JSON.stringify(line)}`
       );
     }
-
-    // Dispatch a new ProgressEvent if we have passed the appropriate threshold
-    if (
-      totalRecords &&
-      recordsRead / totalRecords - lastProgressPercent > maxProgressResolution
-    ) {
-      lastProgressPercent = recordsRead / totalRecords;
-      yield {
-        ...fileProgress,
-        type: 'progress',
-        read: recordsRead,
-        total: totalRecords,
-      };
-    }
-  }
-
-  // Dispatch a final progress event. This is useful so that the progress can
-  // be updated while we are waiting for the next file to start downloading.
-  if (lastProgressPercent !== 1) {
-    yield {
-      ...fileProgress,
-      type: 'progress',
-      read: recordsRead,
-      total: totalRecords,
-    };
   }
 
   yield { type: 'fileend' };
