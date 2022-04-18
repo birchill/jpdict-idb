@@ -150,16 +150,18 @@ async function doUpdate<Series extends DataSeries>({
 
           // Commit version info
           //
-          // XXX First we need to rework the part numbering to be 1-based.
-          //
-          // Then we can check if:
-          //
-          //   currentFileVersion.partInfo.part === currentFileVersion.partInfo.parts
-          //
-          // and drop the `partInfo`.
+          // If this is the last part in a multi-part series, however, don't
+          // write the part info.
+          const versionToWrite = currentFileVersion!;
+          if (
+            versionToWrite.partInfo &&
+            versionToWrite.partInfo.part === versionToWrite.partInfo.parts
+          ) {
+            delete versionToWrite.partInfo;
+          }
           await store.updateDataVersion({
             series,
-            version: currentFileVersion!,
+            version: versionToWrite,
           });
 
           // Final progress event

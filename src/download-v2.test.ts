@@ -272,7 +272,7 @@ describe('download', () => {
     fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.mock(
       'end:kanji/en/1.0.0.jsonl',
-      `{"type":"header","version":{"major":1,"minor":1,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":0,"format":"full","part":1}
+      `{"type":"header","version":{"major":1,"minor":1,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":0,"format":"full"}
 `
     );
 
@@ -498,25 +498,25 @@ describe('download', () => {
   it('should fetch all parts of an initial multi-part download', async () => {
     fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
     fetchMock.mock(
-      'end:words/en/1.1.2-0.jsonl',
+      'end:words/en/1.1.2-1.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":2,"part":0,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":2,"part":1,"format":"full"}
 {"id":1000000,"r":["ヽ"],"s":[{"g":["repetition mark in katakana"],"pos":["unc"],"xref":[{"k":"一の字点"}],"gt":1}]}
 {"id":1000010,"r":["ヾ"],"s":[{"g":["voiced repetition mark in katakana"],"pos":["unc"],"gt":1}]}
 `
     );
     fetchMock.mock(
-      'end:words/en/1.1.2-1.jsonl',
+      'end:words/en/1.1.2-2.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":2,"part":1,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":2,"part":2,"format":"full"}
 {"id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
 {"id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
 `
     );
     fetchMock.mock(
-      'end:words/en/1.1.2-2.jsonl',
+      'end:words/en/1.1.2-3.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":1,"part":2,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":1,"part":3,"format":"full"}
 {"id":1000040,"k":["〃"],"r":["おなじ","おなじく"],"s":[{"g":["ditto mark"],"pos":["n"]}]}
 `
     );
@@ -536,7 +536,7 @@ describe('download', () => {
           minor: 1,
           patch: 2,
           partInfo: {
-            part: 0,
+            part: 1,
             parts: 3,
           },
           dateOfCreation: '2022-04-05',
@@ -589,7 +589,7 @@ describe('download', () => {
           minor: 1,
           patch: 2,
           partInfo: {
-            part: 1,
+            part: 2,
             parts: 3,
           },
           dateOfCreation: '2022-04-05',
@@ -637,7 +637,7 @@ describe('download', () => {
           minor: 1,
           patch: 2,
           partInfo: {
-            part: 2,
+            part: 3,
             parts: 3,
           },
           dateOfCreation: '2022-04-05',
@@ -836,17 +836,17 @@ describe('download', () => {
   it('should resume a multi-part initial download including subsequent patches', async () => {
     fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
     fetchMock.mock(
-      'end:words/en/1.1.0-1.jsonl',
+      'end:words/en/1.1.0-2.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":0,"dateOfCreation":"2022-04-05"},"records":2,"part":1,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":0,"dateOfCreation":"2022-04-05"},"records":2,"part":2,"format":"full"}
 {"id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
 {"id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
 `
     );
     fetchMock.mock(
-      'end:words/en/1.1.0-2.jsonl',
+      'end:words/en/1.1.0-3.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":0,"dateOfCreation":"2022-04-05"},"records":2,"part":2,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":0,"dateOfCreation":"2022-04-05"},"records":2,"part":3,"format":"full"}
 {"id":1000040,"k":["〃"],"r":["おなじ","おなじく"],"s":[{"g":["ditto mark"],"pos":["n"]}]}
 {"id":1000050,"k":["仝"],"r":["どうじょう"],"s":[{"g":["\\"as above\\" mark"],"pos":["n"]}]}
 `
@@ -881,7 +881,7 @@ describe('download', () => {
           minor: 1,
           patch: 0,
           partInfo: {
-            part: 0,
+            part: 1,
             parts: 3,
           },
         },
@@ -897,7 +897,7 @@ describe('download', () => {
           major: 1,
           minor: 1,
           patch: 0,
-          partInfo: { part: 1, parts: 3 },
+          partInfo: { part: 2, parts: 3 },
         },
       },
       {
@@ -917,7 +917,7 @@ describe('download', () => {
           major: 1,
           minor: 1,
           patch: 0,
-          partInfo: { part: 2, parts: 3 },
+          partInfo: { part: 3, parts: 3 },
         },
       },
       {
@@ -976,25 +976,25 @@ describe('download', () => {
   it('should NOT resume a multi-part initial download if there are more than 10 patches since', async () => {
     fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_20_PARTS_3);
     fetchMock.mock(
-      'end:words/en/1.1.20-0.jsonl',
+      'end:words/en/1.1.20-1.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":2,"part":0,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":2,"part":1,"format":"full"}
 {"id":1000000,"r":["ヽ"],"s":[{"g":["repetition mark in katakana"],"pos":["unc"],"xref":[{"k":"一の字点"}],"gt":1}]}
 {"id":1000010,"r":["ヾ"],"s":[{"g":["voiced repetition mark in katakana"],"pos":["unc"],"gt":1}]}
 `
     );
     fetchMock.mock(
-      'end:words/en/1.1.20-1.jsonl',
+      'end:words/en/1.1.20-2.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":2,"part":1,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":2,"part":2,"format":"full"}
 {"id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
 {"id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
 `
     );
     fetchMock.mock(
-      'end:words/en/1.1.20-2.jsonl',
+      'end:words/en/1.1.20-3.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":1,"part":2,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":1,"part":3,"format":"full"}
 {"id":1000040,"k":["〃"],"r":["おなじ","おなじく"],"s":[{"g":["ditto mark"],"pos":["n"]}]}
 `
     );
@@ -1012,7 +1012,7 @@ describe('download', () => {
           minor: 1,
           patch: 0,
           partInfo: {
-            part: 0,
+            part: 1,
             parts: 3,
           },
         },
@@ -1028,7 +1028,7 @@ describe('download', () => {
           major: 1,
           minor: 1,
           patch: 20,
-          partInfo: { part: 0, parts: 3 },
+          partInfo: { part: 1, parts: 3 },
         },
       },
       {
@@ -1048,7 +1048,7 @@ describe('download', () => {
           major: 1,
           minor: 1,
           patch: 20,
-          partInfo: { part: 1, parts: 3 },
+          partInfo: { part: 2, parts: 3 },
         },
       },
       {
@@ -1068,7 +1068,7 @@ describe('download', () => {
           major: 1,
           minor: 1,
           patch: 20,
-          partInfo: { part: 2, parts: 3 },
+          partInfo: { part: 3, parts: 3 },
         },
       },
       {
@@ -1313,9 +1313,9 @@ describe('download', () => {
   it('should produce progress events', async () => {
     fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
     fetchMock.mock(
-      'end:words/en/1.1.2-0.jsonl',
+      'end:words/en/1.1.2-1.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":26,"part":0,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":26,"part":1,"format":"full"}
 {"id":1000000,"r":["ヽ"],"s":[{"g":["repetition mark in katakana"],"pos":["unc"],"xref":[{"k":"一の字点"}],"gt":1}]}
 {"id":1000010,"r":["ヾ"],"s":[{"g":["voiced repetition mark in katakana"],"pos":["unc"],"gt":1}]}
 {"id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
@@ -1345,9 +1345,9 @@ describe('download', () => {
 `
     );
     fetchMock.mock(
-      'end:words/en/1.1.2-1.jsonl',
+      'end:words/en/1.1.2-2.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":58,"part":1,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":58,"part":2,"format":"full"}
 {"id":1000360,"r":["あっさり","アッサリ"],"rm":[{"p":["i1"],"a":3},{"a":3}],"s":[{"g":["easily","readily","quickly","flatly (refuse)"],"pos":["adv","adv-to","vs"],"misc":["on-mim"]},{"g":["lightly (seasoned food, applied make-up, etc.)","plainly","simply"],"pos":["adv","adv-to","vs"],"misc":["on-mim"]}]}
 {"id":1000390,"k":["あっという間に","あっと言う間に","あっとゆう間に","アッという間に","アッと言う間に","アッとゆう間に"],"km":[{"p":["s1"]}],"r":["あっというまに","あっとゆうまに","アッというまに","アッとゆうまに"],"rm":[{"app":3,"p":["s1"]},{"app":6,"a":[{"i":1},{"i":0}]},{"app":24},{"app":48,"a":[{"i":1},{"i":0}]}],"s":[{"g":["just like that","in the twinkling of an eye","in the blink of an eye","in the time it takes to say \\"ah!\\""],"pos":["exp","adv"],"gt":1024}]}
 {"id":1000400,"r":["あっぷあっぷ"],"rm":[{"a":[{"i":1},{"i":4}]}],"s":[{"g":["floundering while nearly drowning"],"pos":["adv","adv-to","vs"]},{"g":["suffering"],"pos":["adv","adv-to","vs"]}]}
@@ -1409,9 +1409,9 @@ describe('download', () => {
 `
     );
     fetchMock.mock(
-      'end:words/en/1.1.2-2.jsonl',
+      'end:words/en/1.1.2-3.jsonl',
       `
-{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":3,"part":2,"format":"full"}
+{"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":3,"part":3,"format":"full"}
 {"id":1001070,"k":["狼狽える"],"r":["うろたえる"],"rm":[{"a":[{"i":0},{"i":4}]}],"s":[{"g":["to be flustered","to lose one's presence of mind"],"pos":["v1","vi"],"misc":["uk"]}]}
 {"id":1001090,"r":["うん","うむ","ううむ"],"rm":[{"p":["s1"],"a":1},{"a":1}],"s":[{"g":["yes","yeah","uh huh"],"pos":["int"]},{"g":["hum","hmmm","well","erm","huh?"],"pos":["int"]},{"g":["oof"],"rapp":1,"pos":["int"],"inf":"moan or groan (of pain)"}]}
 {"id":1001110,"r":["うんざり","ウンザリ"],"rm":[{"p":["s1"],"a":3},{"a":3}],"s":[{"g":["tedious","boring","being fed up with"],"pos":["adv","adv-to","vs"],"misc":["on-mim"]}]}

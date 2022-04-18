@@ -253,9 +253,9 @@ function getDownloadList({
   // Case 1: Partitioned series
   if (downloadType === 'reset' && latestVersion.parts) {
     const files: Array<DownloadFileSpec> = [];
-    let nextPart = 0;
+    let nextPart = 1;
 
-    while (nextPart < latestVersion.parts) {
+    while (nextPart <= latestVersion.parts) {
       files.push({
         format: 'full',
         version: {
@@ -304,7 +304,7 @@ function getDownloadList({
   if (currentVersion.partInfo) {
     let nextPart = currentVersion.partInfo.part + 1;
 
-    while (nextPart < currentVersion.partInfo.parts) {
+    while (nextPart <= currentVersion.partInfo.parts) {
       files.push({
         format: 'full',
         version: {
