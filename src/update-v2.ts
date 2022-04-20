@@ -115,11 +115,11 @@ async function doUpdate<Series extends DataSeries>({
 
       case 'downloadstart':
         totalFiles = event.files;
-        callback({ type: 'updatestart', series });
+        callback({ type: 'updatestart' });
         break;
 
       case 'downloadend':
-        callback({ type: 'updateend', series });
+        callback({ type: 'updateend' });
         break;
 
       case 'filestart':
@@ -127,14 +127,9 @@ async function doUpdate<Series extends DataSeries>({
         currentRecord = 0;
         totalRecords = event.totalRecords;
         currentFileVersion = event.version;
-        callback({ type: 'filestart', series, version: event.version });
+        callback({ type: 'filestart', version: event.version });
         if (currentFile === 1) {
-          callback({
-            type: 'progress',
-            series,
-            fileProgress: 0,
-            totalProgress: 0,
-          });
+          callback({ type: 'progress', fileProgress: 0, totalProgress: 0 });
           lastReportedTotalProgress = 0;
         }
         break;
@@ -167,13 +162,12 @@ async function doUpdate<Series extends DataSeries>({
           const totalProgress = currentFile / totalFiles;
           callback({
             type: 'progress',
-            series,
             fileProgress: 1,
             totalProgress,
           });
           lastReportedTotalProgress = totalProgress;
 
-          callback({ type: 'fileend', series });
+          callback({ type: 'fileend', version: versionToWrite });
         }
         break;
 
@@ -183,7 +177,6 @@ async function doUpdate<Series extends DataSeries>({
           if (error) {
             callback({
               type: 'parseerror',
-              series,
               message: error.message,
               record: event.record,
             });
@@ -213,7 +206,7 @@ async function doUpdate<Series extends DataSeries>({
               totalProgress - lastReportedTotalProgress >
                 MAX_PROGRESS_RESOLUTION)
           ) {
-            callback({ type: 'progress', series, fileProgress, totalProgress });
+            callback({ type: 'progress', fileProgress, totalProgress });
             lastReportedTotalProgress = totalProgress;
           }
         }

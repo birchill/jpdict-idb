@@ -135,12 +135,12 @@ describe('update', function () {
     await updateKanji({ majorVersion: 1 });
 
     assert.deepEqual(events, [
-      { type: 'updatestart', series: 'kanji' },
-      { type: 'filestart', series: 'kanji', version: DATA_VERSION_1_0_0_EN },
-      { type: 'progress', series: 'kanji', fileProgress: 0, totalProgress: 0 },
-      { type: 'progress', series: 'kanji', fileProgress: 1, totalProgress: 1 },
-      { type: 'fileend', series: 'kanji' },
-      { type: 'updateend', series: 'kanji' },
+      { type: 'updatestart' },
+      { type: 'filestart', version: DATA_VERSION_1_0_0_EN },
+      { type: 'progress', fileProgress: 0, totalProgress: 0 },
+      { type: 'progress', fileProgress: 1, totalProgress: 1 },
+      { type: 'fileend', version: DATA_VERSION_1_0_0_EN },
+      { type: 'updateend' },
     ]);
   });
 
