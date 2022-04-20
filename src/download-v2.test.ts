@@ -6,6 +6,7 @@ import { AbortError } from './abort-error';
 import { DownloadError } from './download-error';
 
 import { download, DownloadEvent } from './download-v2';
+import { clearCachedVersionInfo } from './download-version-info';
 import { isObject } from './is-object';
 
 mocha.setup('bdd');
@@ -102,7 +103,10 @@ const downloadWordsV1From110 = () => {
 };
 
 describe('download', () => {
-  afterEach(() => fetchMock.restore());
+  afterEach(() => {
+    fetchMock.restore();
+    clearCachedVersionInfo();
+  });
 
   it('should download the initial version information', async () => {
     fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);

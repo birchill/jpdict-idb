@@ -7,6 +7,7 @@ import sinon from 'sinon';
 import { AbortError } from './abort-error';
 import { JpdictIdb } from './database-v2';
 import { DownloadError } from './download-error';
+import { clearCachedVersionInfo } from './download-version-info';
 
 mocha.setup('bdd');
 chai.use(chaiAsPromised);
@@ -50,6 +51,7 @@ describe('JpdictIdb', function () {
   afterEach(async () => {
     fetchMock.restore();
     sinon.restore();
+    clearCachedVersionInfo();
     if (db) {
       await db.destroy();
     }

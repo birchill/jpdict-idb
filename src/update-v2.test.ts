@@ -4,6 +4,7 @@ import fetchMock from 'fetch-mock';
 
 import { DataVersion } from './data-version';
 import { CurrentVersion } from './download-v2';
+import { clearCachedVersionInfo } from './download-version-info';
 import { JpdictStore } from './store-v2';
 import { ProgressEvent, UpdateEvent } from './update-events';
 import { update } from './update-v2';
@@ -121,6 +122,7 @@ describe('update', function () {
 
   afterEach(() => {
     fetchMock.restore();
+    clearCachedVersionInfo();
     return store.destroy();
   });
 
@@ -239,6 +241,7 @@ describe('update', function () {
     await updateKanji({ majorVersion: 1 });
 
     // Subsequent patch that deletes the first record
+    clearCachedVersionInfo();
     fetchMock.mock(
       { url: 'end:version-en.json', overwriteRoutes: true },
       KANJI_VERSION_1_0_1
@@ -445,6 +448,7 @@ describe('update', function () {
     await updateKanji({ majorVersion: 1 });
 
     // Subsequent minor version only includes the second record
+    clearCachedVersionInfo();
     fetchMock.mock(
       { url: 'end:version-en.json', overwriteRoutes: true },
       KANJI_VERSION_1_1_0

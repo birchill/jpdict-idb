@@ -27,9 +27,61 @@ export async function getVersionInfo({
   timeout: number;
   signal?: AbortSignal;
 }): Promise<VersionInfo> {
-  let versionInfo;
+  const versionInfoFile = await getVersionInfoFile({
+    baseUrl,
+    lang,
+    timeout,
+    signal,
+  });
 
-  // Get the file if needed
+  // Extract the appropriate database version information
+  const dbVersionInfo = getCurrentVersionInfo(
+    versionInfoFile,
+    series,
+    majorVersion
+  );
+  if (!dbVersionInfo) {
+    throw new DownloadError(
+      { code: 'VersionFileInvalid' },
+      `Invalid version object: the requested series, ${series} was not available in this language ('${lang}')`
+    );
+  }
+
+  return dbVersionInfo;
+}
+
+export function clearCachedVersionInfo() {
+  cachedVersionInfo = undefined;
+}
+
+const CACHE_TIMEOUT = 3_000 * 60; // Cache version file contents for 3 minutes
+
+let cachedVersionInfo:
+  | { lang: string; versionInfoFile: VersionInfoFile; accessTime: number }
+  | undefined;
+
+async function getVersionInfoFile({
+  baseUrl,
+  lang,
+  timeout,
+  signal,
+}: {
+  baseUrl: string;
+  lang: string;
+  timeout: number;
+  signal?: AbortSignal;
+}): Promise<VersionInfoFile> {
+  if (
+    cachedVersionInfo?.lang === lang &&
+    cachedVersionInfo.accessTime > Date.now() - CACHE_TIMEOUT
+  ) {
+    return cachedVersionInfo.versionInfoFile;
+  }
+  cachedVersionInfo = undefined;
+  const accessTime = Date.now();
+
+  let rawVersionInfoFile;
+
   const url = `${baseUrl}jpdict/reader/version-${lang}.json`;
 
   let response;
@@ -60,7 +112,7 @@ export async function getVersionInfo({
 
   // Try to parse it
   try {
-    versionInfo = await response.json();
+    rawVersionInfoFile = await response.json();
   } catch (e) {
     throw new DownloadError(
       { code: 'VersionFileInvalid', url },
@@ -74,20 +126,11 @@ export async function getVersionInfo({
     throw new AbortError();
   }
 
-  // Inspect and extract the database version information
-  const dbVersionInfo = getCurrentVersionInfo(
-    versionInfo,
-    series,
-    majorVersion
-  );
-  if (!dbVersionInfo) {
-    throw new DownloadError(
-      { code: 'VersionFileInvalid' },
-      'Invalid version object: Did not match expected structure or requested series was not available in this language'
-    );
-  }
+  const versionInfoFile = parseVersionInfoFile(rawVersionInfoFile);
 
-  return dbVersionInfo;
+  cachedVersionInfo = { lang, versionInfoFile, accessTime };
+
+  return versionInfoFile;
 }
 
 const VersionInfoStruct = s.type({
@@ -104,16 +147,21 @@ const VersionInfoFileStruct = s.record(
   s.record(s.string(), VersionInfoStruct)
 );
 
-function getCurrentVersionInfo(
-  a: unknown,
-  series: string,
-  majorVersion: number
-): VersionInfo | null {
-  if (!a) {
-    return null;
+type VersionInfoFile = s.Infer<typeof VersionInfoFileStruct>;
+
+function parseVersionInfoFile(rawVersionInfoFile: unknown): VersionInfoFile {
+  if (!rawVersionInfoFile) {
+    throw new DownloadError(
+      { code: 'VersionFileInvalid' },
+      'Empty version info file'
+    );
   }
 
-  const [error, versionInfo] = s.validate(a, VersionInfoFileStruct);
+  const [error, versionInfoFile] = s.validate(
+    rawVersionInfoFile,
+    VersionInfoFileStruct
+  );
+
   if (error) {
     throw new DownloadError(
       { code: 'VersionFileInvalid' },
@@ -121,16 +169,24 @@ function getCurrentVersionInfo(
     );
   }
 
-  if (!(series in versionInfo)) {
+  return versionInfoFile;
+}
+
+function getCurrentVersionInfo(
+  versionInfoFile: VersionInfoFile,
+  series: string,
+  majorVersion: number
+): VersionInfo | null {
+  if (!(series in versionInfoFile)) {
     return null;
   }
 
-  if (!(majorVersion in versionInfo[series])) {
+  if (!(majorVersion in versionInfoFile[series])) {
     throw new DownloadError(
       { code: 'MajorVersionNotFound' },
       `No ${majorVersion}.x version information for ${series} data`
     );
   }
 
-  return versionInfo[series][majorVersion];
+  return versionInfoFile[series][majorVersion];
 }
