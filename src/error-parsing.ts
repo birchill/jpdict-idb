@@ -1,5 +1,5 @@
 import { AbortError } from './abort-error';
-import { DownloadError } from './download';
+import { DownloadError } from './download-error';
 import { isObject } from './is-object';
 
 export function isAbortError(e: unknown): e is AbortError {

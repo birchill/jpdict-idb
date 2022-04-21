@@ -8,14 +8,10 @@ export {
   isMajorDataSeries,
 } from './data-series';
 export { DataVersion } from './data-version';
-export {
-  ChangeCallback,
-  ChangeTopic,
-  DataSeriesState,
-  JpdictDatabase,
-} from './database';
+export { DataSeriesState } from './data-series-state';
+export { ChangeCallback, ChangeTopic, JpdictIdb } from './database';
+export { DownloadError, DownloadErrorCode } from './download-error';
 export { JpdictFullTextDatabase } from './database-fulltext';
-export { DownloadError, DownloadErrorCode } from './download';
 export { groupSenses, PosGroup } from './grouping';
 export { NameTranslation, NameType, allNameTypes, isNameType } from './names';
 export { UpdateErrorState, toUpdateErrorState } from './update-error-state';

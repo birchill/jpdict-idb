@@ -1,6 +1,6 @@
 import { kanaToHiragana } from '@birchill/normal-jp';
 
-import { WordRecord } from './records';
+import { WordRecord } from './words';
 import { stripFields } from './utils';
 import {
   BITS_PER_GLOSS_TYPE,
@@ -108,11 +108,8 @@ export function toWordResultFromGlossLookup(
   record: WordRecord,
   matchedRanges: Array<MatchedSenseAndGlossRange>
 ): WordResult {
-  const [
-    kanjiMatches,
-    kanaMatches,
-    senseMatches,
-  ] = getMatchMetadataForGlossLookup(record, matchedRanges);
+  const [kanjiMatches, kanaMatches, senseMatches] =
+    getMatchMetadataForGlossLookup(record, matchedRanges);
 
   return makeWordResult(
     record,
@@ -327,11 +324,11 @@ function getMatchMetadataForCrossRefLookup(
   kanaMatchRanges: Array<MatchedHeadwordRange>,
   senseMatches: number
 ] {
-  let kanjiMatches: number = 0;
+  let kanjiMatches = 0;
   let kanjiMatchRanges: Array<MatchedHeadwordRange> = [];
-  let kanaMatches: number = 0;
+  let kanaMatches = 0;
   let kanaMatchRanges: Array<MatchedHeadwordRange> = [];
-  let senseMatches: number = 0;
+  let senseMatches = 0;
 
   const xRefK = (xref as any).k as string | undefined;
   const xRefR = (xref as any).r as string | undefined;
@@ -510,7 +507,7 @@ function expandSenses(
   const getRangesForSense = (i: number): Array<MatchedRangeForGloss> =>
     matchedGlossRanges
       .filter(([senseIndex]) => senseIndex === i)
-      .map(([_sense, gloss, start, end]) => [gloss, start, end]);
+      .map(([, gloss, start, end]) => [gloss, start, end]);
 
   return senses.map((sense, i) => ({
     g: expandGlosses(sense, getRangesForSense(i)),

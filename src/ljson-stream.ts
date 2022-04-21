@@ -25,11 +25,11 @@ export async function* ljsonStreamIterator({
   const parseLine = (line: string): any => {
     try {
       return JSON.parse(line);
-    } catch (e) {
+    } catch {
       try {
         reader.releaseLock();
-      } catch (e) {
-        /* Ignore */
+      } catch {
+        // Ignore
       }
       throw new DownloadError(
         { code: 'DatabaseFileInvalidJSON', url },
@@ -49,7 +49,7 @@ export async function* ljsonStreamIterator({
     } catch (e) {
       try {
         reader.releaseLock();
-      } catch (e) {
+      } catch {
         // Ignore
       }
 

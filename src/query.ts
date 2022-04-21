@@ -7,9 +7,14 @@ import {
 import idbReady from 'safari-14-idb-fix';
 import { kanaToHiragana } from '@birchill/normal-jp';
 
-import { KanjiEntryLine, Misc, Readings } from './kanji';
-import { KanjiRecord, NameRecord, RadicalRecord, WordRecord } from './records';
+import { Misc, Readings } from './kanji';
 import { JpdictSchema } from './store';
+import {
+  KanjiStoreRecord,
+  NameStoreRecord,
+  RadicalStoreRecord,
+  WordStoreRecord,
+} from './store-types';
 import { getTokens } from './tokenizer';
 import { stripFields } from './utils';
 import {
@@ -24,6 +29,7 @@ import {
   sortResultsByPriorityAndMatchLength,
 } from './word-result-sorting';
 import { CrossReference } from './words';
+import { Overwrite } from './type-helpers';
 
 // Database query methods
 //
@@ -135,7 +141,7 @@ export async function getWords(
   const results: Array<WordResult> = [];
 
   const maybeAddRecord = (
-    record: WordRecord,
+    record: WordStoreRecord,
     term: string,
     kanaMatching: 'exact' | 'kana-equivalent' = 'exact'
   ) => {
@@ -395,7 +401,11 @@ async function lookUpGlosses(
   limit: number
 ): Promise<
   Array<
-    [record: WordRecord, confidence: number, matchedRanges: Array<MatchedRange>]
+    [
+      record: WordStoreRecord,
+      confidence: number,
+      matchedRanges: Array<MatchedRange>
+    ]
   >
 > {
   // Get search tokens
@@ -408,7 +418,7 @@ async function lookUpGlosses(
   const termLower = term.toLocaleLowerCase(locale);
 
   // Prepare result
-  const result: Array<[WordRecord, number, Array<MatchedRange>]> = [];
+  const result: Array<[WordStoreRecord, number, Array<MatchedRange>]> = [];
 
   // Look for any records matching the first token in the appropriate index
   const indexName = locale === 'en' ? 'gt_en' : 'gt_l';
@@ -498,42 +508,45 @@ async function lookUpGlosses(
 //
 // -------------------------------------------------------------------------
 
-export interface KanjiResult
-  extends Omit<KanjiEntryLine, 'rad' | 'comp' | 'm_lang' | 'var' | 'cf'> {
-  m_lang: string;
-  rad: {
-    x: number;
-    nelson?: number;
-    b?: string;
-    k?: string;
-    na: Array<string>;
-    m: Array<string>;
+export type KanjiResult = Overwrite<
+  KanjiStoreRecord,
+  {
+    c: string;
     m_lang: string;
-    base?: {
+    rad: {
+      x: number;
+      nelson?: number;
       b?: string;
       k?: string;
       na: Array<string>;
       m: Array<string>;
       m_lang: string;
+      base?: {
+        b?: string;
+        k?: string;
+        na: Array<string>;
+        m: Array<string>;
+        m_lang: string;
+      };
     };
-  };
-  comp: Array<{
-    c: string;
-    na: Array<string>;
-    // An optional field indicating the kanji character to link to.
-    //
-    // For example, if the component is ⺮, one might want to look up other
-    // kanji with that component, but they also might want to look up the
-    // corresponding kanji for the component, i.e. 竹.
-    //
-    // For kanji / katakana components this is empty. For radical components
-    // this is the kanji of the base radical, if any.
-    k?: string;
-    m: Array<string>;
-    m_lang: string;
-  }>;
-  cf: Array<RelatedKanji>;
-}
+    comp: Array<{
+      c: string;
+      na: Array<string>;
+      // An optional field indicating the kanji character to link to.
+      //
+      // For example, if the component is ⺮, one might want to look up other
+      // kanji with that component, but they also might want to look up the
+      // corresponding kanji for the component, i.e. 竹.
+      //
+      // For kanji / katakana components this is empty. For radical components
+      // this is the kanji of the base radical, if any.
+      k?: string;
+      m: Array<string>;
+      m_lang: string;
+    }>;
+    cf: Array<RelatedKanji>;
+  }
+>;
 
 export interface RelatedKanji {
   c: string;
@@ -553,7 +566,7 @@ export async function getKanji({
   logWarningMessage?: (msg: string) => void;
 }): Promise<Array<KanjiResult>> {
   const ids = kanji.map((kanji) => kanji.codePointAt(0)!);
-  const kanjiRecords: Array<KanjiRecord> = await getKanjiById(ids);
+  const kanjiRecords: Array<KanjiStoreRecord> = await getKanjiById(ids);
 
   const radicalResults = await getRadicalForKanji({
     kanjiRecords,
@@ -585,7 +598,7 @@ export async function getKanji({
   }
 
   // Zip the arrays together
-  return kanjiRecords.map((record, i) =>
+  return kanjiRecords.map<KanjiResult>((record, i) =>
     stripFields(
       {
         ...record,
@@ -600,13 +613,15 @@ export async function getKanji({
   );
 }
 
-async function getKanjiById(ids: Array<number>): Promise<Array<KanjiRecord>> {
+async function getKanjiById(
+  ids: Array<number>
+): Promise<Array<KanjiStoreRecord>> {
   const db = await open();
   if (!db) {
     return [];
   }
 
-  const kanjiRecords: Array<KanjiRecord> = [];
+  const kanjiRecords: Array<KanjiStoreRecord> = [];
   {
     const tx = db!.transaction('kanji');
     for (const c of ids) {
@@ -625,7 +640,7 @@ async function getRadicalForKanji({
   lang,
   logWarningMessage,
 }: {
-  kanjiRecords: Array<KanjiRecord>;
+  kanjiRecords: Array<KanjiStoreRecord>;
   lang: string;
   logWarningMessage: (msg: string) => void;
 }): Promise<Array<KanjiResult['rad']>> {
@@ -685,7 +700,7 @@ function formatRadicalId(id: number): string {
 
 type RadicalVariantArray = Array<{ radical: number; id: string }>;
 
-function parseVariants(record: KanjiRecord): RadicalVariantArray {
+function parseVariants(record: KanjiStoreRecord): RadicalVariantArray {
   const variants: Array<{ radical: number; id: string }> = [];
 
   if (record.var) {
@@ -724,7 +739,7 @@ function popVariantForRadical(
   return id;
 }
 
-function getRadicalVariantId(record: KanjiRecord): string | undefined {
+function getRadicalVariantId(record: KanjiStoreRecord): string | undefined {
   const variants = parseVariants(record);
   const variant = variants.find((a) => a.radical === record.rad.x);
   return variant?.id;
@@ -839,7 +854,7 @@ async function getComponentsForKanji({
   lang,
   logWarningMessage,
 }: {
-  kanjiRecords: Array<KanjiRecord>;
+  kanjiRecords: Array<KanjiStoreRecord>;
   lang: string;
   logWarningMessage: (msg: string) => void;
 }): Promise<Array<KanjiResult['comp']>> {
@@ -860,7 +875,7 @@ async function getComponentsForKanji({
   }
 
   // ... And look them up
-  let kanjiMap: Map<string, KanjiRecord> = new Map();
+  let kanjiMap: Map<string, KanjiStoreRecord> = new Map();
   if (kanjiToLookup.size) {
     const kanjiRecords = await getKanjiById([...kanjiToLookup]);
     kanjiMap = new Map(
@@ -982,7 +997,7 @@ async function getComponentsForKanji({
 }
 
 async function getRelatedKanji(
-  kanjiRecords: Array<KanjiRecord>,
+  kanjiRecords: Array<KanjiStoreRecord>,
   lang: string
 ): Promise<Array<Array<RelatedKanji>>> {
   // Collect all the characters together
@@ -996,7 +1011,7 @@ async function getRelatedKanji(
   const kanjiToLookup = new Set<number>(cf);
 
   // ... And look them up
-  let kanjiMap: Map<string, KanjiRecord> = new Map();
+  let kanjiMap: Map<string, KanjiStoreRecord> = new Map();
   if (kanjiToLookup.size) {
     const kanjiRecords = await getKanjiById([...kanjiToLookup]);
     kanjiMap = new Map(
@@ -1023,7 +1038,7 @@ async function getRelatedKanji(
   return result;
 }
 
-async function getRadicals(): Promise<Map<string, RadicalRecord>> {
+async function getRadicals(): Promise<Map<string, RadicalStoreRecord>> {
   const db = await open();
   if (!db) {
     return new Map();
@@ -1037,7 +1052,7 @@ async function getRadicals(): Promise<Map<string, RadicalRecord>> {
 async function getCharToRadicalMapping(): Promise<Map<string, string>> {
   const radicals = await getRadicals();
 
-  let baseRadical: RadicalRecord | undefined;
+  let baseRadical: RadicalStoreRecord | undefined;
   const mapping: Map<string, string> = new Map();
 
   for (const radical of radicals.values()) {
@@ -1083,7 +1098,7 @@ async function getCharToRadicalMapping(): Promise<Map<string, string>> {
 //
 // -------------------------------------------------------------------------
 
-export type NameResult = Omit<NameRecord, 'h'>;
+export type NameResult = Omit<NameStoreRecord, 'h'>;
 
 export async function getNames(search: string): Promise<Array<NameResult>> {
   const db = await open();
@@ -1098,7 +1113,7 @@ export async function getNames(search: string): Promise<Array<NameResult>> {
   const addedRecords: Set<number> = new Set();
   const result: Array<NameResult> = [];
 
-  const maybeAddRecord = (record: NameRecord) => {
+  const maybeAddRecord = (record: NameStoreRecord) => {
     if (!addedRecords.has(record.id)) {
       result.push(stripFields(record, ['h']));
       addedRecords.add(record.id);
