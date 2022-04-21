@@ -2,10 +2,10 @@ import chai, { assert } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import chaiLike from 'chai-like';
 import fetchMock from 'fetch-mock';
-import { AbortError } from './abort-error';
-import { DownloadError } from './download-error';
 
+import { AbortError } from './abort-error';
 import { download, DownloadEvent } from './download';
+import { DownloadError } from './download-error';
 import { clearCachedVersionInfo } from './download-version-info';
 import { isObject } from './is-object';
 

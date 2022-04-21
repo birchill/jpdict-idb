@@ -9,10 +9,8 @@ import { safeInteger } from './validation-helpers';
 import {
   Accent,
   CrossReference,
-  KanjiInfo,
   KanjiMeta,
   LangSource,
-  ReadingInfo,
   ReadingMeta,
   WordRecord,
   WordSense,
@@ -24,44 +22,19 @@ import {
 //
 // ----------------------------------------------------------------------------
 
-const KanjiInfoSchema: s.Describe<KanjiInfo> = s.enums([
-  'ateji',
-  'io',
-  'iK',
-  'ik',
-  'oK',
-  'rK',
-]);
-
 const KanjiMetaSchema: s.Describe<KanjiMeta> = s.type({
-  i: s.optional(s.nonempty(s.array(KanjiInfoSchema))),
-  p: s.optional(s.nonempty(s.array(s.string()))),
+  i: s.optional(s.array(s.string())),
+  p: s.optional(s.array(s.string())),
 });
 
-const ReadingInfoSchema: s.Describe<ReadingInfo> = s.enums([
-  'gikun',
-  'ik',
-  'ok',
-  'uK',
-]);
-
-type LooselyCheckedAccent = Overwrite<Accent, { pos?: Array<string> }>;
-
-const AccentSchema: s.Describe<LooselyCheckedAccent> = s.type({
+const AccentSchema: s.Describe<Accent> = s.type({
   i: s.min(safeInteger(), 0),
-  pos: s.optional(s.nonempty(s.array(s.string()))),
+  pos: s.optional(s.array(s.string())),
 });
 
-export type LooselyCheckedReadingMeta = Overwrite<
-  ReadingMeta,
-  {
-    a?: number | Array<LooselyCheckedAccent>;
-  }
->;
-
-const ReadingMetaSchema: s.Describe<LooselyCheckedReadingMeta> = s.type({
-  i: s.optional(s.nonempty(s.array(ReadingInfoSchema))),
-  p: s.optional(s.nonempty(s.array(s.string()))),
+const ReadingMetaSchema: s.Describe<ReadingMeta> = s.type({
+  i: s.optional(s.array(s.string())),
+  p: s.optional(s.array(s.string())),
   app: s.optional(s.min(safeInteger(), 0)),
   a: s.optional(s.union([s.min(safeInteger(), 0), s.array(AccentSchema)])),
 });
@@ -98,20 +71,7 @@ const LangSourceSchema: s.Describe<LangSource> = s.type({
   wasei: s.union([s.literal(true), s.literal(undefined)]),
 });
 
-type LooselyCheckedWordSense = Overwrite<
-  WordSense,
-  {
-    // We don't verify that that the pos, field, misc, and dial fields are one of
-    // the expected values because we don't want to have to force a major revision
-    // of the database each time a new value is added.
-    pos?: Array<string>;
-    field?: Array<string>;
-    misc?: Array<string>;
-    dial?: Array<string>;
-  }
->;
-
-const WordSenseSchema: s.Describe<LooselyCheckedWordSense> = s.type({
+const WordSenseSchema: s.Describe<WordSense> = s.type({
   g: s.nonempty(s.array(s.nonempty(s.string()))),
   gt: s.optional(s.min(safeInteger(), 1)),
   lang: s.optional(s.nonempty(s.string())),
@@ -133,8 +93,8 @@ export type WordDownloadRecord = Overwrite<
   WordRecord,
   {
     km?: Array<0 | KanjiMeta>;
-    rm?: Array<0 | LooselyCheckedReadingMeta>;
-    s: Array<LooselyCheckedWordSense>;
+    rm?: Array<0 | ReadingMeta>;
+    s: Array<WordSense>;
   }
 >;
 
@@ -176,39 +136,19 @@ export function validateWordDownloadDeleteRecord(
 //
 // ----------------------------------------------------------------------------
 
-type LooselyCheckedNameTranslation = Overwrite<
-  NameTranslation,
-  {
-    // We don't validate the type is one of the recognized ones since the set of
-    // name types is likely to change in future (it has in the past) and we don't
-    // want to require a major version bump of the database each time.
-    //
-    // Instead, clients should just ignore types they don't understand or do
-    // some suitable fallback.
-    type?: Array<string>;
-  }
->;
-
-const NameTranslationSchema: s.Describe<LooselyCheckedNameTranslation> = s.type(
-  {
-    type: s.optional(s.nonempty(s.array(s.string()))),
-    det: s.array(s.nonempty(s.string())),
-    cf: s.optional(s.array(s.nonempty(s.string()))),
-  }
-);
+const NameTranslationSchema: s.Describe<NameTranslation> = s.type({
+  type: s.optional(s.array(s.string())),
+  det: s.array(s.nonempty(s.string())),
+  cf: s.optional(s.array(s.nonempty(s.string()))),
+});
 
 const NameIdSchema = s.min(safeInteger(), 1);
 
-export type NameDownloadRecord = Overwrite<
-  NameRecord,
-  {
-    tr: Array<LooselyCheckedNameTranslation>;
-  }
->;
+export type NameDownloadRecord = NameRecord;
 
 const NameDownloadRecordSchema: s.Describe<NameDownloadRecord> = s.type({
   id: NameIdSchema,
-  k: s.optional(s.nonempty(s.array(s.nonempty(s.string())))),
+  k: s.optional(s.array(s.nonempty(s.string()))),
   r: s.nonempty(s.array(s.nonempty(s.string()))),
   tr: s.array(NameTranslationSchema),
 });
@@ -258,9 +198,11 @@ const MiscSchema: s.Describe<Misc> = s.type({
   gr: s.optional(safeInteger()),
   sc: s.min(safeInteger(), 1),
   freq: s.optional(s.min(safeInteger(), 0)),
-  jlpt: s.optional(s.min(safeInteger(), 1)),
-  jlptn: s.optional(s.min(safeInteger(), 1)),
-  kk: s.optional(s.min(safeInteger(), 1)),
+  // The following three items should really have a minimum value of 1, but in
+  // the interests of being (a bit) forgiving in what we accept, we allow 0 too.
+  jlpt: s.optional(s.min(safeInteger(), 0)),
+  jlptn: s.optional(s.min(safeInteger(), 0)),
+  kk: s.optional(s.min(safeInteger(), 0)),
   meta: s.optional(s.array(s.string())),
 });
 
@@ -272,13 +214,13 @@ const KanjiDownloadRecordSchema: s.Describe<KanjiDownloadRecord> = s.type({
   c: KanjiIdSchema,
   r: ReadingsStruct,
   m: s.array(s.string()),
-  m_lang: s.optional(s.nonempty(s.string())),
+  m_lang: s.optional(s.string()),
   rad: RadicalStruct,
   refs: s.record(s.string(), s.union([s.string(), s.number()])),
   misc: MiscSchema,
-  comp: s.optional(s.nonempty(s.string())),
+  comp: s.optional(s.string()),
   var: s.optional(s.array(s.string())),
-  cf: s.optional(s.nonempty(s.string())),
+  cf: s.optional(s.string()),
 });
 
 export function validateKanjiDownloadRecord(

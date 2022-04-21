@@ -1,6 +1,7 @@
 import { kanaToHiragana } from '@birchill/normal-jp';
 
-import { WordRecord } from './words';
+import { WordStoreRecord } from './store-types';
+import { Resolve } from './type-helpers';
 import { stripFields } from './utils';
 import {
   BITS_PER_GLOSS_TYPE,
@@ -8,6 +9,7 @@ import {
   GlossType,
   KanjiMeta,
   ReadingMeta,
+  WordRecord,
   WordSense,
 } from './words';
 
@@ -24,23 +26,28 @@ export type WordResult = {
   s: Array<ExtendedSense>;
 };
 
-type ExtendedKanjiEntry = {
-  ent: string;
-  match: boolean;
-  // If set, indicates that the match occurred on this headword and
-  // indicates the range of characters that matched.
-  matchRange?: [start: number, end: number];
-} & KanjiMeta;
-type ExtendedKanaEntry = {
-  ent: string;
-  match: boolean;
-  // If set, indicates that the match occurred on this headword and
-  // indicates the range of characters that matched.
-  matchRange?: [start: number, end: number];
-} & ReadingMeta;
-type ExtendedSense = { match: boolean; g: Array<Gloss> } & Omit<
-  WordSense,
-  'g' | 'gt'
+type ExtendedKanjiEntry = Resolve<
+  {
+    ent: string;
+    match: boolean;
+    // If set, indicates that the match occurred on this headword and
+    // indicates the range of characters that matched.
+    matchRange?: [start: number, end: number];
+  } & KanjiMeta
+>;
+
+type ExtendedKanaEntry = Resolve<
+  {
+    ent: string;
+    match: boolean;
+    // If set, indicates that the match occurred on this headword and
+    // indicates the range of characters that matched.
+    matchRange?: [start: number, end: number];
+  } & ReadingMeta
+>;
+
+type ExtendedSense = Resolve<
+  { match: boolean; g: Array<Gloss> } & Omit<WordSense, 'g' | 'gt'>
 >;
 
 export type Gloss = {
@@ -59,7 +66,7 @@ export const enum MatchMode {
 }
 
 export function toWordResult(
-  record: WordRecord,
+  record: WordStoreRecord,
   search: string | CrossReference,
   matchMode: MatchMode
 ): WordResult {
@@ -105,7 +112,7 @@ type MatchedSenseAndGlossRange = [
 ];
 
 export function toWordResultFromGlossLookup(
-  record: WordRecord,
+  record: WordStoreRecord,
   matchedRanges: Array<MatchedSenseAndGlossRange>
 ): WordResult {
   const [kanjiMatches, kanaMatches, senseMatches] =
@@ -180,7 +187,7 @@ function makeWordResult(
 }
 
 function getMatchMetadata(
-  record: WordRecord,
+  record: WordStoreRecord,
   search: string,
   matchMode: MatchMode
 ): [
@@ -314,7 +321,7 @@ function getMatchMetadata(
 }
 
 function getMatchMetadataForCrossRefLookup(
-  record: WordRecord,
+  record: WordStoreRecord,
   xref: CrossReference,
   matchMode: MatchMode
 ): [
@@ -385,7 +392,7 @@ function getMatchMetadataForCrossRefLookup(
 }
 
 function getMatchMetadataForGlossLookup(
-  record: WordRecord,
+  record: WordStoreRecord,
   matchedRanges: Array<MatchedSenseAndGlossRange>
 ): [kanjiMatches: number, kanaMatches: number, senseMatches: number] {
   const senseMatches = matchedRanges
@@ -426,7 +433,10 @@ function getMatchMetadataForGlossLookup(
   return [kanjiMatches, kanaMatches, senseMatches];
 }
 
-function kanaMatchesForKanji(record: WordRecord, kanjiMatches: number): number {
+function kanaMatchesForKanji(
+  record: WordStoreRecord,
+  kanjiMatches: number
+): number {
   const kanaIsMatch = (rm: ReadingMeta | null) =>
     !rm || typeof rm.app === 'undefined' || !!(rm.app & kanjiMatches);
 
@@ -446,7 +456,10 @@ function extendWithNulls<T>(
   return arr.concat(Array(extra).fill(null));
 }
 
-function kanjiMatchesForKana(record: WordRecord, kanaMatches: number): number {
+function kanjiMatchesForKana(
+  record: WordStoreRecord,
+  kanaMatches: number
+): number {
   const wildCardMatch = (1 << (record.k || []).length) - 1;
   const matchingKanjiAtIndex = (i: number): number => {
     if (!record.rm || record.rm.length < i + 1 || record.rm[i] === null) {

@@ -13,22 +13,9 @@ export { ChangeCallback, ChangeTopic, JpdictIdb } from './database';
 export { DownloadError, DownloadErrorCode } from './download-error';
 export { JpdictFullTextDatabase } from './database-fulltext';
 export { groupSenses, PosGroup } from './grouping';
-export { NameTranslation, NameType, allNameTypes, isNameType } from './names';
-export { UpdateErrorState, toUpdateErrorState } from './update-error-state';
-export {
-  CheckingUpdateState,
-  DownloadingUpdateState,
-  IdleUpdateState,
-  UpdateState,
-  UpdatingDbUpdateState,
-} from './update-state';
-export {
-  cancelUpdateWithRetry,
-  OfflineError,
-  UpdateCompleteCallback,
-  UpdateErrorCallback,
-  updateWithRetry,
-} from './update-with-retry';
+export { NameTranslation, NameType, asNameType, isNameType } from './names';
+export { OfflineError } from './offline-error';
+export { PartInfo } from './part-info';
 export {
   getKanji,
   getNames,
@@ -36,9 +23,23 @@ export {
   getWordsByCrossReference,
   getWordsWithGloss,
   getWordsWithKanji,
+  ExpandedRadical,
   KanjiResult,
   NameResult,
+  RelatedKanji,
 } from './query';
+export { UpdateErrorState, toUpdateErrorState } from './update-error-state';
+export {
+  CheckingUpdateState,
+  IdleUpdateState,
+  UpdateState,
+} from './update-state';
+export {
+  cancelUpdateWithRetry,
+  UpdateCompleteCallback,
+  UpdateErrorCallback,
+  updateWithRetry,
+} from './update-with-retry';
 export {
   Accent,
   CrossReference,
@@ -50,17 +51,15 @@ export {
   MiscType,
   PartOfSpeech,
   ReadingInfo,
-  allDialects,
+  asDialect,
+  asFieldType,
+  asKanjiInfo,
+  asPartOfSpeech,
+  asReadingInfo,
   isDialect,
-  allFieldTypes,
   isFieldType,
-  allKanjiInfo,
   isKanjiInfo,
-  allMiscTypes,
-  isMiscType,
-  allPartsOfSpeech,
   isPartOfSpeech,
-  allReadingInfo,
   isReadingInfo,
   // The following types are related to the format of the input data files
   // and exposed purely for 10ten Japanese Reader and the like that work with

@@ -3,7 +3,6 @@ import { kanaToHiragana } from '@birchill/normal-jp';
 import {
   KanjiDownloadDeleteRecord,
   KanjiDownloadRecord,
-  LooselyCheckedReadingMeta,
   NameDownloadDeleteRecord,
   NameDownloadRecord,
   RadicalDownloadDeleteRecord,
@@ -13,7 +12,7 @@ import {
 } from './download-types';
 import { hasHiragana } from './japanese';
 import { Overwrite } from './type-helpers';
-import { KanjiMeta } from './words';
+import { KanjiMeta, ReadingMeta } from './words';
 
 // ----------------------------------------------------------------------------
 //
@@ -26,7 +25,7 @@ export type WordStoreRecord = Overwrite<
   {
     // When transporting via JSON we replace nulls with 0s but we store them as
     // nulls.
-    rm?: Array<null | LooselyCheckedReadingMeta>;
+    rm?: Array<null | ReadingMeta>;
     km?: Array<null | KanjiMeta>;
 
     // r and k strings with all kana converted to hiragana

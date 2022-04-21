@@ -14,6 +14,8 @@ export function isDataSeries(a: unknown): a is DataSeries {
 // For certain interface actions we lump kanji and radicals together.
 // e.g. If you want to update the kanji data set, you need to update the
 // radicals too since we cross-reference the two.
+//
+// We call the combined set a "major" data series.
 export type MajorDataSeries = 'words' | 'kanji' | 'names';
 
 export const allMajorDataSeries: ReadonlyArray<MajorDataSeries> = [

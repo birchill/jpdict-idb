@@ -4,6 +4,7 @@ import { isKanji } from './japanese';
 import { toWordStoreRecord, WordStoreRecord } from './store-types';
 import { JpdictStore } from './store';
 import { getTokens } from './tokenizer';
+import { WordSense } from './words';
 
 export class JpdictFullTextDatabase extends JpdictIdb {
   constructor({ verbose = false }: { verbose?: boolean } = {}) {
@@ -40,13 +41,11 @@ function getKanjiForEntry(record: WordDownloadRecord): Array<string> {
   return [...new Set(flatKc)];
 }
 
-type LooseWordSense = WordDownloadRecord['s'][0];
-
 function getGlossTokensForEntry(
   record: WordDownloadRecord,
   lang: 'en' | 'locale'
 ): Array<string> {
-  const getTokensForSense = (sense: LooseWordSense): Array<string> => {
+  const getTokensForSense = (sense: WordSense): Array<string> => {
     return sense.g.reduce(
       (tokens: Array<string>, gloss: string) =>
         tokens.concat(...getTokens(gloss, sense.lang || 'en')),
@@ -54,7 +53,7 @@ function getGlossTokensForEntry(
     );
   };
 
-  const isMatchingSense = (sense: LooseWordSense): boolean =>
+  const isMatchingSense = (sense: WordSense): boolean =>
     lang === 'en'
       ? typeof sense.lang === 'undefined' || sense.lang === 'en'
       : typeof sense.lang !== 'undefined';
@@ -62,7 +61,7 @@ function getGlossTokensForEntry(
   const allTokens = record.s
     .filter(isMatchingSense)
     .reduce(
-      (tokens: Array<string>, sense: LooseWordSense) =>
+      (tokens: Array<string>, sense: WordSense) =>
         tokens.concat(...getTokensForSense(sense)),
       []
     );
