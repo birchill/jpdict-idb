@@ -1,11 +1,12 @@
-import { JpdictDatabase } from './database';
+import { JpdictIdb } from './database-v2';
+import { WordDownloadRecord } from './download-types';
 import { isKanji } from './japanese';
-import { toWordRecord, WordRecord } from './records';
-import { JpdictStore } from './store';
+import { toWordStoreRecord, WordStoreRecord } from './store-types';
+import { JpdictStore } from './store-v2';
 import { getTokens } from './tokenizer';
-import { WordEntryLine, WordSense } from './words';
+import { WordSense } from './words';
 
-export class JpdictFullTextDatabase extends JpdictDatabase {
+export class JpdictFullTextDatabase extends JpdictIdb {
   constructor({ verbose = false }: { verbose?: boolean } = {}) {
     super({ verbose });
     this.store = new JpdictFullTextStore();
@@ -13,33 +14,40 @@ export class JpdictFullTextDatabase extends JpdictDatabase {
 }
 
 class JpdictFullTextStore extends JpdictStore {
-  public toWordRecord = toFullTextWordRecord;
+  constructor() {
+    super();
+    this.toStoreRecord.words = toFullTextWordStoreRecord;
+  }
 }
 
-export function toFullTextWordRecord(entry: WordEntryLine): WordRecord {
+export function toFullTextWordStoreRecord(
+  record: WordDownloadRecord
+): WordStoreRecord {
   return {
-    ...toWordRecord(entry),
-    kc: getKanjiForEntry(entry),
-    gt_en: getGlossTokensForEntry(entry, 'en'),
-    gt_l: getGlossTokensForEntry(entry, 'locale'),
+    ...toWordStoreRecord(record),
+    kc: getKanjiForEntry(record),
+    gt_en: getGlossTokensForEntry(record, 'en'),
+    gt_l: getGlossTokensForEntry(record, 'locale'),
   };
 }
 
 // Get the set of kanji characters in an entry
-function getKanjiForEntry(entry: WordEntryLine): Array<string> {
+function getKanjiForEntry(record: WordDownloadRecord): Array<string> {
   // Extract them into an array of arrays
-  const initialKc = (entry.k || []).map((k) => [...k].filter(isKanji));
+  const initialKc = (record.k || []).map((k) => [...k].filter(isKanji));
   // Flatten the array (Array.flat() is not available in TS DOM typings yet.)
   const flatKc = ([] as Array<string>).concat(...initialKc);
   // Return the de-duplicated set
   return [...new Set(flatKc)];
 }
 
+type LooseWordSense = WordDownloadRecord['s'][0];
+
 function getGlossTokensForEntry(
-  entry: WordEntryLine,
+  record: WordDownloadRecord,
   lang: 'en' | 'locale'
 ): Array<string> {
-  const getTokensForSense = (sense: WordSense): Array<string> => {
+  const getTokensForSense = (sense: LooseWordSense): Array<string> => {
     return sense.g.reduce(
       (tokens: Array<string>, gloss: string) =>
         tokens.concat(...getTokens(gloss, sense.lang || 'en')),
@@ -47,15 +55,15 @@ function getGlossTokensForEntry(
     );
   };
 
-  const isMatchingSense = (sense: WordSense): boolean =>
+  const isMatchingSense = (sense: LooseWordSense): boolean =>
     lang === 'en'
       ? typeof sense.lang === 'undefined' || sense.lang === 'en'
       : typeof sense.lang !== 'undefined';
 
-  const allTokens = entry.s
+  const allTokens = record.s
     .filter(isMatchingSense)
     .reduce(
-      (tokens: Array<string>, sense: WordSense) =>
+      (tokens: Array<string>, sense: LooseWordSense) =>
         tokens.concat(...getTokensForSense(sense)),
       []
     );

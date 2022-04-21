@@ -1,21 +1,21 @@
 import {
   IDBPDatabase,
   IDBPTransaction,
-  StoreNames,
   openDB,
+  StoreNames,
 } from 'idb/with-async-ittr';
 import idbReady from 'safari-14-idb-fix';
 import { kanaToHiragana } from '@birchill/normal-jp';
 
 import { KanjiEntryLine, Misc, Readings } from './kanji';
-import { KanjiRecord, NameRecord, WordRecord, RadicalRecord } from './records';
+import { KanjiRecord, NameRecord, RadicalRecord, WordRecord } from './records';
 import { JpdictSchema } from './store';
 import { getTokens } from './tokenizer';
 import { stripFields } from './utils';
 import {
+  MatchMode,
   toWordResult,
   toWordResultFromGlossLookup,
-  MatchMode,
   WordResult,
 } from './word-result';
 import {
@@ -93,7 +93,7 @@ function open(): Promise<IDBPDatabase<JpdictSchema> | null> {
         _state = 'open';
         return db;
       })
-      .catch((_) => {
+      .catch(() => {
         _state = 'idle';
         _db = undefined;
         return null;
@@ -326,7 +326,7 @@ export async function getWordsWithGloss(
 
   // Set up our output value.
   const resultMeta: Map<number, GlossSearchResultMeta> = new Map();
-  let results: Array<WordResult> = [];
+  const results: Array<WordResult> = [];
 
   // First search using the specified locale (if not English).
   if (lang !== 'en') {

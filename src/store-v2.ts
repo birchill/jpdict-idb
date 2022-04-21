@@ -108,33 +108,33 @@ export type RecordUpdate<T extends DataSeries> =
       record: DownloadDeleteRecord<T>;
     };
 
-const toStoreRecord: {
-  [series in DataSeries]: (
-    record: DownloadRecord<series>
-  ) => JpdictSchema[series]['value'];
-} = {
-  words: toWordStoreRecord,
-  names: toNameStoreRecord,
-  kanji: toKanjiStoreRecord,
-  radicals: toRadicalStoreRecord,
-};
-
-const getStoreId: {
-  [series in DataSeries]: (
-    record: DownloadDeleteRecord<series>
-  ) => JpdictSchema[series]['key'];
-} = {
-  words: getStoreIdForWordRecord,
-  names: getStoreIdForNameRecord,
-  kanji: getStoreIdForKanjiRecord,
-  radicals: getStoreIdForRadicalRecord,
-};
-
 export class JpdictStore {
   private state: 'idle' | 'opening' | 'open' | 'error' | 'deleting' = 'idle';
   private db: IDBPDatabase<JpdictSchema> | undefined;
   private openPromise: Promise<IDBPDatabase<JpdictSchema>> | undefined;
   private deletePromise: Promise<void> | undefined;
+
+  protected toStoreRecord: {
+    [series in DataSeries]: (
+      record: DownloadRecord<series>
+    ) => JpdictSchema[series]['value'];
+  } = {
+    words: toWordStoreRecord,
+    names: toNameStoreRecord,
+    kanji: toKanjiStoreRecord,
+    radicals: toRadicalStoreRecord,
+  };
+
+  protected getStoreId: {
+    [series in DataSeries]: (
+      record: DownloadDeleteRecord<series>
+    ) => JpdictSchema[series]['key'];
+  } = {
+    words: getStoreIdForWordRecord,
+    names: getStoreIdForNameRecord,
+    kanji: getStoreIdForKanjiRecord,
+    radicals: getStoreIdForRadicalRecord,
+  };
 
   async open(): Promise<IDBPDatabase<JpdictSchema>> {
     if (this.state === 'open') {
@@ -375,9 +375,9 @@ export class JpdictStore {
       // See: https://jsfiddle.net/birtles/vx4urLkw/17/
       for (const update of updates) {
         if (update.mode === 'delete') {
-          void table.delete(getStoreId[series](update.record));
+          void table.delete(this.getStoreId[series](update.record));
         } else {
-          void table.put(toStoreRecord[series](update.record));
+          void table.put(this.toStoreRecord[series](update.record));
         }
       }
 

@@ -5,8 +5,8 @@ import { JpdictFullTextDatabase } from './database-fulltext';
 import {
   getKanji,
   getNames,
-  getWordsByCrossReference,
   getWords,
+  getWordsByCrossReference,
   getWordsWithGloss,
   getWordsWithKanji,
   NameResult,
@@ -76,16 +76,16 @@ describe('query', function () {
   it('should fetch kanji', async () => {
     await db.ready;
 
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":1}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":1,"format":"full","format":"full"}
 {"c":"引","r":{"on":["イン"],"kun":["ひ.く","ひ.ける"],"na":["いな","ひき","ひけ","びき"]},"m":["pull","tug","jerk","admit","install","quote","refer to"],"rad":{"x":57},"refs":{"nelson_c":1562,"nelson_n":1681,"halpern_njecd":181,"halpern_kkld":133,"halpern_kkld_2ed":160,"heisig":1232,"heisig6":1318,"henshall":77,"sh_kk":216,"sh_kk2":216,"kanji_in_context":257,"busy_people":"3.2","kodansha_compact":605,"skip":"1-3-1","sh_desc":"3h1.1","conning":422},"misc":{"sc":4,"gr":2,"freq":218,"jlpt":3,"kk":9},"comp":"⼁⼸","var":["057-hen"]}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":3}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":3,"format":"full","format":"full"}
 {"id":"002","r":2,"b":"⼁","k":"｜","s":1,"na":["たてぼう","ぼう"],"m":["stick"]}
 {"id":"057","r":57,"b":"⼸","k":"弓","s":3,"na":["ゆみ"],"m":["bow","bow (archery, violin)"]}
 {"id":"057-hen","r":57,"b":"⼸","k":"弓","pua":59218,"s":3,"na":["ゆみへん"],"m":["bow","bow (archery, violin)"],"posn":"hen"}
@@ -165,16 +165,16 @@ describe('query', function () {
   it('should fill in katakana component descriptions', async () => {
     await db.ready;
 
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":1}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":1,"format":"full"}
 {"c":"通","r":{"on":["ツウ","ツ"],"kun":["とお.る","とお.り","-とお.り","-どお.り","とお.す","とお.し","-どお.し","かよ.う"],"na":["とん","どうし","どおり","みち"]},"m":["traffic","pass through","avenue","commute","counter for letters, notes, documents, etc."],"rad":{"x":162},"refs":{"nelson_c":4703,"nelson_n":6063,"halpern_njecd":3109,"halpern_kkld":1982,"halpern_kkld_2ed":2678,"heisig":1408,"heisig6":1511,"henshall":176,"sh_kk":150,"sh_kk2":150,"kanji_in_context":204,"busy_people":"3.11","kodansha_compact":695,"skip":"3-3-7","sh_desc":"2q7.18","conning":159},"misc":{"sc":9,"gr":2,"freq":80,"jlpt":3,"kk":9},"comp":"マ⽤⻌","var":["162-nyou"]}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":4}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":4,"format":"full"}
 {"id":"101","r":101,"b":"⽤","k":"用","s":5,"na":["もちいる"],"m":["utilize","business","service","use","employ"]}
 {"id":"162","r":162,"b":"⾡","k":"辵","s":3,"na":["しんにょう","しんにゅう"],"m":["road","walk","to advance","move ahead"]}
 {"id":"162-nyou","r":162,"b":"⻌","k":"辶","s":3,"na":["しんにょう","しんにゅう"],"m":["road","walk","to advance","move ahead"],"posn":"nyou"}
@@ -212,17 +212,17 @@ describe('query', function () {
   it('should match radical variants', async () => {
     await db.ready;
 
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":2}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":2,"format":"full"}
 {"c":"凶","r":{"on":["キョウ"]},"m":["villain","evil","bad luck","disaster"],"rad":{"x":17},"refs":{"nelson_c":663,"nelson_n":442,"halpern_njecd":2961,"halpern_kkld":1877,"halpern_kkld_2ed":2557,"heisig":1490,"heisig6":1603,"henshall":1159,"sh_kk":1280,"sh_kk2":1354,"kanji_in_context":1812,"kodansha_compact":172,"skip":"3-2-2","sh_desc":"0a4.19","conning":296},"misc":{"sc":4,"gr":8,"freq":1673,"jlpt":1,"kk":4},"comp":"⼂⼃⼐"}
 {"c":"胸","r":{"on":["キョウ"],"kun":["むね","むな-"]},"m":["bosom","breast","chest","heart","feelings"],"rad":{"x":130},"refs":{"nelson_c":3768,"nelson_n":4811,"halpern_njecd":951,"halpern_kkld":647,"halpern_kkld_2ed":858,"heisig":1491,"heisig6":1604,"henshall":840,"sh_kk":1283,"sh_kk2":1357,"kanji_in_context":1086,"kodansha_compact":1030,"skip":"1-4-6","sh_desc":"4b6.9","conning":1971},"misc":{"sc":10,"gr":6,"freq":1144,"jlpt":2,"kk":5},"comp":"⽉⼓凶","var":["130-2"]}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":5}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":5,"format":"full"}
 {"id":"020","r":20,"b":"⼓","k":"勹","s":2,"na":["つつみがまえ","くがまえ"],"m":["wrapping"],"posn":"kamae"}
 {"id":"074","r":74,"b":"⽉","k":"月","s":4,"na":["つき"],"m":["month","moon"]}
 {"id":"074-hen","r":74,"b":"⺝","s":4,"na":["つきへん"],"m":["month","moon"],"posn":"hen"}
@@ -293,16 +293,16 @@ describe('query', function () {
   it('should match component variants', async () => {
     await db.ready;
 
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":1}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":1,"format":"full"}
 {"c":"筋","r":{"on":["キン"],"kun":["すじ"]},"m":["muscle","sinew","tendon","fiber","plot","plan","descent"],"rad":{"x":118},"refs":{"nelson_c":3395,"nelson_n":4286,"halpern_njecd":2678,"halpern_kkld":1719,"halpern_kkld_2ed":2337,"heisig":941,"heisig6":1012,"henshall":843,"sh_kk":1090,"sh_kk2":1141,"kanji_in_context":1059,"kodansha_compact":1476,"skip":"2-6-6","sh_desc":"6f6.4","conning":392},"misc":{"sc":12,"gr":6,"freq":744,"jlpt":1,"kk":5},"comp":"⺮⽉⼒","var":["118-kanmuri","130-2"]}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":7}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":7,"format":"full"}
 {"id":"019","r":19,"b":"⼒","k":"力","s":2,"na":["ちから"],"m":["power","strength","strong","strain","bear up","exert"]}
 {"id":"074","r":74,"b":"⽉","k":"月","s":4,"na":["つき"],"m":["month","moon"]}
 {"id":"074-hen","r":74,"b":"⺝","s":4,"na":["つきへん"],"m":["month","moon"],"posn":"hen"}
@@ -376,10 +376,10 @@ describe('query', function () {
   it('should fetch related kanji', async () => {
     await db.ready;
 
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":6}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":6,"format":"full"}
 {"c":"構","r":{"py":["gou4"],"on":["コウ"],"kun":["かま.える","かま.う"],"na":["とち"]},"m":["posture","build","pretend"],"rad":{"x":75},"refs":{"nelson_c":2343,"nelson_n":2823,"halpern_njecd":1049,"halpern_kkld_2ed":962,"heisig6":1959,"henshall":675,"sh_kk2":1048,"kanji_in_context":991,"kodansha_compact":1108,"skip":"1-4-10","sh_desc":"4a10.10","conning":917},"misc":{"sc":14,"gr":5,"freq":316,"jlpt":2,"kk":6},"comp":"⽊冓","var":["075-hen"],"cf":"講"}
 {"c":"留","r":{"py":["liu2"],"on":["リュウ","ル"],"kun":["と.める","と.まる","とど.める","とど.まる","るうぶる"],"na":["とめ"]},"m":["detain","fasten","halt","stop"],"rad":{"x":102},"refs":{"nelson_c":3003,"nelson_n":3750,"halpern_njecd":2580,"halpern_kkld_2ed":2235,"heisig6":1527,"henshall":805,"sh_kk2":774,"kanji_in_context":432,"kodansha_compact":1341,"skip":"2-5-5","sh_desc":"5f5.4","conning":1170},"misc":{"sc":10,"gr":5,"freq":731,"jlpt":2,"kk":6},"comp":"⼛⼑⽥","cf":"貿溜"}
 {"c":"冓","r":{"py":["gou4"],"on":["コウ"],"kun":["かま.える"]},"m":["put together","inner palace"],"rad":{"x":13},"refs":{"nelson_n":396,"skip":"2-5-5","sh_desc":"0a10.14"},"misc":{"sc":10,"kk":1},"comp":"井再⼌"}
@@ -389,8 +389,8 @@ describe('query', function () {
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":6}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":6,"format":"full"}
 {"id":"018","r":18,"b":"⼑","k":"刀","s":2,"na":["かたな"],"m":["sword","saber","knife"]}
 {"id":"028","r":28,"b":"⼛","k":"厶","s":2,"na":["む"],"m":["myself"]}
 {"id":"075","r":75,"b":"⽊","k":"木","s":4,"na":["き"],"m":["tree","wood"]}
@@ -436,10 +436,10 @@ describe('query', function () {
   });
 
   it('should fetch names by kanji', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:names-rc-en-3.0.0.ljson',
-      `{"type":"header","version":{"major":3,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1}
+      'end:names/en/3.0.0.jsonl',
+      `{"type":"header","version":{"major":3,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1,"format":"full"}
 {"r":["こくろう"],"k":["国労"],"id":1657560,"tr":[{"type":["org"],"det":["National Railway Workers' Union"]}]}
 `
     );
@@ -460,10 +460,10 @@ describe('query', function () {
   });
 
   it('should fetch names by reading', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:names-rc-en-3.0.0.ljson',
-      `{"type":"header","version":{"major":3,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1}
+      'end:names/en/3.0.0.jsonl',
+      `{"type":"header","version":{"major":3,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1,"format":"full"}
 {"r":["こくろう"],"k":["国労"],"id":1657560,"tr":[{"type":["org"],"det":["National Railway Workers' Union"]}]}
 `
     );
@@ -484,10 +484,10 @@ describe('query', function () {
   });
 
   it('should fetch names by kana-equivalence', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:names-rc-en-3.0.0.ljson',
-      `{"type":"header","version":{"major":3,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":3}
+      'end:names/en/3.0.0.jsonl',
+      `{"type":"header","version":{"major":3,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":3,"format":"full"}
 {"r":["マルタ"],"id":5082405,"tr":[{"type":["place"],"det":["Malta"]},{"type":["fem"],"det":["Marta","Martha"]}]}
 {"r":["まるた"],"k":["円田"],"id":5143227,"tr":[{"type":["surname"],"det":["Maruta"]}]}
 {"r":["まるた"],"k":["丸太"],"id":5193528,"tr":[{"type":["place","surname"],"det":["Maruta"]}]}
@@ -516,10 +516,10 @@ describe('query', function () {
   });
 
   it('should fetch words by kanji', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1,"format":"full"}
 {"r":["このあいだ","このかん"],"s":[{"pos":["n-t","n-adv"],"g":["the other day","lately","recently","during this period"]},{"rapp":2,"g":["meanwhile","in the meantime"]}],"k":["この間","此の間"],"id":1004690,"km":[{"p":["i1"]}],"rm":[{"p":["i1"],"a":0},{"a":3}]}
 `
     );
@@ -562,10 +562,10 @@ describe('query', function () {
   });
 
   it('should fetch words by kana', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1,"format":"full"}
 {"r":["このあいだ","このかん"],"s":[{"pos":["n-t","n-adv"],"g":["the other day","lately","recently","during this period"]},{"rapp":2,"g":["meanwhile","in the meantime"]}],"k":["この間","此の間"],"id":1004690,"km":[{"p":["i1"]}],"rm":[{"p":["i1"],"a":0},{"a":3}]}
 `
     );
@@ -614,10 +614,10 @@ describe('query', function () {
   });
 
   it('should fetch words by kana by looking at both kanji and reading indices', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":35}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":35,"format":"full"}
 {"id":1,"r":["かきまわす"],"s":[{"pos":["v5s","vt"],"g":["to stir","to churn","to poke (a fire)","to disturb (water)"]},{"pos":["v5s","vt"],"g":["to rummage around"]},{"pos":["v5s","vt"],"g":["to throw into confusion","to throw into chaos","to disturb"]}],"k":["かき回す","掻き回す"],"km":[0,{"p":["i2"]}],"rm":[{"p":["i2"],"a":[{"i":0},{"i":4}]}]}
 {"id":2,"r":["かきこむ"],"s":[{"pos":["v5m","vt"],"g":["to bolt down one's food","to gulp down","to eat quickly"]},{"pos":["v5m","vt"],"g":["to carry under the arm","to rake in","to scoop up"]}],"k":["かき込む","掻き込む","掻きこむ"],"rm":[{"a":[{"i":3},{"i":0}]}]}
 {"id":3,"r":["かきあつめる"],"s":[{"pos":["v1","vt"],"g":["to gather up","to scrape up together","to rake"]}],"k":["かき集める","掻き集める"],"rm":[{"a":[{"i":5},{"i":0}]}]}
@@ -673,10 +673,10 @@ describe('query', function () {
   });
 
   it('should fetch words by kana-equivalence', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":2}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":2,"format":"full"}
 {"r":["はんぺん","はんぺい"],"s":[{"pos":["n"],"g":["pounded fish cake"],"misc":["uk"]},{"kapp":1,"g":["half a slice","half a ticket","ticket stub"]}],"k":["半片","半平"],"id":1010230,"rm":[{"a":[{"i":0},{"i":3}]},{"app":2,"a":[{"i":0},{"i":1}]}]}
 {"r":["わいシャツ"],"s":[{"pos":["n"],"g":["obscene shirt (pun)"],"xref":[{"k":"Ｙシャツ"}]}],"k":["猥シャツ"],"id":1569320}
 `
@@ -737,10 +737,10 @@ describe('query', function () {
   });
 
   it('should expand gloss type information', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1,"format":"full"}
 {"r":["ばついち","バツいち","バツイチ"],"s":[{"xref":[{"sense":1,"k":"戸籍"}],"pos":["n"],"gt":128,"g":["being once divorced","one-time divorcee","one x mark (i.e. one name struck from the family register)"],"misc":["uk","joc"]}],"k":["罰一","ばつ一","バツ１"],"id":1010290,"rm":[{"app":3},{"app":4},{"app":0}]}
 `
     );
@@ -784,10 +784,10 @@ describe('query', function () {
   });
 
   it('should sort more common entries first', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":2}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":2,"format":"full"}
 {"r":["ひとびと"],"s":[{"pos":["n"],"g":["people","men and women"]},{"g":["each person","everybody"]}],"k":["人々","人びと","人人"],"id":1500001,"km":[{"p":["i1","n1","nf01"]}],"rm":[{"p":["i1","n1","nf01"],"a":2}]}
 {"r":["にんにん"],"s":[{"xref":[{"r":"ひとびと","sense":2,"k":"人々"}],"pos":["n"],"g":["each person","everybody"],"misc":["dated"]}],"k":["人々","人人"],"id":1500000,"rm":[{"a":1}]}
 `
@@ -842,10 +842,10 @@ describe('query', function () {
   });
 
   it('should sort only using matched headwords', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":3}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":3,"format":"full"}
 {"id":1,"r":["うま","いま","おま","ウマ"],"s":[{"pos":["n"],"g":["horse"]},{"rapp":1,"pos":["n"],"g":["horse racing"]},{"rapp":1,"field":["shogi"],"pos":["n"],"g":["promoted bishop"],"misc":["abbr"]}],"k":["馬"],"km":[{"p":["i1","n1","nf02"]}],"rm":[{"p":["i1","n1","nf02"],"a":2},{"i":["ok"]},{"i":["ok"]},{"app":0,"a":2}]}
 {"id":2,"r":["いま"],"s":[{"pos":["n-adv","adj-no"],"g":["now","the present time","just now","soon","immediately"]},{"pos":["adv"],"g":["another","more"]}],"k":["今"],"km":[{"p":["i1","n1","nf07"]}],"rm":[{"p":["i1","n1","nf07"],"a":1}]}
 {"id":3,"r":["いま"],"s":[{"pos":["n"],"g":["living room (Western style)","sitting room"]}],"k":["居間"],"km":[{"p":["i1","n1","nf12"]}],"rm":[{"p":["i1","n1","nf12"],"a":2}]}
@@ -863,10 +863,10 @@ describe('query', function () {
   });
 
   it('should search by starting string', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":3}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":3,"format":"full"}
 {"r":["せんにん"],"s":[{"pos":["n"],"g":["immortal mountain wizard (in Taoism)","mountain man (esp. a hermit)"]},{"g":["one not bound by earthly desires or the thoughts of normal men"]}],"k":["仙人","僊人"],"id":1387170,"km":[{"p":["n2","nf34","s2"]}],"rm":[{"p":["n2","nf34","s2"],"a":3}]}
 {"r":["せんだい"],"s":[{"pos":["n"],"g":["Sendai (city in Miyagi)"]}],"k":["仙台"],"id":2164680,"km":[{"p":["s1"]}],"rm":[{"p":["s1"],"a":1}]}
 {"r":["セント"],"s":[{"pos":["n"],"g":["cent (monetary unit)"],"misc":["uk"]}],"k":["仙"],"id":1075090,"km":[{"i":["ateji"]}],"rm":[{"p":["g1"],"a":1}]}
@@ -937,10 +937,10 @@ describe('query', function () {
   });
 
   it('should search by individual kanji', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":2}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":2,"format":"full"}
 {"r":["せんにん"],"s":[{"pos":["n"],"g":["immortal mountain wizard (in Taoism)","mountain man (esp. a hermit)"]},{"g":["one not bound by earthly desires or the thoughts of normal men"]}],"k":["仙人","僊人"],"id":1387170,"km":[{"p":["n2","nf34","s2"]}],"rm":[{"p":["n2","nf34","s2"],"a":3}]}
 {"r":["せんだい"],"s":[{"pos":["n"],"g":["Sendai (city in Miyagi)"]}],"k":["仙台"],"id":2164680,"km":[{"p":["s1"]}],"rm":[{"p":["s1"],"a":1}]}
 `
@@ -995,10 +995,10 @@ describe('query', function () {
   });
 
   it('should search by gloss', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":2}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":2,"format":"full"}
 {"r":["あっというまに","あっとゆうまに","アッというまに","アッとゆうまに"],"s":[{"pos":["exp","adv"],"gt":1024,"g":["just like that","in the twinkling of an eye","in the blink of an eye","in the time it takes to say \\"ah!\\""]}],"k":["あっという間に","あっと言う間に","あっとゆう間に","アッという間に","アッと言う間に","アッとゆう間に"],"id":1000390,"km":[{"p":["s1"]}],"rm":[{"app":3,"p":["s1"]},{"app":6,"a":[{"i":1},{"i":0}]},{"app":24},{"app":48,"a":[{"i":1},{"i":0}]}]}
 {"r":["またたくまに"],"s":[{"pos":["adv"],"g":["in the twinkling of an eye","in a flash"]}],"k":["瞬く間に","またたく間に"],"id":1909530,"rm":[{"a":3}]}
 `
@@ -1076,10 +1076,10 @@ describe('query', function () {
 
   it('should rank common words first', async () => {
     // Set up a bunch of sleep-related words
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":21}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":21,"format":"full"}
 {"id":1,"r":["すいみん"],"s":[{"pos":["n","adj-no"],"g":["sleep"]}],"k":["睡眠"],"km":[{"p":["i1","n1","nf07"]}],"rm":[{"p":["i1","n1","nf07"],"a":0}]}
 {"id":2,"r":["すいみんざい"],"s":[{"pos":["n"],"g":["sleeping tablet"]}],"k":["睡眠剤"],"rm":[{"a":[{"i":3},{"i":0}]}]}
 {"id":3,"r":["すいみんぶそく"],"s":[{"pos":["n","adj-no"],"g":["lack of sleep"]}],"k":["睡眠不足"],"rm":[{"a":5}]}
@@ -1121,10 +1121,10 @@ describe('query', function () {
 
   it('should rank 食べる before 食う', async () => {
     // Set up a bunch of eating-related words
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":10}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":10,"format":"full"}
 {"id":1,"r":["たべる"],"s":[{"pos":["v1","vt"],"g":["to eat"]},{"pos":["v1","vt"],"g":["to live on (e.g. a salary)","to live off","to subsist on"]}],"k":["食べる","喰べる"],"km":[{"p":["i1","n2","nf25"]},{"i":["iK"]}],"rm":[{"p":["i1","n2","nf25"],"a":2}]}
 {"id":2,"r":["くう"],"s":[{"pos":["v5u","vt"],"g":["to eat"],"misc":["male"]},{"pos":["v5u","vt"],"g":["to live","to make a living","to survive"]},{"pos":["v5u","vt"],"g":["to bite","to sting (as insects do)"]},{"pos":["v5u","vt"],"g":["to tease","to torment","to taunt","to make light of","to make fun of"]},{"pos":["v5u","vt"],"g":["to encroach on","to eat into","to consume"]},{"pos":["v5u","vt"],"g":["to defeat a superior","to threaten a position"]},{"pos":["v5u","vt"],"g":["to consume time and-or resources"]},{"pos":["v5u","vt"],"g":["to receive something (usu. an unfavourable event)"],"misc":["col"]},{"pos":["v5u","vt"],"g":["to have sexual relations with a woman, esp. for the first time"],"misc":["male","vulg"]}],"k":["食う","喰う","啖う"],"km":[{"p":["i1","n2","nf33"]},{"p":["s1"]},{"i":["oK"]}],"rm":[{"p":["i1","n2","nf33","s1"],"a":1}]}
 {"id":3,"r":["めしあがる"],"s":[{"pos":["v5r","vt"],"g":["to eat","to drink"],"misc":["hon"]}],"k":["召し上がる","召しあがる","召上がる","召し上る"],"km":[{"p":["i1","n2","nf45"]}],"rm":[{"p":["i1","n2","nf45"],"a":[{"i":0},{"i":4}]}]}
@@ -1146,10 +1146,10 @@ describe('query', function () {
   });
 
   it('should search by cross-reference', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:words-rc-en-2.0.0.ljson',
-      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":8}
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":8,"format":"full"}
 {"r":["せいしょ"],"s":[{"field":["Christn"],"pos":["n"],"g":["Bible","Holy Writ","scriptures"]}],"k":["聖書"],"id":1380340,"km":[{"p":["i1","n1","nf14"]}],"rm":[{"p":["i1","n1","nf14"],"a":1}]}
 {"r":["ワイシャツ"],"s":[{"lsrc":[{"src":"white shirt","wasei":true}],"xref":[{"r":"ホワイトシャツ"}],"pos":["n"],"g":["shirt","business shirt","dress shirt"],"misc":["uk","abbr"]}],"k":["Ｙシャツ"],"id":1148640,"km":[{"p":["i1","s1"]}],"rm":[{"p":["i1","s1"]}]}
 {"r":["ジャントー","ジャントウ"],"s":[{"lsrc":[{"lang":"zh"}],"xref":[{"k":"対子"}],"field":["mahj"],"pos":["n"],"g":["pair (as part of a winning hand, together with four melds)","eyes"]}],"k":["雀頭"],"id":2749740,"rm":[0,{"i":["ik"]}]}
