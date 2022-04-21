@@ -262,8 +262,8 @@ export class JpdictIdb {
       promise: updatePromise
         .catch(() => {}) // Ignore errors from this Promise chain
         .finally(() => {
-          // Reset the in-progress update but only if the language wasn't changed
-          // (since we don't want to clobber a new request).
+          // Reset the in-progress update but only if the language wasn't
+          // changed (since we don't want to clobber a new request).
           if (
             this.inProgressUpdates[series] &&
             this.inProgressUpdates[series]!.lang === lang
@@ -406,5 +406,15 @@ export class JpdictIdb {
     inProgressUpdate.controller.abort();
 
     return true;
+  }
+
+  // -------------------------------------------------------------------------
+  //
+  // Misc
+  //
+  // -------------------------------------------------------------------------
+
+  get isVerbose() {
+    return this.verbose;
   }
 }

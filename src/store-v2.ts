@@ -289,9 +289,9 @@ export class JpdictStore {
   }
 
   async clearSeries(series: DataSeries) {
-    await this.open();
+    const db = await this.open();
 
-    const tx = this.db!.transaction([series, 'version'], 'readwrite');
+    const tx = db.transaction([series, 'version'], 'readwrite');
 
     try {
       // Drop the table
@@ -303,8 +303,7 @@ export class JpdictStore {
       const id = getVersionKey(series);
       void versionTable.delete(id);
     } catch (e) {
-      console.error(`Error deleting data series '${series}'`);
-      console.log(e);
+      console.error(`Error deleting data series '${series}'`, e);
 
       // Ignore the abort from the transaction
       tx.done.catch(() => {});
@@ -348,9 +347,9 @@ export class JpdictStore {
       await this.db!.put('version', { ...version, id });
     } catch (e) {
       console.error(
-        `Error updating version of '${series}' to ${JSON.stringify(version)}`
+        `Error updating version of '${series}' to ${JSON.stringify(version)}`,
+        e
       );
-      console.log(e);
 
       throw e;
     }
@@ -384,8 +383,7 @@ export class JpdictStore {
 
       await tx.done;
     } catch (e) {
-      console.error(`Error updating series ${series}`);
-      console.log(e);
+      console.error(`Error updating series ${series}`, e);
 
       // Ignore the abort from the transaction
       tx.done.catch(() => {});

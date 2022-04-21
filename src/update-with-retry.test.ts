@@ -4,7 +4,7 @@ import chaiAsPromised from 'chai-as-promised';
 import fetchMock from 'fetch-mock';
 import sinon from 'sinon';
 
-import { JpdictDatabase } from './database';
+import { JpdictIdb } from './database-v2';
 import { cancelUpdateWithRetry, updateWithRetry } from './update-with-retry';
 
 mocha.setup('bdd');
@@ -40,13 +40,13 @@ const VERSION_INFO = {
 };
 
 describe('updateWithRetry', function () {
-  let db: JpdictDatabase;
+  let db: JpdictIdb;
 
   // We time out some of these tests occasionally.
   this.timeout(10000);
 
   beforeEach(() => {
-    db = new JpdictDatabase();
+    db = new JpdictIdb();
   });
 
   afterEach(async () => {
@@ -58,15 +58,15 @@ describe('updateWithRetry', function () {
   });
 
   it('should call the onUpdateComplete callback on success', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
@@ -82,15 +82,15 @@ describe('updateWithRetry', function () {
   });
 
   it('should call the onUpdateError callback on complete failure', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
@@ -112,16 +112,16 @@ describe('updateWithRetry', function () {
   });
 
   it('should retry a network error', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
-    fetchMock.once('end:.ljson', 404);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.once('end:.jsonl', 404);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
@@ -134,7 +134,7 @@ describe('updateWithRetry', function () {
     }> = [];
     const updateStart = new Date();
 
-    await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve) => {
       updateWithRetry({
         db,
         series: 'kanji',
@@ -142,7 +142,7 @@ describe('updateWithRetry', function () {
         onUpdateComplete: resolve,
         onUpdateError: (params) => {
           errors.push(params);
-          clock.next();
+          void clock.runToLastAsync();
         },
       });
     });
@@ -165,19 +165,19 @@ describe('updateWithRetry', function () {
   });
 
   it('should wait until it is online', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
-    let isOnline: boolean = false;
+    let isOnline = false;
 
     sinon.replaceGetter(
       navigator,
@@ -185,9 +185,9 @@ describe('updateWithRetry', function () {
       sinon.fake(() => isOnline)
     );
 
-    let gotOfflineError: boolean = false;
+    let gotOfflineError = false;
 
-    await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve) => {
       updateWithRetry({
         db,
         series: 'kanji',
@@ -206,22 +206,22 @@ describe('updateWithRetry', function () {
   });
 
   it('should wait until it is online even when re-trying a network error', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
-    fetchMock.mock('end:.ljson', 404, { repeat: 2 });
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.mock('end:.jsonl', 404, { repeat: 2 });
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
     const clock = sinon.useFakeTimers({ toFake: ['setTimeout'] });
 
-    let isOnline: boolean = true;
+    let isOnline = true;
     sinon.replaceGetter(
       navigator,
       'onLine',
@@ -234,7 +234,7 @@ describe('updateWithRetry', function () {
       retryCount?: number;
     }> = [];
 
-    await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve) => {
       updateWithRetry({
         db,
         series: 'kanji',
@@ -257,7 +257,7 @@ describe('updateWithRetry', function () {
             isOnline = false;
           }
 
-          clock.next();
+          void clock.runToLastAsync();
         },
       });
     });
@@ -277,29 +277,29 @@ describe('updateWithRetry', function () {
   });
 
   it('should coalesce overlapping requests', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
-    fetchMock.once('end:.ljson', 404);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.once('end:.jsonl', 404);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
     const clock = sinon.useFakeTimers({ toFake: ['setTimeout'] });
 
-    const firstInvocation = new Promise<void>((resolve, reject) => {
+    const firstInvocation = new Promise<void>((resolve) => {
       updateWithRetry({
         db,
         series: 'kanji',
         lang: 'en',
         onUpdateComplete: resolve,
         onUpdateError: () => {
-          clock.next();
+          void clock.runToLastAsync();
         },
       });
     });
@@ -325,17 +325,17 @@ describe('updateWithRetry', function () {
     assert.isFalse(secondCompletionCallbackCalled);
   });
 
-  it('should NOT coalesce overlapping requests when the forceUpdate flag is set', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
-    fetchMock.once('end:.ljson', 404);
+  it('should NOT coalesce overlapping requests when the updateNow flag is set', async () => {
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.once('end:.jsonl', 404);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
@@ -363,7 +363,7 @@ describe('updateWithRetry', function () {
         db,
         series: 'kanji',
         lang: 'en',
-        forceUpdate: true,
+        updateNow: true,
         onUpdateComplete: resolve,
         onUpdateError: ({ error }) => reject(error),
       });
@@ -373,27 +373,27 @@ describe('updateWithRetry', function () {
   });
 
   it('should NOT coalesce overlapping requests when the requested language changes', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
-    fetchMock.mock('end:jpdict-rc-fr-version.json', VERSION_INFO);
-    fetchMock.once('end:.ljson', 404);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.mock('end:version-fr.json', VERSION_INFO);
+    fetchMock.once('end:.jsonl', 404);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:kanji-rc-fr-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/fr/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-fr-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/fr/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
@@ -432,65 +432,16 @@ describe('updateWithRetry', function () {
   });
 
   it('should allow canceling the retries', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
-    fetchMock.once('end:.ljson', 404);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.once('end:.jsonl', 404);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
-`
-    );
-
-    // Wait for first error
-
-    const clock = sinon.useFakeTimers({
-      toFake: ['setTimeout', 'clearTimeout'],
-    });
-
-    let completeCalled = false;
-    await new Promise((resolve) => {
-      updateWithRetry({
-        db,
-        series: 'kanji',
-        lang: 'en',
-        onUpdateComplete: () => {
-          completeCalled = true;
-        },
-        onUpdateError: resolve,
-      });
-    });
-
-    // Then cancel
-
-    await cancelUpdateWithRetry({ db, series: 'kanji' });
-
-    // Then make sure that the completion doesn't happen
-
-    clock.next();
-    clock.restore();
-
-    // It turns out we need to wait quiet a few frames to be sure the completion
-    // would happen if we hadn't canceled things.
-    await waitForAnimationFrames(8);
-
-    assert.isFalse(completeCalled);
-  });
-
-  it('should allow canceling the retries', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
-    fetchMock.once('end:.ljson', 404);
-    fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
-`
-    );
-    fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
@@ -515,11 +466,11 @@ describe('updateWithRetry', function () {
 
     // Then cancel
 
-    await cancelUpdateWithRetry({ db, series: 'kanji' });
+    cancelUpdateWithRetry({ db, series: 'kanji' });
 
     // Then make sure that the completion doesn't happen
 
-    clock.next();
+    void clock.runAllAsync();
     clock.restore();
 
     // It turns out we need to wait quiet a few frames to be sure the completion
@@ -530,16 +481,16 @@ describe('updateWithRetry', function () {
   });
 
   it('should cancel the retries when the database is deleted', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
-    fetchMock.once('end:.ljson', 404);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.once('end:.jsonl', 404);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
@@ -568,7 +519,7 @@ describe('updateWithRetry', function () {
 
     // Then make sure that the completion doesn't happen
 
-    clock.next();
+    void clock.runToLastAsync();
     clock.restore();
     await waitForAnimationFrames(15); // We seem to need at least ~15
 
@@ -576,19 +527,19 @@ describe('updateWithRetry', function () {
   });
 
   it('should reset the timeout after each successful download', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
-    fetchMock.mock('end:.ljson', 404, { repeat: 2 });
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.mock('end:.jsonl', 404, { repeat: 2 });
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
 
     // Make radical file fail only once
     let callCount = 0;
-    fetchMock.mock('end:radicals-rc-en-4.0.0.ljson', () => {
+    fetchMock.mock('end:radicals/en/4.0.0.jsonl', () => {
       if (callCount++) {
-        return `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+        return `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `;
       } else {
         return 404;
@@ -623,7 +574,7 @@ describe('updateWithRetry', function () {
           if (!nextRetry) {
             reject(error);
           } else {
-            clock.runAllAsync();
+            void clock.runAllAsync();
           }
         },
       });
@@ -647,16 +598,16 @@ describe('updateWithRetry', function () {
   });
 
   it('should retry when saving to the database fails', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
@@ -676,26 +627,23 @@ describe('updateWithRetry', function () {
   });
 
   it('should give up after saving to the database fails too many times', async () => {
-    fetchMock.mock('end:jpdict-rc-en-version.json', VERSION_INFO);
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
-      'end:kanji-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0}
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
 `
     );
     fetchMock.mock(
-      'end:radicals-rc-en-4.0.0.ljson',
-      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0}
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
 
     const constraintError = new Error('Constraint error');
     constraintError.name = 'ConstraintError';
 
-    // We need to actually stub out the store method since we want the DB
-    // update state to reach 'updatingdb' since we want to test that when
-    // we reach that condition we DON'T clear the retryCount.
-    const stub = sinon.stub(db.store, 'bulkUpdateTable');
+    const stub = sinon.stub(db.store, 'updateSeries');
     stub.throws(constraintError);
 
     const errors: Array<Error> = [];
