@@ -1,24 +1,19 @@
-import { jsonEqualish } from '@birchill/json-equalish';
+import jsonEqualish from '@birchill/json-equalish';
 
 import { AbortError } from './abort-error';
-import { allDataSeries, DataSeries, MajorDataSeries } from './data-series';
-import { DataVersion } from './data-version';
-import { download, hasLanguage } from './download';
-import { isKanjiDeletionLine, isKanjiEntryLine } from './kanji';
-import { isRadicalDeletionLine, isRadicalEntryLine } from './radicals';
-import { isNameDeletionLine, isNameEntryLine } from './names';
-import { JpdictStore } from './store';
-import { UpdateAction } from './update-actions';
-import { UpdateState } from './update-state';
-import { reducer as updateReducer } from './update-reducer';
 import {
-  updateKanji,
-  updateNames,
-  UpdateOptions,
-  updateRadicals,
-  updateWords,
-} from './update';
-import { isWordDeletionLine, isWordEntryLine } from './words';
+  allDataSeries,
+  allMajorDataSeries,
+  DataSeries,
+  MajorDataSeries,
+} from './data-series';
+import { DataSeriesState } from './data-series-state';
+import { DataVersion } from './data-version';
+import { hasLanguage } from './download';
+import { JpdictStore } from './store';
+import { UpdateAction, reducer as updateReducer } from './update-state-reducer';
+import { UpdateState } from './update-state';
+import { update } from './update';
 
 const MAJOR_VERSION: { [series in DataSeries]: number } = {
   kanji: 4,
@@ -26,18 +21,6 @@ const MAJOR_VERSION: { [series in DataSeries]: number } = {
   names: 3,
   words: 2,
 };
-
-export const enum DataSeriesState {
-  // We don't know yet if we have a database or not
-  Initializing,
-  // No data has been stored yet
-  Empty,
-  // We have data and it's usable
-  Ok,
-  // The database itself is somehow unavailable (e.g. IndexedDB has been
-  // disabled or blocked due to user permissions or private mode browsing).
-  Unavailable,
-}
 
 export type ChangeTopic = 'stateupdated' | 'deleted';
 export type ChangeCallback = (topic: ChangeTopic) => void;
@@ -54,36 +37,43 @@ type InProgressUpdate = {
   lang: string;
 };
 
-export class JpdictDatabase {
+export class JpdictIdb {
   kanji: DataSeriesInfo = {
-    state: DataSeriesState.Initializing,
+    state: 'init',
     version: null,
-    updateState: { state: 'idle', lastCheck: null },
+    updateState: { type: 'idle', lastCheck: null },
   };
   radicals: DataSeriesInfo = {
-    state: DataSeriesState.Initializing,
+    state: 'init',
     version: null,
-    updateState: { state: 'idle', lastCheck: null },
+    updateState: { type: 'idle', lastCheck: null },
   };
   names: DataSeriesInfo = {
-    state: DataSeriesState.Initializing,
+    state: 'init',
     version: null,
-    updateState: { state: 'idle', lastCheck: null },
+    updateState: { type: 'idle', lastCheck: null },
   };
   words: DataSeriesInfo = {
-    state: DataSeriesState.Initializing,
+    state: 'init',
     version: null,
-    updateState: { state: 'idle', lastCheck: null },
+    updateState: { type: 'idle', lastCheck: null },
   };
 
+  // This is currently only public so we can stub it in unit tests
   store: JpdictStore;
-  verbose = false;
 
+  private verbose = false;
   private readyPromise: Promise<any>;
+  private changeListeners: ChangeCallback[] = [];
   private inProgressUpdates: {
     [series in MajorDataSeries]: InProgressUpdate | undefined;
   } = { words: undefined, kanji: undefined, names: undefined };
-  private changeListeners: ChangeCallback[] = [];
+
+  // -------------------------------------------------------------------------
+  //
+  // Initialization
+  //
+  // -------------------------------------------------------------------------
 
   constructor({ verbose = false }: { verbose?: boolean } = {}) {
     this.store = new JpdictStore();
@@ -93,7 +83,11 @@ export class JpdictDatabase {
     this.readyPromise = (async () => {
       try {
         for (const series of allDataSeries) {
-          const dataVersion = await this.store.getDataVersion(series);
+          // (2022-04-20 w/ TS 4.6.3) The following cast is needed to convince
+          // TS that `store` has been initialized.
+          //
+          // See https://stackoverflow.com/questions/51675833/typescript-error-property-is-used-before-being-assigned
+          const dataVersion = await (this as this).store.getDataVersion(series);
           this.updateDataVersion(series, dataVersion);
         }
       } catch (e) {
@@ -104,7 +98,7 @@ export class JpdictDatabase {
         for (const series of allDataSeries) {
           this[series] = {
             ...this[series],
-            state: DataSeriesState.Unavailable,
+            state: 'unavailable',
             version: null,
           };
         }
@@ -119,6 +113,64 @@ export class JpdictDatabase {
   get ready() {
     return this.readyPromise;
   }
+
+  // -------------------------------------------------------------------------
+  //
+  // Destruction
+  //
+  // -------------------------------------------------------------------------
+
+  async destroy() {
+    try {
+      await this.ready;
+    } catch {
+      // Ignore, we're going to destroy anyway
+    }
+
+    const hasData = allDataSeries.some(
+      (key: DataSeries) => this[key].state !== 'unavailable'
+    );
+    if (hasData) {
+      await this.store.destroy();
+    }
+
+    const hasInProgressUpdate = allMajorDataSeries.some(
+      (s) => typeof this.inProgressUpdates[s] !== 'undefined'
+    );
+    if (this.verbose && hasInProgressUpdate) {
+      console.info('Destroying database while there is an in-progress update');
+    }
+
+    this.store = new JpdictStore();
+    for (const series of allDataSeries) {
+      this[series] = {
+        state: 'empty',
+        version: null,
+        updateState: { type: 'idle', lastCheck: null },
+      };
+    }
+    this.notifyChanged('deleted');
+  }
+
+  async deleteSeries(series: MajorDataSeries) {
+    if (this.inProgressUpdates[series]) {
+      this.cancelUpdate(series);
+    }
+
+    await this.store.clearSeries(series);
+    this.updateDataVersion(series, null);
+
+    if (series === 'kanji') {
+      await this.store.clearSeries('radicals');
+      this.updateDataVersion('radicals', null);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  //
+  // Change listeners
+  //
+  // -------------------------------------------------------------------------
 
   addChangeListener(callback: ChangeCallback) {
     if (this.changeListeners.indexOf(callback) !== -1) {
@@ -136,40 +188,25 @@ export class JpdictDatabase {
   }
 
   private notifyChanged(topic: ChangeTopic) {
-    const changeListeners = [...this.changeListeners];
+    const changeListeners = this.changeListeners.slice();
     for (const callback of changeListeners) {
       callback(topic);
     }
   }
 
-  private updateDataVersion(series: DataSeries, version: DataVersion | null) {
-    if (
-      this[series].state !== DataSeriesState.Initializing &&
-      this[series].state !== DataSeriesState.Unavailable &&
-      jsonEqualish(this[series].version, version)
-    ) {
-      return;
-    }
+  // -------------------------------------------------------------------------
+  //
+  // Updating
+  //
+  // -------------------------------------------------------------------------
 
-    this[series].version = version;
-    this[series].state = version ? DataSeriesState.Ok : DataSeriesState.Empty;
-
-    this.notifyChanged('stateupdated');
-  }
-
-  async update({
-    series,
-    lang = 'en',
-  }: {
-    series: MajorDataSeries;
-    lang?: string;
-  }) {
+  async update({ series, lang }: { series: MajorDataSeries; lang: string }) {
     // Check for an existing update
     const existingUpdate = this.inProgressUpdates[series];
     if (existingUpdate && existingUpdate.lang === lang) {
       if (this.verbose) {
-        console.log(
-          `Detected overlapping update for ${series}. Re-using existing update.`
+        console.info(
+          `Detected overlapping update for '${series}' series. Re-using existing update.`
         );
       }
 
@@ -179,76 +216,54 @@ export class JpdictDatabase {
     // Cancel the existing update since the language doesn't match
     if (existingUpdate) {
       if (this.verbose) {
-        console.log(
-          `Cancelling existing update for ${series} since the requested language (${lang}) doesn't match that of the existing update(${existingUpdate.lang})`
+        console.info(
+          `Cancelling existing update for '${series}' series since the requested language (${lang}) doesn't match that of the existing update(${existingUpdate.lang})`
         );
       }
 
-      this.cancelUpdate({ series });
+      this.cancelUpdate(series);
     }
 
     const controller = new AbortController();
+    const signal = controller.signal;
+    const updatePromise = (async () => {
+      await this.ready;
+
+      if (signal.aborted) {
+        throw new AbortError();
+      }
+
+      switch (series) {
+        case 'words':
+          await this.doUpdate({ series: 'words', signal, lang });
+          break;
+
+        case 'kanji':
+          await this.doUpdate({ series: 'kanji', signal, lang });
+          if (signal.aborted) {
+            throw new AbortError();
+          }
+          await this.doUpdate({ series: 'radicals', signal, lang });
+          break;
+
+        case 'names':
+          await this.doUpdate({ series: 'names', signal, lang });
+          break;
+      }
+
+      if (signal.aborted) {
+        throw new AbortError();
+      }
+    })();
+
     this.inProgressUpdates[series] = {
       lang,
       controller,
-      promise: (async () => {
-        try {
-          await this.ready;
-
-          if (controller.signal.aborted) {
-            throw new AbortError();
-          }
-
-          switch (series) {
-            case 'words':
-              await this.doUpdate({
-                series: 'words',
-                lang,
-                forceFetch: true,
-                isEntryLine: isWordEntryLine,
-                isDeletionLine: isWordDeletionLine,
-                update: updateWords,
-              });
-              break;
-
-            case 'kanji':
-              await this.doUpdate({
-                series: 'kanji',
-                lang,
-                forceFetch: true,
-                isEntryLine: isKanjiEntryLine,
-                isDeletionLine: isKanjiDeletionLine,
-                update: updateKanji,
-              });
-
-              await this.doUpdate({
-                series: 'radicals',
-                lang,
-                forceFetch: true,
-                isEntryLine: isRadicalEntryLine,
-                isDeletionLine: isRadicalDeletionLine,
-                update: updateRadicals,
-              });
-              break;
-
-            case 'names':
-              await this.doUpdate({
-                series: 'names',
-                lang,
-                forceFetch: true,
-                isEntryLine: isNameEntryLine,
-                isDeletionLine: isNameDeletionLine,
-                update: updateNames,
-              });
-              break;
-          }
-
-          if (controller.signal.aborted) {
-            throw new AbortError();
-          }
-        } finally {
-          // Reset the in progress update but only if the language wasn't
-          // changed (since we don't want to clobber the new request).
+      promise: updatePromise
+        .catch(() => {}) // Ignore errors from this Promise chain
+        .finally(() => {
+          // Reset the in-progress update but only if the language wasn't
+          // changed (since we don't want to clobber a new request).
           if (
             this.inProgressUpdates[series] &&
             this.inProgressUpdates[series]!.lang === lang
@@ -256,37 +271,21 @@ export class JpdictDatabase {
             this.inProgressUpdates[series] = undefined;
           }
           this.notifyChanged('stateupdated');
-        }
-      })(),
+        }),
     };
 
-    return this.inProgressUpdates[series]!.promise;
+    return updatePromise;
   }
 
-  private async doUpdate<EntryLine, DeletionLine>({
+  private async doUpdate({
     series,
+    signal,
     lang: requestedLang,
-    forceFetch,
-    isEntryLine,
-    isDeletionLine,
-    update,
   }: {
     series: DataSeries;
+    signal: AbortSignal;
     lang: string;
-    forceFetch: boolean;
-    isEntryLine: (a: any) => a is EntryLine;
-    isDeletionLine: (a: any) => a is DeletionLine;
-    update: (options: UpdateOptions<EntryLine, DeletionLine>) => Promise<void>;
   }) {
-    // Fetch the AbortSignal so we can check if we have been aborted even after
-    // our InProgressUpdate is removed.
-    const majorSeries: MajorDataSeries =
-      series === 'radicals' ? 'kanji' : series;
-    if (!this.inProgressUpdates[majorSeries]) {
-      throw new AbortError();
-    }
-    const signal = this.inProgressUpdates[majorSeries]!.controller.signal;
-
     let wroteSomething = false;
 
     const reducer = (action: UpdateAction) => {
@@ -294,10 +293,16 @@ export class JpdictDatabase {
         this[series].updateState,
         action
       );
-      if (action.type === 'finishpatch') {
+
+      if (action.type === 'fileend') {
         wroteSomething = true;
         this.updateDataVersion(series, action.version);
       }
+
+      if (action.type === 'parseerror' && this.verbose) {
+        console.warn('Encountered parse error', action.message, action.record);
+      }
+
       this.notifyChanged('stateupdated');
     };
 
@@ -328,14 +333,14 @@ export class JpdictDatabase {
       // If the language we have stored (if any) differs from the language we
       // are about to update to, clobber the existing data for this series.
       const currentLang: string | undefined =
-        this[series].state === DataSeriesState.Ok
-          ? this[series].version!.lang
-          : undefined;
+        this[series].state === 'ok' ? this[series].version?.lang : undefined;
       if (currentLang && currentLang !== lang) {
         if (this.verbose) {
-          console.log(`Clobbering ${series} data to change lang to ${lang}`);
+          console.info(
+            `Clobbering '${series}' data to change lang to '${lang}'`
+          );
         }
-        await this.store.clearTable(series);
+        await this.store.clearSeries(series);
         this.updateDataVersion(series, null);
       }
 
@@ -344,41 +349,28 @@ export class JpdictDatabase {
       }
 
       if (this.verbose) {
-        console.log(
-          `Requesting download for ${series} series with current version ${JSON.stringify(
+        console.info(
+          `Requesting download for '${series}' series with current version ${JSON.stringify(
             this[series].version || undefined
           )}`
         );
       }
 
-      const downloadIterator = download({
-        series,
+      await update({
+        callback: reducer,
+        currentVersion: this[series].version || undefined,
         lang,
         majorVersion: MAJOR_VERSION[series],
-        currentVersion: this[series].version || undefined,
         signal,
-        forceFetch,
-        isEntryLine,
-        isDeletionLine,
-      });
-
-      if (signal.aborted) {
-        throw new AbortError();
-      }
-
-      await update({
-        downloadIterator,
-        lang,
+        series,
         store: this.store,
-        callback: reducer,
-        verbose: this.verbose,
       });
 
       if (signal.aborted) {
         throw new AbortError();
       }
 
-      reducer({ type: 'finish', checkDate });
+      reducer({ type: 'end', checkDate });
     } catch (e) {
       // We should only update the last-check date if we actually made some
       // sort of update.
@@ -390,7 +382,22 @@ export class JpdictDatabase {
     }
   }
 
-  cancelUpdate({ series }: { series: MajorDataSeries }): boolean {
+  private updateDataVersion(series: DataSeries, version: DataVersion | null) {
+    if (
+      this[series].state !== 'init' &&
+      this[series].state !== 'unavailable' &&
+      jsonEqualish(this[series].version, version)
+    ) {
+      return;
+    }
+
+    this[series].version = version;
+    this[series].state = version ? 'ok' : 'empty';
+
+    this.notifyChanged('stateupdated');
+  }
+
+  cancelUpdate(series: MajorDataSeries): boolean {
     const inProgressUpdate = this.inProgressUpdates[series];
     if (!inProgressUpdate) {
       return false;
@@ -401,50 +408,13 @@ export class JpdictDatabase {
     return true;
   }
 
-  async destroy() {
-    try {
-      await this.ready;
-    } catch (e) {
-      /* Ignore, we're going to destroy anyway */
-    }
+  // -------------------------------------------------------------------------
+  //
+  // Misc
+  //
+  // -------------------------------------------------------------------------
 
-    const hasData = allDataSeries.some(
-      (key: DataSeries) => this[key].state !== DataSeriesState.Unavailable
-    );
-    if (hasData) {
-      await this.store.destroy();
-    }
-
-    const hasInProgressUpdate = Object.keys(this.inProgressUpdates).some(
-      (key) =>
-        typeof this.inProgressUpdates[key as MajorDataSeries] !== 'undefined'
-    );
-    if (this.verbose && hasInProgressUpdate) {
-      console.log('Destroying database while there is an in-progress update');
-    }
-
-    this.store = new JpdictStore();
-    for (const series of allDataSeries) {
-      this[series] = {
-        state: DataSeriesState.Empty,
-        version: null,
-        updateState: { state: 'idle', lastCheck: null },
-      };
-    }
-    this.notifyChanged('deleted');
-  }
-
-  async deleteSeries(series: MajorDataSeries) {
-    if (this.inProgressUpdates[series]) {
-      this.cancelUpdate({ series });
-    }
-
-    await this.store.clearTable(series);
-    this.updateDataVersion(series, null);
-
-    if (series === 'kanji') {
-      await this.store.clearTable('radicals');
-      this.updateDataVersion('radicals', null);
-    }
+  get isVerbose() {
+    return this.verbose;
   }
 }

@@ -4,7 +4,7 @@ import chaiAsPromised from 'chai-as-promised';
 import fetchMock from 'fetch-mock';
 import sinon from 'sinon';
 
-import { JpdictIdb } from './database-v2';
+import { JpdictIdb } from './database';
 import { cancelUpdateWithRetry, updateWithRetry } from './update-with-retry';
 
 mocha.setup('bdd');

@@ -1,9 +1,9 @@
 import * as s from 'superstruct';
-import { DataSeries } from './data-series';
 
-import { KanjiRecord, Misc, Radical, Readings } from './kanji-v2';
-import { NameRecord, NameTranslation } from './names-v2';
-import { RadicalRecord } from './radicals-v2';
+import { DataSeries } from './data-series';
+import { KanjiRecord, Misc, Radical, Readings } from './kanji';
+import { NameRecord, NameTranslation } from './names';
+import { RadicalRecord } from './radicals';
 import { Overwrite } from './type-helpers';
 import { safeInteger } from './validation-helpers';
 import {
@@ -16,7 +16,7 @@ import {
   ReadingMeta,
   WordRecord,
   WordSense,
-} from './words-v2';
+} from './words';
 
 // ----------------------------------------------------------------------------
 //

@@ -1,232 +1,239 @@
+import { AbortError } from './abort-error';
 import { DataSeries } from './data-series';
 import { DataVersion } from './data-version';
-import { DownloadEvent } from './download';
-import { KanjiEntryLine, KanjiDeletionLine } from './kanji';
-import { RadicalEntryLine, RadicalDeletionLine } from './radicals';
-import { NameEntryLine, NameDeletionLine } from './names';
-import { KanjiRecord, RadicalRecord, NameRecord, WordRecord } from './records';
-import { JpdictStore } from './store';
-import { UpdateAction } from './update-actions';
-import { stripFields } from './utils';
-import { WordEntryLine, WordDeletionLine } from './words';
+import {
+  validateDownloadDeleteRecord,
+  validateDownloadRecord,
+} from './download-types';
+import { CurrentVersion, download, RecordEvent } from './download';
+import { JpdictStore, RecordUpdate } from './store';
+import { UpdateEvent } from './update-events';
 
-export type UpdateCallback = (action: UpdateAction) => void;
+export type UpdateCallback = (action: UpdateEvent) => void;
 
-// Since IDB transactions are not tied to Promises properly yet and we can't
-// keep a transaction alive while waiting on a stream we are basically forced to
-// either:
+// The number of records to queue up before updating the store.
 //
-// a) Abandon using transactions and live with the performance penalty of
-//    doing so and the possibility of the DB being in an inconsistent state
-//    (e.g. saying it is update-to-date with version X but actually having
-//    part of version X+1 applied).
+// For IndexedDB, bigger batches are faster since we can just wait on the
+// transaction to complete rather than each individual put or delete and that
+// tends to be dramatically faster.
 //
-//    The latter is particularly bad when it comes to full updates since we
-//    could delete everything and then only partially apply the new update
-//    leaving us with an incomplete database.
+// However, making the batches too big introduces janky progress because
+// typically the download speed is faster than the update speed so we try to
+// make sure the batches aren't _too_ big.
 //
-// b) Abandon using transactions and create a parallel copy of the databases
-//    and swap them in when done, thus avoiding at least the possibility of
-//    being in an inconsistent state.
+// (In case that doesn't make sense, suppose we use a batch size of 10,000.
+// Often, downloading 10,000 records takes a fraction of a second while on many
+// systems putting 10,000 records into IndexedDB takes a second or two. If we
+// dispatch progress events based on the 'record' events we get from the
+// download and then do a big database update we'll get a series of quick
+// progress events and then a big pause while we update.
 //
-//    Unfortunately this is basically impossible to do with IndexedDB.
-//    IndexedDB 2.0 allows renaming tables but only during version update so
-//    we'd have to update the schema every time we do a full update even if the
-//    update is only a data update.
-//
-// c) Accumulate all the data in memory first and then use regular
-//    transactions to apply it.
-//
-// Considering that by not waiting for the success result of push actions bulk
-// putting can be really fast, (c) is very attractive.
-//
-// (See https://jsfiddle.net/birtles/vx4urLkw/16/ for a rough benchmark.)
-//
-// However, we plan to use this in situations where we are downloading other
-// dictionaries in parallel. In that case we'd rather not accumulate all the
-// data for multiple dictionaries in memory at once. Ideally we'd like to batch
-// changes for full updates, write them to a temporary database, then swap it in
-// at the last moment but as described in (b) above that's really awkward with
-// IndexedDB. So, for now, we just have to recommend only updating once database
-// at a time to limit memory usage.
+// We could try to dispatch progress events while we're updating too--in fact,
+// we used to do just that--but it's simpler if we can just have one type of
+// progress event and dispatch it fairly consistently.)
+const BATCH_SIZE = 1000;
 
-export async function updateWords(
-  options: UpdateOptions<WordEntryLine, WordDeletionLine>
-) {
-  return update<WordEntryLine, WordDeletionLine, WordRecord, number>({
-    ...options,
-    series: 'words',
-    toRecord: options.store.toWordRecord,
-    getId: options.store.getIdForWordRecord,
-  });
-}
+// Don't update the progress until it has changed by at least 2%.
+const MAX_PROGRESS_RESOLUTION = 0.02;
 
-export async function updateKanji(
-  options: UpdateOptions<KanjiEntryLine, KanjiDeletionLine>
-) {
-  return update<KanjiEntryLine, KanjiDeletionLine, KanjiRecord, number>({
-    ...options,
-    series: 'kanji',
-    toRecord: options.store.toKanjiRecord,
-    getId: options.store.getIdForKanjiRecord,
-  });
-}
-
-export async function updateRadicals(
-  options: UpdateOptions<RadicalEntryLine, RadicalDeletionLine>
-) {
-  return update<RadicalEntryLine, RadicalDeletionLine, RadicalRecord, string>({
-    ...options,
-    series: 'radicals',
-    toRecord: options.store.toRadicalRecord,
-    getId: options.store.getIdForRadicalRecord,
-  });
-}
-
-export async function updateNames(
-  options: UpdateOptions<NameEntryLine, NameDeletionLine>
-) {
-  return update<NameEntryLine, NameDeletionLine, NameRecord, number>({
-    ...options,
-    series: 'names',
-    toRecord: options.store.toNameRecord,
-    getId: options.store.getIdForNameRecord,
-  });
-}
-
-export interface UpdateOptions<EntryLine, DeletionLine> {
-  downloadIterator: AsyncIterableIterator<
-    DownloadEvent<EntryLine, DeletionLine>
-  >;
-  lang: string;
-  store: JpdictStore;
-  callback: UpdateCallback;
-  verbose?: boolean;
-}
-
-async function update<
-  EntryLine extends Omit<object, 'type'>,
-  DeletionLine,
-  RecordType extends WordRecord | KanjiRecord | RadicalRecord | NameRecord,
-  IdType extends number | string
->({
-  downloadIterator,
-  store,
-  lang,
-  series,
-  toRecord,
-  getId,
+export async function update({
   callback,
-  verbose = false,
+  currentVersion,
+  lang,
+  majorVersion,
+  series,
+  signal,
+  store,
 }: {
-  downloadIterator: AsyncIterableIterator<
-    DownloadEvent<EntryLine, DeletionLine>
-  >;
-  store: JpdictStore;
-  lang: string;
-  series: DataSeries;
-  toRecord: (e: EntryLine) => RecordType;
-  getId: (e: DeletionLine) => IdType;
   callback: UpdateCallback;
-  verbose?: boolean;
+  currentVersion?: CurrentVersion;
+  lang: string;
+  majorVersion: number;
+  signal: AbortSignal;
+  series: DataSeries;
+  store: JpdictStore;
+}): Promise<void> {
+  return doUpdate({
+    callback,
+    currentVersion,
+    lang,
+    majorVersion,
+    series,
+    signal,
+    store,
+  });
+}
+
+async function doUpdate<Series extends DataSeries>({
+  callback,
+  currentVersion,
+  lang,
+  majorVersion,
+  series,
+  signal,
+  store,
+}: {
+  callback: UpdateCallback;
+  currentVersion?: CurrentVersion;
+  lang: string;
+  majorVersion: number;
+  signal: AbortSignal;
+  series: Series;
+  store: JpdictStore;
 }) {
-  let recordsToPut: Array<RecordType> = [];
-  let recordsToDelete: Array<IdType> = [];
+  // Clear the database if the current version is empty in case we have records
+  // lying around from an incomplete initial download.
+  if (!currentVersion) {
+    await store.clearSeries(series);
+  }
 
-  let currentVersion: DataVersion | undefined;
+  let currentFile = 0;
+  let currentFileVersion: DataVersion | undefined;
+  let totalFiles = 0;
 
-  const finishCurrentVersion = async () => {
-    if (!currentVersion) {
-      return;
+  let currentRecord = 0;
+  let totalRecords = 0;
+  let updates: Array<RecordUpdate<Series>> = [];
+
+  let lastReportedTotalProgress: number | undefined;
+
+  for await (const event of download({
+    series,
+    majorVersion,
+    currentVersion,
+    lang,
+    signal,
+  })) {
+    if (signal.aborted) {
+      throw new AbortError();
     }
 
-    callback({ type: 'finishdownload', version: currentVersion });
-
-    try {
-      const onProgress = ({
-        processed,
-        total,
-      }: {
-        processed: number;
-        total: number;
-      }) => {
-        callback({ type: 'progress', loaded: processed, total });
-      };
-
-      await store.bulkUpdateTable({
-        table: series,
-        put: recordsToPut,
-        drop: currentVersion.patch === 0 ? '*' : recordsToDelete,
-        version: currentVersion,
-        onProgress,
-      });
-    } catch (e) {
-      if (verbose) {
-        console.log('Got error while updating tables');
-        console.log(e);
-        console.log(JSON.stringify(currentVersion));
-      }
-      throw e;
-    }
-
-    if (verbose) {
-      console.log('Successfully updated tables');
-      console.log(JSON.stringify(currentVersion));
-    }
-
-    recordsToPut = [];
-    recordsToDelete = [];
-
-    const appliedVersion = currentVersion;
-
-    currentVersion = undefined;
-
-    callback({ type: 'finishpatch', version: appliedVersion });
-  };
-
-  for await (const event of downloadIterator) {
     switch (event.type) {
-      case 'version':
-        if (currentVersion) {
-          throw new Error(
-            `Unfinished version: ${JSON.stringify(currentVersion)}`
-          );
+      case 'reset':
+        await store.clearSeries(series);
+        break;
+
+      case 'downloadstart':
+        totalFiles = event.files;
+        callback({ type: 'updatestart' });
+        break;
+
+      case 'downloadend':
+        callback({ type: 'updateend' });
+        break;
+
+      case 'filestart':
+        currentFile++;
+        currentRecord = 0;
+        totalRecords = event.totalRecords;
+        currentFileVersion = event.version;
+        callback({ type: 'filestart', version: event.version });
+        if (currentFile === 1) {
+          callback({ type: 'progress', fileProgress: 0, totalProgress: 0 });
+          lastReportedTotalProgress = 0;
         }
-
-        currentVersion = { ...stripFields(event, ['type']), lang };
-
-        callback({
-          type: 'startdownload',
-          series,
-          version: currentVersion,
-        });
         break;
 
-      case 'versionend':
-        await finishCurrentVersion();
-        break;
-
-      case 'entry':
+      case 'fileend':
         {
-          // The following hack is here until I work out how to fix this
-          // properly:
+          // Save remaining batched items
+          if (updates.length) {
+            await store.updateSeries({ series, updates });
+            updates = [];
+          }
+
+          // Commit version info
           //
-          //   https://stackoverflow.com/questions/57815891/how-to-define-an-object-type-that-does-not-include-a-specific-member
-          //
-          const recordToPut = toRecord(
-            stripFields(event, ['type']) as unknown as EntryLine
-          );
-          recordsToPut.push(recordToPut);
+          // If this is the last part in a multi-part series, however, don't
+          // write the part info.
+          const versionToWrite = currentFileVersion!;
+          if (
+            versionToWrite.partInfo &&
+            versionToWrite.partInfo.part === versionToWrite.partInfo.parts
+          ) {
+            delete versionToWrite.partInfo;
+          }
+          await store.updateDataVersion({
+            series,
+            version: versionToWrite,
+          });
+
+          // Final progress event
+          const totalProgress = currentFile / totalFiles;
+          callback({
+            type: 'progress',
+            fileProgress: 1,
+            totalProgress,
+          });
+          lastReportedTotalProgress = totalProgress;
+
+          callback({ type: 'fileend', version: versionToWrite });
         }
         break;
 
-      case 'deletion':
-        recordsToDelete.push(getId(event));
-        break;
+      case 'record':
+        {
+          const [error, update] = parseRecordEvent({ series, event });
+          if (error) {
+            callback({
+              type: 'parseerror',
+              message: error.message,
+              record: event.record,
+            });
+          } else {
+            updates.push(update);
+            if (updates.length >= BATCH_SIZE) {
+              await store.updateSeries({ series, updates });
+              updates = [];
+            }
+          }
 
-      case 'progress':
-        callback(event);
+          // We update the total number of records even if we failed to validate
+          // the incoming record because the progress should continue even if
+          // all the records are bad.
+          currentRecord++;
+
+          // If we have processed enough records to pass the progress event
+          // threshold, dispatch a progress event.
+          const fileProgress = currentRecord / totalRecords;
+          const totalProgress = (currentFile - 1 + fileProgress) / totalFiles;
+          if (
+            // Don't dispatch a 100% file progress event until after we've
+            // updated the version database (as part of processing the 'fileend'
+            // event.)
+            fileProgress < 1 &&
+            (lastReportedTotalProgress === undefined ||
+              totalProgress - lastReportedTotalProgress >
+                MAX_PROGRESS_RESOLUTION)
+          ) {
+            callback({ type: 'progress', fileProgress, totalProgress });
+            lastReportedTotalProgress = totalProgress;
+          }
+        }
         break;
     }
   }
+}
+
+function parseRecordEvent<Series extends DataSeries>({
+  series,
+  event,
+}: {
+  series: Series;
+  event: RecordEvent;
+}): [Error, undefined] | [undefined, RecordUpdate<Series>] {
+  const { mode, record: unvalidatedRecord } = event;
+  if (mode === 'delete') {
+    const [err, record] = validateDownloadDeleteRecord({
+      series,
+      record: unvalidatedRecord,
+    });
+    return err ? [err, undefined] : [undefined, { mode, record }];
+  }
+
+  const [err, record] = validateDownloadRecord({
+    series,
+    record: unvalidatedRecord,
+  });
+  return err ? [err, undefined] : [undefined, { mode, record }];
 }

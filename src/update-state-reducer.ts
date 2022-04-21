@@ -1,6 +1,6 @@
 import { DataSeries } from './data-series';
 import { UpdateEvent } from './update-events';
-import { UpdateState } from './update-state-v2';
+import { UpdateState } from './update-state';
 
 export type UpdateAction =
   | UpdateEvent

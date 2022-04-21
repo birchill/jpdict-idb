@@ -1,10 +1,9 @@
-import { JpdictIdb } from './database-v2';
+import { JpdictIdb } from './database';
 import { WordDownloadRecord } from './download-types';
 import { isKanji } from './japanese';
 import { toWordStoreRecord, WordStoreRecord } from './store-types';
-import { JpdictStore } from './store-v2';
+import { JpdictStore } from './store';
 import { getTokens } from './tokenizer';
-import { WordSense } from './words';
 
 export class JpdictFullTextDatabase extends JpdictIdb {
   constructor({ verbose = false }: { verbose?: boolean } = {}) {

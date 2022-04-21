@@ -1,10 +1,12 @@
-import { assert } from 'chai';
+import chai, { assert } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 
 import { JpdictStore } from './store';
 
 mocha.setup('bdd');
+chai.use(chaiAsPromised);
 
-describe('store', function () {
+describe('store', () => {
   it('should handle multiple simultaneous opens', async () => {
     const store = new JpdictStore();
     const promise1 = store.open();
@@ -37,19 +39,24 @@ describe('store', function () {
 
     // First add something to the database
     await store.open();
-    await store.bulkUpdateTable({
-      table: 'kanji',
-      put: [
+    await store.updateSeries({
+      series: 'kanji',
+      updates: [
         {
-          c: 13314,
-          r: {},
-          m: [],
-          rad: { x: 1 },
-          refs: { nelson_c: 265, halpern_njecd: 2028 },
-          misc: { sc: 6 },
+          mode: 'add',
+          record: {
+            c: '㐂',
+            r: {},
+            m: [],
+            rad: { x: 1 },
+            refs: { nelson_c: 265, halpern_njecd: 2028 },
+            misc: { sc: 6 },
+          },
         },
       ],
-      drop: [],
+    });
+    await store.updateDataVersion({
+      series: 'kanji',
       version: {
         major: 1,
         minor: 0,

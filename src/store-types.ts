@@ -13,7 +13,7 @@ import {
 } from './download-types';
 import { hasHiragana } from './japanese';
 import { Overwrite } from './type-helpers';
-import { KanjiMeta } from './words-v2';
+import { KanjiMeta } from './words';
 
 // ----------------------------------------------------------------------------
 //

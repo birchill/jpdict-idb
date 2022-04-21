@@ -3,28 +3,29 @@ import {
   deleteDB,
   IDBPDatabase,
   IDBPTransaction,
-  StoreNames,
   openDB,
+  StoreNames,
 } from 'idb/with-async-ittr';
 import idbReady from 'safari-14-idb-fix';
 
 import { DataSeries } from './data-series';
 import { DataVersion } from './data-version';
+import { DownloadDeleteRecord, DownloadRecord } from './download-types';
 import { QuotaExceededError } from './quota-exceeded-error';
 import {
-  getIdForKanjiRecord,
-  getIdForNameRecord,
-  getIdForRadicalRecord,
-  getIdForWordRecord,
-  KanjiRecord,
-  NameRecord,
-  RadicalRecord,
-  toKanjiRecord,
-  toNameRecord,
-  toRadicalRecord,
-  toWordRecord,
-  WordRecord,
-} from './records';
+  getStoreIdForKanjiRecord,
+  getStoreIdForNameRecord,
+  getStoreIdForRadicalRecord,
+  getStoreIdForWordRecord,
+  KanjiStoreRecord,
+  NameStoreRecord,
+  RadicalStoreRecord,
+  toKanjiStoreRecord,
+  toNameStoreRecord,
+  toRadicalStoreRecord,
+  toWordStoreRecord,
+  WordStoreRecord,
+} from './store-types';
 import { stripFields } from './utils';
 
 interface DataVersionRecord extends DataVersion {
@@ -50,7 +51,7 @@ function getVersionKey(series: DataSeries): 1 | 2 | 3 | 4 {
 export interface JpdictSchema extends DBSchema {
   words: {
     key: number;
-    value: WordRecord;
+    value: WordStoreRecord;
     indexes: {
       k: Array<string>;
       r: Array<string>;
@@ -62,7 +63,7 @@ export interface JpdictSchema extends DBSchema {
   };
   kanji: {
     key: number;
-    value: KanjiRecord;
+    value: KanjiStoreRecord;
     indexes: {
       'r.on': Array<string>;
       'r.kun': Array<string>;
@@ -71,7 +72,7 @@ export interface JpdictSchema extends DBSchema {
   };
   radicals: {
     key: string;
-    value: RadicalRecord;
+    value: RadicalStoreRecord;
     indexes: {
       r: number;
       b: string;
@@ -80,7 +81,7 @@ export interface JpdictSchema extends DBSchema {
   };
   names: {
     key: number;
-    value: NameRecord;
+    value: NameStoreRecord;
     indexes: {
       k: Array<string>;
       r: Array<string>;
@@ -93,21 +94,47 @@ export interface JpdictSchema extends DBSchema {
   };
 }
 
+export type RecordUpdate<T extends DataSeries> =
+  | {
+      mode: 'add';
+      record: DownloadRecord<T>;
+    }
+  | {
+      mode: 'change';
+      record: DownloadRecord<T>;
+    }
+  | {
+      mode: 'delete';
+      record: DownloadDeleteRecord<T>;
+    };
+
 export class JpdictStore {
   private state: 'idle' | 'opening' | 'open' | 'error' | 'deleting' = 'idle';
   private db: IDBPDatabase<JpdictSchema> | undefined;
   private openPromise: Promise<IDBPDatabase<JpdictSchema>> | undefined;
   private deletePromise: Promise<void> | undefined;
 
-  public toWordRecord = toWordRecord;
-  public toKanjiRecord = toKanjiRecord;
-  public toRadicalRecord = toRadicalRecord;
-  public toNameRecord = toNameRecord;
+  protected toStoreRecord: {
+    [series in DataSeries]: (
+      record: DownloadRecord<series>
+    ) => JpdictSchema[series]['value'];
+  } = {
+    words: toWordStoreRecord,
+    names: toNameStoreRecord,
+    kanji: toKanjiStoreRecord,
+    radicals: toRadicalStoreRecord,
+  };
 
-  public getIdForWordRecord = getIdForWordRecord;
-  public getIdForRadicalRecord = getIdForRadicalRecord;
-  public getIdForKanjiRecord = getIdForKanjiRecord;
-  public getIdForNameRecord = getIdForNameRecord;
+  protected getStoreId: {
+    [series in DataSeries]: (
+      record: DownloadDeleteRecord<series>
+    ) => JpdictSchema[series]['key'];
+  } = {
+    words: getStoreIdForWordRecord,
+    names: getStoreIdForNameRecord,
+    kanji: getStoreIdForKanjiRecord,
+    radicals: getStoreIdForRadicalRecord,
+  };
 
   async open(): Promise<IDBPDatabase<JpdictSchema>> {
     if (this.state === 'open') {
@@ -124,6 +151,7 @@ export class JpdictStore {
 
     this.state = 'opening';
 
+    /* eslint @typescript-eslint/no-this-alias: 0 */
     const self = this;
 
     this.openPromise = idbReady().then(() =>
@@ -189,7 +217,9 @@ export class JpdictStore {
           if (self.db) {
             try {
               self.db.close();
-            } catch (_) {}
+            } catch {
+              // Ignore
+            }
             self.db = undefined;
             self.state = 'idle';
           }
@@ -234,7 +264,7 @@ export class JpdictStore {
       await this.openPromise;
     }
 
-    this.db!.close();
+    this.db?.close();
     this.db = undefined;
     this.state = 'idle';
   }
@@ -258,13 +288,37 @@ export class JpdictStore {
     this.state = 'idle';
   }
 
-  async clearTable(series: DataSeries) {
-    await this.bulkUpdateTable({
-      table: series,
-      put: [],
-      drop: '*',
-      version: null,
-    });
+  async clearSeries(series: DataSeries) {
+    const db = await this.open();
+
+    const tx = db.transaction([series, 'version'], 'readwrite');
+
+    try {
+      // Drop the table
+      const targetTable = tx.objectStore(series);
+      await targetTable.clear();
+
+      // Drop the version record
+      const versionTable = tx.objectStore('version');
+      const id = getVersionKey(series);
+      void versionTable.delete(id);
+    } catch (e) {
+      console.error(`Error deleting data series '${series}'`, e);
+
+      // Ignore the abort from the transaction
+      tx.done.catch(() => {});
+      try {
+        tx.abort();
+      } catch {
+        // Ignore exceptions from aborting the transaction.
+        // This can happen is the transaction has already been aborted by this
+        // point.
+      }
+
+      throw e;
+    }
+
+    await tx.done;
   }
 
   async getDataVersion(series: DataSeries): Promise<DataVersion | null> {
@@ -279,101 +333,57 @@ export class JpdictStore {
     return stripFields(versionDoc, ['id']);
   }
 
-  async bulkUpdateTable<Name extends DataSeries>({
-    table,
-    put,
-    drop,
+  async updateDataVersion({
+    series,
     version,
-    onProgress,
   }: {
-    table: Name;
-    put: Array<JpdictSchema[Name]['value']>;
-    drop: Array<JpdictSchema[Name]['key']> | '*';
-    version: DataVersion | null;
-    onProgress?: (params: { processed: number; total: number }) => void;
+    series: DataSeries;
+    version: DataVersion;
   }) {
     await this.open();
 
-    const tx = this.db!.transaction([table, 'version'], 'readwrite');
-    const targetTable = tx.objectStore(table);
-
-    // Calculate the total number of records we will process.
-    const totalRecords = (drop !== '*' ? drop.length : 0) + put.length;
-
     try {
-      if (drop === '*') {
-        await targetTable.clear();
-      } else {
-        for (const id of drop) {
-          // We could possibly skip waiting on the result of this like we do
-          // below, but we don't normally delete a lot of records so it seems
-          // safest to wait for now.
-          //
-          // This is also the reason we don't report progress for delete
-          // actions.
-          await targetTable.delete(id);
-        }
-      }
+      const id = getVersionKey(series);
+      await this.db!.put('version', { ...version, id });
     } catch (e) {
-      console.log('Error during delete portion of bulk update');
-      console.log(e);
-
-      // Ignore the abort from the transaction
-      tx.done.catch(() => {});
-      try {
-        tx.abort();
-      } catch (_) {
-        // Ignore exceptions from aborting the transaction.
-        // This can happen is the transaction has already been aborted by this
-        // point.
-      }
+      console.error(
+        `Error updating version of '${series}' to ${JSON.stringify(version)}`,
+        e
+      );
 
       throw e;
     }
+  }
+
+  async updateSeries<T extends DataSeries>({
+    series,
+    updates,
+  }: {
+    series: T;
+    updates: Array<RecordUpdate<T>>;
+  }) {
+    await this.open();
+
+    const tx = this.db!.transaction(series, 'readwrite');
+    const table = tx.store;
 
     try {
-      let processed = 0;
-
-      // Batch updates so we can report progress.
+      // The important thing here is NOT to wait on the result of each
+      // put/delete. This speeds up the operation by an order of magnitude or
+      // two and is Dexie's secret sauce.
       //
-      // 4,000 gives us enough granularity when dealing with small data sets
-      // like the kanji data (~13k records) while avoiding being too spammy with
-      // large data sets like the names data (~740k records).
-      const BATCH_SIZE = 4000;
-      while (put.length) {
-        const batch = put.splice(0, BATCH_SIZE);
-        const putPromises: Array<Promise<JpdictSchema[Name]['key']>> = [];
-        for (const record of batch) {
-          // The important thing here is NOT to wait on the result of put.
-          // This speeds up the operation by an order of magnitude or two and
-          // is Dexie's secret sauce.
-          //
-          // See: https://jsfiddle.net/birtles/vx4urLkw/17/
-          const putPromise = targetTable.put(record);
-
-          // Add some extra logging directly on the put promise.
-          putPromise.catch((e) => {
-            if (e?.name !== 'AbortError') {
-              console.log('Got error putting record');
-              console.log(e, e?.name, e?.message);
-            }
-          });
-
-          // Note that we hold on to the original promise (NOT the result of the
-          // call to catch() above) so that the call to Promise.all below still
-          // rejects.
-          putPromises.push(putPromise);
-        }
-        await Promise.all(putPromises);
-
-        processed += batch.length;
-        if (onProgress) {
-          onProgress({ processed, total: totalRecords });
+      // See: https://jsfiddle.net/birtles/vx4urLkw/17/
+      for (const update of updates) {
+        if (update.mode === 'delete') {
+          void table.delete(this.getStoreId[series](update.record));
+        } else {
+          void table.put(this.toStoreRecord[series](update.record));
         }
       }
+
+      await tx.done;
     } catch (e) {
-      console.log('Error during put portion of bulk update');
-      console.log(e);
+      console.error(`Error updating series ${series}`, e);
 
       // Ignore the abort from the transaction
       tx.done.catch(() => {});
@@ -393,7 +403,7 @@ export class JpdictStore {
       // exceeded so we try to detect that case and throw an actual
       // QuotaExceededError instead.
       if (isVeryGenericError(e) && (await atOrNearQuota())) {
-        console.log(
+        console.info(
           'Detected generic error masking a quota exceeded situation'
         );
         throw new QuotaExceededError();
@@ -401,41 +411,13 @@ export class JpdictStore {
 
       throw e;
     }
-
-    try {
-      const dbVersionTable = tx.objectStore('version');
-      const id = getVersionKey(table);
-      if (version) {
-        await dbVersionTable.put({
-          ...version,
-          id,
-        });
-      } else {
-        await dbVersionTable.delete(id);
-      }
-    } catch (e) {
-      console.log('Error during version update portion of bulk update');
-      console.log(JSON.stringify(version));
-
-      // Ignore the abort from the transaction
-      tx.done.catch(() => {});
-      try {
-        tx.abort();
-      } catch (_) {
-        // As above, ignore exceptions from aborting the transaction.
-      }
-
-      throw e;
-    }
-
-    await tx.done;
   }
 
   // Test API
-  async _getKanji(kanji: Array<number>): Promise<Array<KanjiRecord>> {
+  async _getKanji(kanji: Array<number>): Promise<Array<KanjiStoreRecord>> {
     await this.open();
 
-    const result: Array<KanjiRecord> = [];
+    const result: Array<KanjiStoreRecord> = [];
     {
       const tx = this.db!.transaction('kanji');
       for (const c of kanji) {

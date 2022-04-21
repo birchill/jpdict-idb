@@ -1,5 +1,5 @@
 import { DataSeries, MajorDataSeries } from './data-series';
-import { ChangeCallback, ChangeTopic, JpdictIdb } from './database-v2';
+import { ChangeCallback, ChangeTopic, JpdictIdb } from './database';
 import { DownloadError } from './download-error';
 import { OfflineError } from './offline-error';
 import {
@@ -7,7 +7,7 @@ import {
   requestIdleCallback,
 } from './request-idle-callback';
 import { getUpdateKey } from './update-key';
-import { UpdatingUpdateState } from './update-state-v2';
+import { UpdatingUpdateState } from './update-state';
 
 export type UpdateCompleteCallback = () => void;
 export type UpdateErrorCallback = (params: {
