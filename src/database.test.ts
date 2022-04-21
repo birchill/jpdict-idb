@@ -46,12 +46,12 @@ describe('JpdictIdb', function () {
 
   beforeEach(() => {
     db = new JpdictIdb();
+    clearCachedVersionInfo();
   });
 
   afterEach(async () => {
     fetchMock.restore();
     sinon.restore();
-    clearCachedVersionInfo();
     if (db) {
       await db.destroy();
     }

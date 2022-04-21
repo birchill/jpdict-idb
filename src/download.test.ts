@@ -103,9 +103,12 @@ const downloadWordsV1From110 = () => {
 };
 
 describe('download', () => {
+  beforeEach(() => {
+    clearCachedVersionInfo();
+  });
+
   afterEach(() => {
     fetchMock.restore();
-    clearCachedVersionInfo();
   });
 
   it('should download the initial version information', async () => {

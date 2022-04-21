@@ -5,6 +5,7 @@ import fetchMock from 'fetch-mock';
 import sinon from 'sinon';
 
 import { JpdictIdb } from './database';
+import { clearCachedVersionInfo } from './download-version-info';
 import { cancelUpdateWithRetry, updateWithRetry } from './update-with-retry';
 
 mocha.setup('bdd');
@@ -47,6 +48,7 @@ describe('updateWithRetry', function () {
 
   beforeEach(() => {
     db = new JpdictIdb();
+    clearCachedVersionInfo();
   });
 
   afterEach(async () => {

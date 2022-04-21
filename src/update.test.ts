@@ -114,6 +114,7 @@ describe('update', function () {
   };
 
   beforeEach(() => {
+    clearCachedVersionInfo();
     controller = new AbortController();
     signal = controller.signal;
     events = [];
@@ -122,7 +123,6 @@ describe('update', function () {
 
   afterEach(() => {
     fetchMock.restore();
-    clearCachedVersionInfo();
     return store.destroy();
   });
 
