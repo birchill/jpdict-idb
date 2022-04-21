@@ -1,4 +1,4 @@
-import { DownloadError } from './download';
+import { DownloadError } from './download-error';
 
 // A flattened representation of error information suitable for postMessaging.
 //
@@ -8,7 +8,7 @@ import { DownloadError } from './download';
 export interface UpdateErrorState {
   name: string;
   message: string;
-  code?: number;
+  code?: string;
   url?: string;
   nextRetry?: Date;
   retryCount?: number;

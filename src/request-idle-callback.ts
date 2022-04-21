@@ -23,13 +23,17 @@ export let requestIdleCallback: (
 ) => IdleCallbackHandle;
 export let cancelIdleCallback: (handle: IdleCallbackHandle) => void;
 
-if ((self as any).requestIdleCallback && (self as any).cancelIdleCallback) {
+if (
+  typeof self === 'object' &&
+  self.requestIdleCallback &&
+  self.cancelIdleCallback
+) {
   requestIdleCallback = (self as any).requestIdleCallback;
   cancelIdleCallback = (self as any).cancelIdleCallback;
 } else {
   requestIdleCallback = (
     callback: IdleRequestCallback,
-    options: IdleRequestOptions
+    options?: IdleRequestOptions
   ): IdleCallbackHandle => {
     // Use half the specified timeout since it probably represents a worst-case
     // scenario.
@@ -40,6 +44,6 @@ if ((self as any).requestIdleCallback && (self as any).cancelIdleCallback) {
   };
 
   cancelIdleCallback = (handle: IdleCallbackHandle) => {
-    self.clearTimeout(handle);
+    clearTimeout(handle);
   };
 }

@@ -1,19 +1,18 @@
-import { MiscType, PartOfSpeech } from './words';
-import { WordResult } from './word-result';
+import { WordSense } from './words';
 
 export interface PosGroup<Sense> {
-  pos: Array<PartOfSpeech>;
-  misc: Array<MiscType>;
+  pos: Array<string>;
+  misc: Array<string>;
   senses: Array<Sense>;
 }
 
-export function groupSenses<Sense extends WordResult['s'][0]>(
+export function groupSenses<Sense extends WordSense>(
   senses: Array<Sense>
 ): Array<PosGroup<Sense>> {
   const groups: Array<PosGroup<Sense>> = [];
 
   // Do an initial grouping based on the first part-of-speech (POS)
-  let previousPos: PartOfSpeech | undefined;
+  let previousPos: string | undefined;
   for (const sense of senses) {
     // Look for a match. Note that a match can be one of two kinds:
     //
@@ -27,7 +26,7 @@ export function groupSenses<Sense extends WordResult['s'][0]>(
       groups[groups.length - 1].senses.push(dropPos(sense, previousPos));
     } else {
       // If there was no match, start a new group
-      const thisPos = sense.pos && sense.pos.length ? sense.pos[0] : undefined;
+      const thisPos = sense.pos?.length ? sense.pos[0] : undefined;
       const pos = thisPos ? [thisPos] : [];
       groups.push({ pos, misc: [], senses: [dropPos(sense, thisPos)] });
       previousPos = thisPos;
@@ -87,9 +86,9 @@ export function groupSenses<Sense extends WordResult['s'][0]>(
 
 // Set up a utility to produce a copy of a sense with the specified
 // part(s)-of-speech removed.
-function dropPos<Sense extends WordResult['s'][0]>(
+function dropPos<Sense extends WordSense>(
   sense: Sense,
-  posToDrop: PartOfSpeech | Array<PartOfSpeech> | undefined
+  posToDrop: string | Array<string> | undefined
 ): Sense {
   let pos = sense.pos
     ? sense.pos.filter((pos) =>
