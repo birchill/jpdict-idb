@@ -9,7 +9,6 @@ import { JpdictIdb } from './database';
 import { DownloadError } from './download-error';
 import { clearCachedVersionInfo } from './download-version-info';
 
-mocha.setup('bdd');
 chai.use(chaiAsPromised);
 chai.use(chaiDateTime);
 

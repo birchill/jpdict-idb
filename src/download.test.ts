@@ -9,7 +9,6 @@ import { DownloadError } from './download-error';
 import { clearCachedVersionInfo } from './download-version-info';
 import { isObject } from './is-object';
 
-mocha.setup('bdd');
 chai.use(chaiLike);
 chai.use(chaiAsPromised);
 

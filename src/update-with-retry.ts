@@ -16,6 +16,15 @@ export type UpdateErrorCallback = (params: {
   retryCount?: number;
 }) => void;
 
+// We allow passing in a custom setTimeout implementation so that unit tests
+// can mock it, because overriding the global definition interferes with
+// playwright, and sinon can't mock ES6 dependencies:
+//
+// https://github.com/hugomrdias/playwright-test/issues/426
+// https://github.com/microsoft/playwright/issues/9123
+// https://github.com/sinonjs/sinon/issues/1711
+type SetTimeoutFn = (cb: () => void, duration: number) => number;
+
 // Updates the passed-in database and retries in the case of failure due to
 // network failures or being offline.
 //
@@ -39,32 +48,44 @@ export type UpdateErrorCallback = (params: {
 // this.)
 export function updateWithRetry({
   db,
-  series,
   lang,
+  series,
   onUpdateComplete,
   onUpdateError,
+  setTimeout = self.setTimeout,
   updateNow = false,
 }: {
   db: JpdictIdb;
-  series: MajorDataSeries;
   lang: string;
+  series: MajorDataSeries;
+  setTimeout?: SetTimeoutFn;
   onUpdateComplete?: UpdateCompleteCallback;
   onUpdateError?: UpdateErrorCallback;
   updateNow?: boolean;
 }) {
-  startUpdate({ db, series, lang, onUpdateComplete, onUpdateError, updateNow });
+  startUpdate({
+    db,
+    lang,
+    series,
+    setTimeout,
+    onUpdateComplete,
+    onUpdateError,
+    updateNow,
+  });
 }
 
 function runUpdate({
   db,
-  series,
   lang,
+  series,
+  setTimeout,
   onUpdateComplete,
   onUpdateError,
 }: {
   db: JpdictIdb;
-  series: MajorDataSeries;
   lang: string;
+  series: MajorDataSeries;
+  setTimeout: SetTimeoutFn;
   onUpdateComplete?: UpdateCompleteCallback;
   onUpdateError?: UpdateErrorCallback;
 }) {
@@ -73,8 +94,9 @@ function runUpdate({
     const onlineCallback = async () => {
       runUpdate({
         db,
-        series,
         lang,
+        series,
+        setTimeout,
         onUpdateComplete,
         onUpdateError,
       });
@@ -116,9 +138,10 @@ function runUpdate({
         const scheduleResult = maybeScheduleRetry({
           db,
           lang,
+          series,
+          setTimeout,
           onUpdateComplete,
           onUpdateError,
-          series,
         });
         if (scheduleResult) {
           ({ nextRetry, retryCount } = scheduleResult);
@@ -127,9 +150,10 @@ function runUpdate({
         const scheduleResult = maybeScheduleIdleRetry({
           db,
           lang,
+          series,
+          setTimeout,
           onUpdateComplete,
           onUpdateError,
-          series,
         });
         if (scheduleResult) {
           ({ retryCount } = scheduleResult);
@@ -240,6 +264,7 @@ function startUpdate({
   db,
   lang,
   series,
+  setTimeout,
   onUpdateComplete,
   onUpdateError,
   updateNow,
@@ -247,6 +272,7 @@ function startUpdate({
   db: JpdictIdb;
   lang: string;
   series: MajorDataSeries;
+  setTimeout: SetTimeoutFn;
   onUpdateComplete?: UpdateCompleteCallback;
   onUpdateError?: UpdateErrorCallback;
   updateNow: boolean;
@@ -315,7 +341,7 @@ function startUpdate({
     return;
   }
 
-  runUpdate({ db, series, lang, onUpdateComplete, onUpdateError });
+  runUpdate({ db, lang, series, setTimeout, onUpdateComplete, onUpdateError });
 }
 
 function resetUpdate({
@@ -400,15 +426,17 @@ function beginUpdating({
 function maybeScheduleRetry({
   db,
   lang,
+  series,
+  setTimeout,
   onUpdateComplete,
   onUpdateError,
-  series,
 }: {
   db: JpdictIdb;
   lang: string;
+  series: MajorDataSeries;
+  setTimeout: SetTimeoutFn;
   onUpdateComplete?: UpdateCompleteCallback;
   onUpdateError?: UpdateErrorCallback;
-  series: MajorDataSeries;
 }): { retryCount: number; nextRetry: Date } | undefined {
   const updateKey = getUpdateKey(db, series);
   const retryState = inProgressUpdates.get(updateKey);
@@ -442,8 +470,9 @@ function maybeScheduleRetry({
 
     runUpdate({
       db,
-      series,
       lang,
+      series,
+      setTimeout,
       onUpdateComplete,
       onUpdateError,
     });
@@ -489,15 +518,17 @@ function clearRetryInterval({
 function maybeScheduleIdleRetry({
   db,
   lang,
+  series,
+  setTimeout,
   onUpdateComplete,
   onUpdateError,
-  series,
 }: {
   db: JpdictIdb;
   lang: string;
+  series: MajorDataSeries;
+  setTimeout: SetTimeoutFn;
   onUpdateComplete?: UpdateCompleteCallback;
   onUpdateError?: UpdateErrorCallback;
-  series: MajorDataSeries;
 }): { retryCount: number } | undefined {
   const updateKey = getUpdateKey(db, series);
   const retryState = inProgressUpdates.get(updateKey);
@@ -529,8 +560,9 @@ function maybeScheduleIdleRetry({
 
       runUpdate({
         db,
-        series,
         lang,
+        series,
+        setTimeout,
         onUpdateComplete,
         onUpdateError,
       });

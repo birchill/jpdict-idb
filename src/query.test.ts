@@ -15,8 +15,6 @@ import {
 import { WordResult } from './word-result';
 import { GlossType } from './words';
 
-mocha.setup('bdd');
-
 const VERSION_INFO = {
   kanji: {
     '4': {

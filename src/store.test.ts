@@ -3,7 +3,6 @@ import chaiAsPromised from 'chai-as-promised';
 
 import { JpdictStore } from './store';
 
-mocha.setup('bdd');
 chai.use(chaiAsPromised);
 
 describe('store', () => {

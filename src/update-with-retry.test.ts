@@ -8,9 +8,12 @@ import { JpdictIdb } from './database';
 import { clearCachedVersionInfo } from './download-version-info';
 import { cancelUpdateWithRetry, updateWithRetry } from './update-with-retry';
 
-mocha.setup('bdd');
 chai.use(chaiDateTime);
 chai.use(chaiAsPromised);
+
+const fastSetTimeout = (cb: () => void) => {
+  return self.setTimeout(cb, 0);
+};
 
 const VERSION_INFO = {
   kanji: {
@@ -43,9 +46,6 @@ const VERSION_INFO = {
 describe('updateWithRetry', function () {
   let db: JpdictIdb;
 
-  // We time out some of these tests occasionally.
-  this.timeout(10000);
-
   beforeEach(() => {
     db = new JpdictIdb();
     clearCachedVersionInfo();
@@ -75,8 +75,8 @@ describe('updateWithRetry', function () {
     await new Promise<void>((resolve, reject) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
         onUpdateComplete: resolve,
         onUpdateError: ({ error }) => reject(error),
       });
@@ -104,8 +104,8 @@ describe('updateWithRetry', function () {
     const retryPromise = new Promise<void>((resolve, reject) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
         onUpdateComplete: resolve,
         onUpdateError: ({ error }) => reject(error),
       });
@@ -127,8 +127,6 @@ describe('updateWithRetry', function () {
 `
     );
 
-    const clock = sinon.useFakeTimers({ toFake: ['setTimeout'] });
-
     const errors: Array<{
       error: Error;
       nextRetry?: Date;
@@ -139,17 +137,15 @@ describe('updateWithRetry', function () {
     await new Promise<void>((resolve) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
+        setTimeout: fastSetTimeout,
         onUpdateComplete: resolve,
         onUpdateError: (params) => {
           errors.push(params);
-          void clock.runToLastAsync();
         },
       });
     });
-
-    clock.restore();
 
     assert.lengthOf(errors, 1);
     assert.equal(errors[0].error.name, 'DownloadError');
@@ -192,8 +188,8 @@ describe('updateWithRetry', function () {
     await new Promise<void>((resolve) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
         onUpdateComplete: resolve,
         onUpdateError: ({ error }) => {
           assert.equal(error.name, 'OfflineError');
@@ -221,8 +217,6 @@ describe('updateWithRetry', function () {
 `
     );
 
-    const clock = sinon.useFakeTimers({ toFake: ['setTimeout'] });
-
     let isOnline = true;
     sinon.replaceGetter(
       navigator,
@@ -239,8 +233,9 @@ describe('updateWithRetry', function () {
     await new Promise<void>((resolve) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
+        setTimeout: fastSetTimeout,
         onUpdateComplete: resolve,
         onUpdateError: ({ error, nextRetry, retryCount }) => {
           errors.push({
@@ -258,13 +253,9 @@ describe('updateWithRetry', function () {
           if (retryCount && retryCount >= 1) {
             isOnline = false;
           }
-
-          void clock.runToLastAsync();
         },
       });
     });
-
-    clock.restore();
 
     assert.lengthOf(errors, 3);
 
@@ -292,17 +283,13 @@ describe('updateWithRetry', function () {
 `
     );
 
-    const clock = sinon.useFakeTimers({ toFake: ['setTimeout'] });
-
     const firstInvocation = new Promise<void>((resolve) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
+        setTimeout: fastSetTimeout,
         onUpdateComplete: resolve,
-        onUpdateError: () => {
-          void clock.runToLastAsync();
-        },
       });
     });
 
@@ -321,8 +308,6 @@ describe('updateWithRetry', function () {
     });
 
     await Promise.race([firstInvocation, secondInvocation]);
-
-    clock.restore();
 
     assert.isFalse(secondCompletionCallbackCalled);
   });
@@ -348,8 +333,8 @@ describe('updateWithRetry', function () {
       firstInvocation = new Promise((_, reject) => {
         updateWithRetry({
           db,
-          series: 'kanji',
           lang: 'en',
+          series: 'kanji',
           onUpdateComplete: reject,
           onUpdateError: firstErrorResolve,
         });
@@ -363,11 +348,11 @@ describe('updateWithRetry', function () {
     const secondInvocation = new Promise<void>((resolve, reject) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
-        updateNow: true,
+        series: 'kanji',
         onUpdateComplete: resolve,
         onUpdateError: ({ error }) => reject(error),
+        updateNow: true,
       });
     });
 
@@ -406,8 +391,8 @@ describe('updateWithRetry', function () {
       firstInvocation = new Promise((_, reject) => {
         updateWithRetry({
           db,
-          series: 'kanji',
           lang: 'en',
+          series: 'kanji',
           onUpdateComplete: reject,
           onUpdateError: firstErrorResolve,
         });
@@ -421,8 +406,8 @@ describe('updateWithRetry', function () {
     const secondInvocation = new Promise<void>((resolve, reject) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'fr',
+        series: 'kanji',
         onUpdateComplete: resolve,
         onUpdateError: ({ error }) => reject(error),
       });
@@ -449,16 +434,13 @@ describe('updateWithRetry', function () {
 
     // Wait for first error
 
-    const clock = sinon.useFakeTimers({
-      toFake: ['setTimeout', 'clearTimeout'],
-    });
-
     let completeCalled = false;
     await new Promise((resolve) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
+        setTimeout: fastSetTimeout,
         onUpdateComplete: () => {
           completeCalled = true;
         },
@@ -471,9 +453,6 @@ describe('updateWithRetry', function () {
     cancelUpdateWithRetry({ db, series: 'kanji' });
 
     // Then make sure that the completion doesn't happen
-
-    void clock.runAllAsync();
-    clock.restore();
 
     // It turns out we need to wait quiet a few frames to be sure the completion
     // would happen if we hadn't canceled things.
@@ -498,16 +477,13 @@ describe('updateWithRetry', function () {
 
     // Wait for first error
 
-    const clock = sinon.useFakeTimers({
-      toFake: ['setTimeout', 'clearTimeout'],
-    });
-
     let completeCalled = false;
     await new Promise((resolve) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
+        setTimeout: fastSetTimeout,
         onUpdateComplete: () => {
           completeCalled = true;
         },
@@ -521,8 +497,6 @@ describe('updateWithRetry', function () {
 
     // Then make sure that the completion doesn't happen
 
-    void clock.runToLastAsync();
-    clock.restore();
     await waitForAnimationFrames(15); // We seem to need at least ~15
 
     assert.isFalse(completeCalled);
@@ -548,11 +522,6 @@ describe('updateWithRetry', function () {
       }
     });
 
-    const clock = sinon.useFakeTimers({
-      now: Date.now(),
-      toFake: ['setTimeout'],
-    });
-
     const errors: Array<{
       error: Error;
       retryInterval?: number;
@@ -562,8 +531,9 @@ describe('updateWithRetry', function () {
     await new Promise<void>((resolve, reject) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
+        setTimeout: fastSetTimeout,
         onUpdateComplete: resolve,
         onUpdateError: ({ error, nextRetry, retryCount }) => {
           errors.push({
@@ -575,14 +545,10 @@ describe('updateWithRetry', function () {
           });
           if (!nextRetry) {
             reject(error);
-          } else {
-            void clock.runAllAsync();
           }
         },
       });
     });
-
-    clock.restore();
 
     assert.lengthOf(errors, 3);
 
@@ -620,8 +586,8 @@ describe('updateWithRetry', function () {
     await new Promise<void>((resolve, reject) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
         onUpdateComplete: resolve,
         onUpdateError: ({ error }) => reject(error),
       });
@@ -653,8 +619,8 @@ describe('updateWithRetry', function () {
     const updateResult = new Promise<void>((resolve, reject) => {
       updateWithRetry({
         db,
-        series: 'kanji',
         lang: 'en',
+        series: 'kanji',
         onUpdateComplete: resolve,
         onUpdateError: ({ error, nextRetry }) => {
           errors.push(error);

@@ -37,7 +37,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run tests (Chrome)
-        run: yarn test
+        run: yarn test --forbid-only
 
       - name: Run tests (Firefox)
         run: yarn test --browser firefox

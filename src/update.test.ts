@@ -9,7 +9,6 @@ import { JpdictStore } from './store';
 import { ProgressEvent, UpdateEvent } from './update-events';
 import { update } from './update';
 
-mocha.setup('bdd');
 chai.use(chaiAsPromised);
 
 const KANJI_VERSION_1_0_0 = {
