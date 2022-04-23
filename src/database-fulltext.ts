@@ -20,7 +20,7 @@ class JpdictFullTextStore extends JpdictStore {
   }
 }
 
-export function toFullTextWordStoreRecord(
+function toFullTextWordStoreRecord(
   record: WordDownloadRecord
 ): WordStoreRecord {
   return {
