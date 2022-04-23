@@ -10,9 +10,8 @@ import {
   getWordsByCrossReference,
   getWordsWithGloss,
   getWordsWithKanji,
-  NameResult,
 } from './query';
-import { WordResult } from './word-result';
+import { NameResult, WordResult } from './result-types';
 import { GlossType } from './words';
 
 const VERSION_INFO = {

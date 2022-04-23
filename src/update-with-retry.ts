@@ -44,8 +44,8 @@ type SetTimeoutFn = (cb: () => void, duration: number) => number;
 //
 // Furthermore, note that if an invocation is canceled there is no abort
 // callback or AbortError or anything of the sort. (Again, this is fixable but
-// it requires store the callbacks passed-in, and currently no client needs
-// this.)
+// it requires us to store the callbacks passed-in, and currently no client
+// needs this.)
 export function updateWithRetry({
   db,
   lang,

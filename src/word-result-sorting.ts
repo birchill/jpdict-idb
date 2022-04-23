@@ -1,4 +1,4 @@
-import { WordResult } from './word-result';
+import { WordResult } from './result-types';
 
 // As with Array.prototype.sort, sorts `results` in-place, but returns the
 // result to support chaining.

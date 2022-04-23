@@ -7,7 +7,6 @@ import {
 import idbReady from 'safari-14-idb-fix';
 import { kanaToHiragana } from '@birchill/normal-jp';
 
-import { Misc, Radical, Readings } from './kanji';
 import { JpdictSchema } from './store';
 import {
   KanjiStoreRecord,
@@ -16,20 +15,24 @@ import {
   WordStoreRecord,
 } from './store-types';
 import { getTokens } from './tokenizer';
-import { Resolve } from './type-helpers';
 import { stripFields } from './utils';
 import {
   MatchMode,
   toWordResult,
   toWordResultFromGlossLookup,
-  WordResult,
-} from './word-result';
+} from './to-word-result';
 import {
   getPriority,
   sortResultsByPriority,
   sortResultsByPriorityAndMatchLength,
 } from './word-result-sorting';
 import { CrossReference } from './words';
+import {
+  KanjiResult,
+  NameResult,
+  RelatedKanji,
+  WordResult,
+} from './result-types';
 
 // Database query methods
 //
@@ -507,58 +510,6 @@ async function lookUpGlosses(
 // Kanji
 //
 // -------------------------------------------------------------------------
-
-export type KanjiResult = {
-  c: string;
-  r: Readings;
-  m: Array<string>;
-  m_lang: string;
-  rad: ExpandedRadical;
-  refs: Record<string, string | number>;
-  misc: Misc;
-  comp: Array<{
-    c: string;
-    na: Array<string>;
-    // An optional field indicating the kanji character to link to.
-    //
-    // For example, if the component is ⺮, one might want to look up other
-    // kanji with that component, but they also might want to look up the
-    // corresponding kanji for the component, i.e. 竹.
-    //
-    // For kanji / katakana components this is empty. For radical components
-    // this is the kanji of the base radical, if any.
-    k?: string;
-    m: Array<string>;
-    m_lang: string;
-  }>;
-  var?: Array<string>;
-  cf: Array<RelatedKanji>;
-};
-
-export type ExpandedRadical = Resolve<
-  Omit<Radical, 'name'> & {
-    b?: string;
-    k?: string;
-    na: Array<string>;
-    m: Array<string>;
-    m_lang: string;
-    base?: {
-      b?: string;
-      k?: string;
-      na: Array<string>;
-      m: Array<string>;
-      m_lang: string;
-    };
-  }
->;
-
-export type RelatedKanji = {
-  c: string;
-  r: Readings;
-  m: Array<string>;
-  m_lang: string;
-  misc: Misc;
-};
 
 export async function getKanji({
   kanji,
@@ -1101,8 +1052,6 @@ async function getCharToRadicalMapping(): Promise<Map<string, string>> {
 // Names
 //
 // -------------------------------------------------------------------------
-
-export type NameResult = Omit<NameStoreRecord, 'h'>;
 
 export async function getNames(search: string): Promise<Array<NameResult>> {
   const db = await open();

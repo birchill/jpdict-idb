@@ -1,17 +1,17 @@
 export type KanjiRecord = {
   c: string;
-  r: Readings;
+  r: KanjiReading;
   m: Array<string>;
   m_lang?: string;
   rad: Radical;
   refs: Record<string, string | number>;
-  misc: Misc;
+  misc: KanjiMiscInfo;
   comp?: string;
   var?: Array<string>;
   cf?: string;
 };
 
-export type Readings = {
+export type KanjiReading = {
   on?: Array<string>;
   kun?: Array<string>;
   na?: Array<string>;
@@ -24,7 +24,7 @@ export type Radical = {
   name?: Array<string>;
 };
 
-export type Misc = {
+export type KanjiMiscInfo = {
   gr?: number;
   sc: number;
   freq?: number;

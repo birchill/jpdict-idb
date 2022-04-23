@@ -1,7 +1,13 @@
 import { kanaToHiragana } from '@birchill/normal-jp';
 
+import {
+  ExtendedKanaEntry,
+  ExtendedKanjiEntry,
+  ExtendedSense,
+  Gloss,
+  WordResult,
+} from './result-types';
 import { WordStoreRecord } from './store-types';
-import { Resolve } from './type-helpers';
 import { stripFields } from './utils';
 import {
   BITS_PER_GLOSS_TYPE,
@@ -12,50 +18,6 @@ import {
   WordRecord,
   WordSense,
 } from './words';
-
-// ---------------------------------------------------------------------------
-//
-// Public API
-//
-// ---------------------------------------------------------------------------
-
-export type WordResult = {
-  id: number;
-  k: Array<ExtendedKanjiEntry>;
-  r: Array<ExtendedKanaEntry>;
-  s: Array<ExtendedSense>;
-};
-
-type ExtendedKanjiEntry = Resolve<
-  {
-    ent: string;
-    match: boolean;
-    // If set, indicates that the match occurred on this headword and
-    // indicates the range of characters that matched.
-    matchRange?: [start: number, end: number];
-  } & KanjiMeta
->;
-
-type ExtendedKanaEntry = Resolve<
-  {
-    ent: string;
-    match: boolean;
-    // If set, indicates that the match occurred on this headword and
-    // indicates the range of characters that matched.
-    matchRange?: [start: number, end: number];
-  } & ReadingMeta
->;
-
-type ExtendedSense = Resolve<
-  { match: boolean; g: Array<Gloss> } & Omit<WordSense, 'g' | 'gt'>
->;
-
-export type Gloss = {
-  str: string;
-  type?: GlossType; // undefined = GlossType.None
-  // Character offsets for matched text when doing a gloss search
-  matchRange?: [start: number, end: number];
-};
 
 export const enum MatchMode {
   Lexeme,

@@ -1,7 +1,7 @@
 import * as s from 'superstruct';
 
 import { DataSeries } from './data-series';
-import { KanjiRecord, Misc, Radical, Readings } from './kanji';
+import { KanjiMiscInfo, KanjiReading, KanjiRecord, Radical } from './kanji';
 import { NameRecord, NameTranslation } from './names';
 import { RadicalRecord } from './radicals';
 import { Overwrite } from './type-helpers';
@@ -180,7 +180,7 @@ export function validateNameDownloadDeleteRecord(
 //
 // ----------------------------------------------------------------------------
 
-const ReadingsStruct: s.Describe<Readings> = s.type({
+const ReadingsStruct: s.Describe<KanjiReading> = s.type({
   on: s.optional(s.array(s.string())),
   kun: s.optional(s.array(s.string())),
   na: s.optional(s.array(s.string())),
@@ -194,7 +194,7 @@ const RadicalStruct: s.Describe<Radical> = s.type({
   var: s.optional(s.string()),
 });
 
-const MiscSchema: s.Describe<Misc> = s.type({
+const MiscSchema: s.Describe<KanjiMiscInfo> = s.type({
   gr: s.optional(safeInteger()),
   sc: s.min(safeInteger(), 1),
   freq: s.optional(s.min(safeInteger(), 0)),

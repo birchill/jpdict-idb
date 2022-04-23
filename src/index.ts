@@ -23,11 +23,15 @@ export {
   getWordsByCrossReference,
   getWordsWithGloss,
   getWordsWithKanji,
+} from './query';
+export {
   ExpandedRadical,
+  Gloss,
   KanjiResult,
   NameResult,
   RelatedKanji,
-} from './query';
+  WordResult,
+} from './result-types';
 export { UpdateErrorState, toUpdateErrorState } from './update-error-state';
 export {
   CheckingUpdateState,
@@ -69,4 +73,3 @@ export {
   WordSense as RawWordSense,
   GLOSS_TYPE_MAX,
 } from './words';
-export { Gloss, WordResult } from './word-result';
