@@ -1,4 +1,4 @@
-import jsonEqualish from '@birchill/json-equalish';
+import { jsonEqualish } from '@birchill/json-equalish';
 
 import { AbortError } from './abort-error';
 import {
