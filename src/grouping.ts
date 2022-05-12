@@ -1,4 +1,4 @@
-import { WordSense } from './words';
+import { ExtendedSense } from './result-types';
 
 export interface PosGroup<Sense> {
   pos: Array<string>;
@@ -6,7 +6,7 @@ export interface PosGroup<Sense> {
   senses: Array<Sense>;
 }
 
-export function groupSenses<Sense extends WordSense>(
+export function groupSenses<Sense extends ExtendedSense>(
   senses: Array<Sense>
 ): Array<PosGroup<Sense>> {
   const groups: Array<PosGroup<Sense>> = [];
@@ -86,7 +86,7 @@ export function groupSenses<Sense extends WordSense>(
 
 // Set up a utility to produce a copy of a sense with the specified
 // part(s)-of-speech removed.
-function dropPos<Sense extends WordSense>(
+function dropPos<Sense extends ExtendedSense>(
   sense: Sense,
   posToDrop: string | Array<string> | undefined
 ): Sense {
