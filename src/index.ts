@@ -7,11 +7,12 @@ export {
   isDataSeries,
   isMajorDataSeries,
 } from './data-series';
-export { DataVersion } from './data-version';
 export { DataSeriesState } from './data-series-state';
+export { DataVersion } from './data-version';
 export { ChangeCallback, ChangeTopic, JpdictIdb } from './database';
-export { DownloadError, DownloadErrorCode } from './download-error';
 export { JpdictFullTextDatabase } from './database-fulltext';
+export { DownloadError, DownloadErrorCode } from './download-error';
+export { clearCachedVersionInfo } from './download-version-info';
 export { groupSenses, PosGroup } from './grouping';
 export { NameTranslation, NameType, asNameType, isNameType } from './names';
 export { OfflineError } from './offline-error';
