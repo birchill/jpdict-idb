@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/birchill/jpdict-idb/compare/v0.0.1...v0.0.2) (2022-05-12)
+
+### Bug Fixes
+
+- fix typing of senses argument to groupSenses ([21c7c2b](https://github.com/birchill/jpdict-idb/commit/21c7c2b7d8773869fada96cd836aa9664b768be4))
+
 ### 0.0.1 (2022-05-12)
 
 First version
