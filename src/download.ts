@@ -352,7 +352,7 @@ async function* getEvents({
   partInfo,
 }: GetEventsOptions): AsyncIterableIterator<DownloadEvent> {
   const dottedVersion = `${version.major}.${version.minor}.${version.patch}`;
-  const commonUrlStart = `${baseUrl}reader/${series}/${lang}/${dottedVersion}`;
+  const commonUrlStart = `${baseUrl}jpdict/reader/${series}/${lang}/${dottedVersion}`;
   const url =
     format === 'patch'
       ? `${commonUrlStart}-patch.jsonl`
