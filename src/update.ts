@@ -31,7 +31,7 @@ export type UpdateCallback = (action: UpdateEvent) => void;
 // We could try to dispatch progress events while we're updating too--in fact,
 // we used to do just that--but it's simpler if we can just have one type of
 // progress event and dispatch it fairly consistently.)
-const BATCH_SIZE = 1000;
+const BATCH_SIZE = 2000;
 
 // Don't update the progress until it has changed by at least 1%.
 const MAX_PROGRESS_RESOLUTION = 0.01;
