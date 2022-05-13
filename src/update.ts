@@ -33,8 +33,8 @@ export type UpdateCallback = (action: UpdateEvent) => void;
 // progress event and dispatch it fairly consistently.)
 const BATCH_SIZE = 1000;
 
-// Don't update the progress until it has changed by at least 2%.
-const MAX_PROGRESS_RESOLUTION = 0.02;
+// Don't update the progress until it has changed by at least 1%.
+const MAX_PROGRESS_RESOLUTION = 0.01;
 
 export async function update({
   callback,

@@ -425,8 +425,8 @@ describe('update', function () {
         } else {
           assert.isAtLeast(
             event.totalProgress,
-            lastTotalProgress + 0.02,
-            `Progress event #${i}: total progress should be at least 2% greater than the previous value (${lastTotalProgress})`
+            lastTotalProgress + 0.01,
+            `Progress event #${i}: total progress should be at least 1% greater than the previous value (${lastTotalProgress})`
           );
         }
       }
