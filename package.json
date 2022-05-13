@@ -22,6 +22,7 @@
     "dist"
   ],
   "type": "module",
+  "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
   "homepage": "https://github.com/birchill/jpdict-idb#readme",
