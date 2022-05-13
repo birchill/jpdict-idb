@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/birchill/jpdict-idb/compare/v1.0.0...v1.1.0) (2022-05-13)
+
+### Features
+
+- add CJS version ([733d5e0](https://github.com/birchill/jpdict-idb/commit/733d5e0dc9ff2e9c812c9e6c715add337224bbe5))
+- increase database update batch size ([78d6096](https://github.com/birchill/jpdict-idb/commit/78d609674ae87c8212ea026a70b46dc8c43fc1fb))
+- increase progress resolution to 1% ([2eeeca7](https://github.com/birchill/jpdict-idb/commit/2eeeca7833cb765d70db91bfcdd48e647d035006))
+
 ## [1.0.0](https://github.com/birchill/jpdict-idb/compare/v0.0.4...v1.0.0) (2022-05-12)
 
 ### [0.0.4](https://github.com/birchill/jpdict-idb/compare/v0.0.3...v0.0.4) (2022-05-12)
