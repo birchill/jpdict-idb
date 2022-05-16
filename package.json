@@ -59,7 +59,7 @@
     "lint-staged": "12.4.1",
     "mocha": "9.2.2",
     "pinst": "3.0.0",
-    "playwright-test": "7.4.1",
+    "playwright-test": "8.0.0",
     "prettier": "2.6.2",
     "process": "0.11.10",
     "rollup": "2.73.0",
