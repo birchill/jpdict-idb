@@ -62,7 +62,7 @@
     "playwright-test": "8.0.0",
     "prettier": "2.6.2",
     "process": "0.11.10",
-    "rollup": "2.74.1",
+    "rollup": "2.75.0",
     "rollup-plugin-cleaner": "1.0.0",
     "rollup-plugin-dts": "4.2.2",
     "sinon": "14.0.0",
