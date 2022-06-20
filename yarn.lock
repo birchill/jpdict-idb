@@ -3409,10 +3409,10 @@ playwright-core@1.22.1:
   resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.22.1.tgz#59ddf903546171fdfd9c3dc189630c883619667c"
   integrity sha512-H+ZUVYnceWNXrRf3oxTEKAr81QzFsCKu5Fp//fEjQvqgKkfA1iX3E9DBrPJpPNOrgVzcE+IqeI0fDmYJe6Ynnw==
 
-playwright-test@8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-8.1.0.tgz#7728d18cbc348044e2a82eeef9ebf6c5242b3677"
-  integrity sha512-yqt2RznJ+5TSbBbRMafq9vMs+e4WS+P7tZBcCgRS1K6I/VV2huEkXgv8zXhO6REt21ep60LGhOi84VFCm3sFcQ==
+playwright-test@8.1.1:
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-8.1.1.tgz#7ff648d6ffdc0ca2405d0bb1ea45e4549409ad4f"
+  integrity sha512-FFfuPH6Q/AFoJQDJ6/ateZBBQoiJx8LS8eM0pWExgB0OS9nygnM+KMR/25/dfYdlgw1bESlwtBa5UrBwulvKIw==
   dependencies:
     buffer "^6.0.3"
     camelcase "^6.3.0"
