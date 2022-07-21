@@ -221,14 +221,15 @@ export type FieldType = typeof allFieldTypes[number];
 // prettier-ignore
 const allFieldTypes = [
   'agric', 'anat', 'archeol', 'archit', 'art', 'astron', 'audvid', 'aviat',
-  'baseb', 'biochem', 'biol', 'bot', 'Buddh', 'bus', 'chem', 'Christn', 'cloth',
-  'comp', 'cryst', 'ecol', 'econ', 'elec', 'electr', 'embryo', 'engr', 'ent',
-  'finc', 'fish', 'food', 'gardn', 'genet', 'geogr', 'geol', 'geom', 'go',
-  'golf', 'gramm', 'grmyth', 'hanaf', 'horse', 'law', 'ling', 'logic', 'MA',
-  'mahj', 'math', 'mech', 'med', 'met', 'mil', 'music', 'ornith', 'paleo',
-  'pathol', 'pharm', 'phil', 'photo', 'physics', 'physiol', 'print', 'psy',
-  'psych', 'rail', 'Shinto', 'shogi', 'sports', 'stat', 'sumo', 'telec',
-  'tradem', 'vidg', 'zool',
+  'baseb', 'biochem', 'biol', 'bot', 'Buddh', 'bus', 'cards', 'chem', 'Christn',
+  'cloth', 'comp', 'cryst', 'dent', 'ecol', 'econ', 'elec', 'electr', 'embryo',
+  'engr', 'ent', 'film', 'finc', 'fish', 'food', 'gardn', 'genet', 'geogr',
+  'geol', 'geom', 'go', 'golf', 'gramm', 'grmyth', 'hanaf', 'horse', 'kabuki',
+  'law', 'ling', 'logic', 'MA', 'mahj', 'manga', 'math', 'mech', 'med', 'met',
+  'mil', 'mining', 'music', 'noh', 'ornith', 'paleo', 'pathol', 'pharm', 'phil',
+  'photo', 'physics', 'physiol', 'politics', 'print', 'psy', 'psyanal', 'psych',
+  'rail', 'rommyth', 'Shinto', 'shogi', 'ski', 'sports', 'stat', 'stockm',
+  'sumo', 'telec', 'tradem', 'tv', 'vidg', 'zool',
 ] as const;
 
 export function isFieldType(a: unknown): a is FieldType {
@@ -246,12 +247,13 @@ export type MiscType = typeof allMiscTypes[number];
 
 // prettier-ignore
 const allMiscTypes = [
-  'abbr', 'arch', 'char', 'chn', 'col', 'company', 'creat', 'dated', 'dei',
-  'derog', 'doc', 'ev', 'fam', 'fem', 'fict', 'form', 'given', 'group', 'hist',
-  'hon', 'hum', 'id', 'joc', 'leg', 'm-sl', 'male', 'myth', 'net-sl', 'obj',
-  'obs', 'obsc', 'on-mim', 'organization', 'oth', 'person', 'place', 'poet',
-  'pol', 'product', 'proverb', 'quote', 'rare', 'relig', 'sens', 'serv', 'sl',
-  'station', 'surname', 'uk', 'unclass', 'vulg', 'work', 'X', 'yoji', ] as
+  'abbr', 'aphorism', 'arch', 'char', 'chn', 'col', 'company', 'creat', 'dated',
+  'dei', 'derog', 'doc', 'ev', 'euph', 'fam', 'fem', 'fict', 'form', 'given',
+  'group', 'hist', 'hon', 'hum', 'id', 'joc', 'leg', 'm-sl', 'male', 'myth',
+  'net-sl', 'obj', 'obs', 'obsc', 'on-mim', 'organization', 'oth', 'person',
+  'place', 'poet', 'pol', 'product', 'proverb', 'quote', 'rare', 'relig',
+  'sens', 'serv', 'sl', 'station', 'surname', 'uk', 'unclass', 'vulg', 'work',
+  'X', 'yoji', ] as
   const;
 
 export function isMiscType(a: unknown): a is MiscType {

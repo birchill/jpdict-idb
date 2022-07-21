@@ -51,6 +51,7 @@ const allNameTypes = [
   'product',
   'relig',
   'serv',
+  'ship',
   'station',
   'surname',
   'unclass',
