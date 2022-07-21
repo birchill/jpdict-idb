@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/birchill/jpdict-idb/compare/v1.1.0...v1.2.0) (2022-07-21)
+
+### Features
+
+- add new field/misc types ([b94f288](https://github.com/birchill/jpdict-idb/commit/b94f2882d3d760a2dc2b08bbd5786198c96909f5))
+
+### Bug Fixes
+
+- **deps:** update dependency superstruct to ^0.16.0 ([05cbf3a](https://github.com/birchill/jpdict-idb/commit/05cbf3ad61782675557befd9bb8d3418cd507ab1))
+
 ## [1.1.0](https://github.com/birchill/jpdict-idb/compare/v1.0.0...v1.1.0) (2022-05-13)
 
 ### Features

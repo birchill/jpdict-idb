@@ -1,6 +1,6 @@
 {
   "name": "@birchill/jpdict-idb",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Download and lookup jpdict data using IndexedDB",
   "author": "Brian Birtles",
   "scripts": {
