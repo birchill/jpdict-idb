@@ -155,6 +155,8 @@ const kanjiInfoValues = [
   'oK',
   // rarely-used kanji form
   'rK',
+  // search-only kanji form
+  'sK',
 ] as const;
 
 export function isKanjiInfo(a: unknown): a is KanjiInfo {
@@ -178,6 +180,8 @@ const allReadingInfo = [
   'ok',
   // word usually written using kanji alone
   'uK',
+  // search-only kana form
+  'sk',
 ] as const;
 
 export function isReadingInfo(a: unknown): a is ReadingInfo {
