@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/birchill/jpdict-idb/compare/v1.2.0...v1.2.1) (2022-08-15)
+
+### Bug Fixes
+
+- add search-only forms ([af91e0c](https://github.com/birchill/jpdict-idb/commit/af91e0c3587e5316d2e0613cb7fa6a8b39533ece))
+
 ## [1.2.0](https://github.com/birchill/jpdict-idb/compare/v1.1.0...v1.2.0) (2022-07-21)
 
 ### Features
