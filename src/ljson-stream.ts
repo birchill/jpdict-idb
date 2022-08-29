@@ -39,7 +39,7 @@ export async function* ljsonStreamIterator({
   };
 
   while (true) {
-    let readResult: ReadableStreamDefaultReadResult<Uint8Array>;
+    let readResult: ReadableStreamReadResult<Uint8Array>;
     try {
       readResult = await waitWithTimeout({
         promise: reader.read(),
