@@ -220,7 +220,7 @@ const KanjiDownloadRecordSchema: s.Describe<KanjiDownloadRecord> = s.type({
   misc: MiscSchema,
   comp: s.optional(s.string()),
   var: s.optional(s.array(s.string())),
-  cf: s.optional(s.string()),
+  cf: s.optional(s.union([s.string(), s.array(s.string())])),
 });
 
 export function validateKanjiDownloadRecord(

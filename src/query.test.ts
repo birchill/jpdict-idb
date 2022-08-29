@@ -434,6 +434,53 @@ describe('query', function () {
     ]);
   });
 
+  it('should handle an array of related kanji', async () => {
+    await db.ready;
+
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    // It just so happens that the following data is wrong in that the cf field
+    // refers to itself. We'll fix that upstream but for now it's probably fine
+    // to leave this here as a test we don't get all infinitely recursive.
+    fetchMock.mock(
+      'end:kanji/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":2,"format":"full"}
+{"c":"復","r":{"py":["fu4"],"on":["フク"],"kun":["また"]},"m":["restore","return to","revert","resume"],"rad":{"x":60},"refs":{"nelson_c":1627,"nelson_n":1760,"halpern_njecd":575,"halpern_kkld_2ed":527,"heisig6":940,"henshall":782,"sh_kk2":939,"kanji_in_context":521,"kodansha_compact":634,"skip":"1-3-9","sh_desc":"3i9.4","conning":865},"misc":{"sc":12,"gr":5,"freq":438,"jlpt":2,"kk":6,"jlptn":2},"comp":"⼻复⽇⼡","cf":["複","輹"]}
+{"c":"複","r":{"py":["fu4"],"on":["フク"]},"m":["duplicate","double","compound","multiple"],"rad":{"x":145},"refs":{"nelson_c":4255,"nelson_n":5484,"halpern_njecd":1222,"halpern_kkld_2ed":1132,"heisig6":504,"henshall":783,"sh_kk2":938,"kanji_in_context":522,"kodansha_compact":1636,"skip":"1-5-9","sh_desc":"5e9.3","conning":863},"misc":{"sc":14,"gr":5,"freq":915,"jlpt":2,"kk":6,"jlptn":2},"comp":"⻂复⽇⼡","var":["145-hen"],"cf":["復","複"]}
+`
+    );
+    fetchMock.mock(
+      'end:radicals/en/4.0.0.jsonl',
+      `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":4,"format":"full"}
+{"id":"034","r":34,"b":"⼡","k":"夂","s":3,"na":["ふゆがしら","のまたかんむり","のまた","ちかんむり"],"m":["winter"]}
+{"id":"072","r":72,"b":"⽇","k":"日","s":4,"na":["ひ"],"m":["day","sun","Japan","counter for days"]}
+{"id":"145","r":145,"b":"⾐","k":"衣","s":6,"na":["ころも"],"m":["garment","clothes","dressing"]}
+{"id":"145-hen","r":145,"b":"⻂","k":"衤","s":5,"na":["ころもへん"],"m":["garment","clothes","dressing"],"posn":"hen"}
+`
+    );
+
+    await db.update({ series: 'kanji', lang: 'en' });
+
+    const result = await getKanji({ kanji: ['複'], lang: 'en' });
+
+    assert.lengthOf(result, 1);
+    assert.deepEqual(result[0].cf, [
+      {
+        c: '復',
+        r: { py: ['fu4'], on: ['フク'], kun: ['また'] },
+        m: ['restore', 'return to', 'revert', 'resume'],
+        m_lang: 'en',
+        misc: { sc: 12, gr: 5, freq: 438, jlpt: 2, kk: 6, jlptn: 2 },
+      },
+      {
+        c: '複',
+        r: { py: ['fu4'], on: ['フク'] },
+        m: ['duplicate', 'double', 'compound', 'multiple'],
+        m_lang: 'en',
+        misc: { sc: 14, gr: 5, freq: 915, jlpt: 2, kk: 6, jlptn: 2 },
+      },
+    ]);
+  });
+
   it('should fetch names by kanji', async () => {
     fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
