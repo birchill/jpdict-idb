@@ -25,8 +25,8 @@ export let cancelIdleCallback: (handle: IdleCallbackHandle) => void;
 
 if (
   typeof self === 'object' &&
-  self.requestIdleCallback &&
-  self.cancelIdleCallback
+  typeof self.requestIdleCallback === 'function' &&
+  typeof self.cancelIdleCallback === 'function'
 ) {
   requestIdleCallback = (self as any).requestIdleCallback;
   cancelIdleCallback = (self as any).cancelIdleCallback;
