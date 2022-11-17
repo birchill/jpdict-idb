@@ -34,7 +34,7 @@
     "@birchill/normal-jp": "^1.4.0",
     "idb": "^7.0.2",
     "safari-14-idb-fix": "^3.0.0",
-    "superstruct": "^0.16.0"
+    "superstruct": "^1.0.3"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "9.0.2",
