@@ -3510,15 +3510,15 @@ pinst@3.0.0:
   resolved "https://registry.yarnpkg.com/pinst/-/pinst-3.0.0.tgz#80dec0a85f1f993c6084172020f3dbf512897eec"
   integrity sha512-cengSmBxtCyaJqtRSvJorIIZXMXg+lJ3sIljGmtBGUVonMnMsVJbnzl6jGN1HkOWwxNuJynCJ2hXxxqCQrFDdw==
 
-playwright-core@1.22.1:
-  version "1.22.1"
-  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.22.1.tgz#59ddf903546171fdfd9c3dc189630c883619667c"
-  integrity sha512-H+ZUVYnceWNXrRf3oxTEKAr81QzFsCKu5Fp//fEjQvqgKkfA1iX3E9DBrPJpPNOrgVzcE+IqeI0fDmYJe6Ynnw==
+playwright-core@1.28.1:
+  version "1.28.1"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.28.1.tgz#8400be9f4a8d1c0489abdb9e75a4cc0ffc3c00cb"
+  integrity sha512-3PixLnGPno0E8rSBJjtwqTwJe3Yw72QwBBBxNoukIj3lEeBNXwbNiKrNuB1oyQgTBw5QHUhNO3SteEtHaMK6ag==
 
-playwright-test@8.1.1:
-  version "8.1.1"
-  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-8.1.1.tgz#7ff648d6ffdc0ca2405d0bb1ea45e4549409ad4f"
-  integrity sha512-FFfuPH6Q/AFoJQDJ6/ateZBBQoiJx8LS8eM0pWExgB0OS9nygnM+KMR/25/dfYdlgw1bESlwtBa5UrBwulvKIw==
+playwright-test@8.1.2:
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-8.1.2.tgz#3bdb49fbba26500fc78b31fa36111d6fd7a31997"
+  integrity sha512-D+0Km5sAGhX/WOftY7JGNrcLb7jRZukGf23nJwh8tz+KAJnuZ30IrB3UHIsiasaP+YPAaw3bRgoLyrCgOMKBCw==
   dependencies:
     buffer "^6.0.3"
     camelcase "^6.3.0"
@@ -3535,7 +3535,7 @@ playwright-test@8.1.1:
     ora "^6.1.0"
     p-wait-for "4.1.0"
     path-browserify "^1.0.1"
-    playwright-core "1.22.1"
+    playwright-core "1.28.1"
     polka "^0.5.2"
     premove "^4.0.0"
     process "^0.11.10"
