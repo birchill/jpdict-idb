@@ -5,9 +5,7 @@ env:
 
 jobs:
   build:
-    # Need to force Ubuntu 20 for now until playwright-test updates its
-    # playwright version https://github.com/hugomrdias/playwright-test/issues/505
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 15
 
     steps:
