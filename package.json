@@ -52,7 +52,7 @@
     "chai-as-promised": "7.1.1",
     "chai-datetime": "1.8.0",
     "chai-like": "1.1.1",
-    "eslint": "8.37.0",
+    "eslint": "8.38.0",
     "eslint-config-prettier": "8.8.0",
     "fetch-mock": "9.11.0",
     "husky": "8.0.3",
