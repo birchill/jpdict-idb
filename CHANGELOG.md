@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/birchill/jpdict-idb/compare/v1.2.2...v1.3.0) (2023-05-09)
+
+### Features
+
+- add 'ship' misc type ([278fc97](https://github.com/birchill/jpdict-idb/commit/278fc9748250c7f990298dccfbde35daeaf1cb93))
+
+### Bug Fixes
+
+- **deps:** update dependency superstruct to v1 ([566a8b7](https://github.com/birchill/jpdict-idb/commit/566a8b7e6da33b4752507ea633620af280f8617b))
+
 ### [1.2.2](https://github.com/birchill/jpdict-idb/compare/v1.2.1...v1.2.2) (2022-08-29)
 
 ### Bug Fixes
