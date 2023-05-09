@@ -140,7 +140,7 @@ export type LangSource = {
 
 // KanjiInfo
 
-export type KanjiInfo = typeof kanjiInfoValues[number];
+export type KanjiInfo = (typeof kanjiInfoValues)[number];
 
 const kanjiInfoValues = [
   // ateji (phonetic) reading
@@ -169,7 +169,7 @@ export function asKanjiInfo(a: unknown): KanjiInfo | undefined {
 
 // ReadingInfo
 
-export type ReadingInfo = typeof allReadingInfo[number];
+export type ReadingInfo = (typeof allReadingInfo)[number];
 
 const allReadingInfo = [
   // gikun (meaning as reading) or jukujikun (special kanji reading)
@@ -194,7 +194,7 @@ export function asReadingInfo(a: unknown): ReadingInfo | undefined {
 
 // Part of speech
 
-export type PartOfSpeech = typeof allPartsOfSpeech[number];
+export type PartOfSpeech = (typeof allPartsOfSpeech)[number];
 
 // prettier-ignore
 const allPartsOfSpeech = [
@@ -220,7 +220,7 @@ export function asPartOfSpeech(a: unknown): PartOfSpeech | undefined {
 
 // Field
 
-export type FieldType = typeof allFieldTypes[number];
+export type FieldType = (typeof allFieldTypes)[number];
 
 // prettier-ignore
 const allFieldTypes = [
@@ -247,7 +247,7 @@ export function asFieldType(a: unknown): FieldType | undefined {
 // Misc types. A few of these are not used (e.g. male-sl, uK) but they have
 // entity definitions in the upstream XML file so we include them here.
 
-export type MiscType = typeof allMiscTypes[number];
+export type MiscType = (typeof allMiscTypes)[number];
 
 // prettier-ignore
 const allMiscTypes = [
@@ -256,8 +256,8 @@ const allMiscTypes = [
   'group', 'hist', 'hon', 'hum', 'id', 'joc', 'leg', 'm-sl', 'male', 'myth',
   'net-sl', 'obj', 'obs', 'obsc', 'on-mim', 'organization', 'oth', 'person',
   'place', 'poet', 'pol', 'product', 'proverb', 'quote', 'rare', 'relig',
-  'sens', 'serv', 'sl', 'station', 'surname', 'uk', 'unclass', 'vulg', 'work',
-  'X', 'yoji', ] as
+  'sens', 'serv', 'ship', 'sl', 'station', 'surname', 'uk', 'unclass', 'vulg',
+  'work', 'X', 'yoji', ] as
   const;
 
 export function isMiscType(a: unknown): a is MiscType {
@@ -270,7 +270,7 @@ export function asMiscType(a: unknown): MiscType | undefined {
 
 // Dialects
 
-export type Dialect = typeof allDialects[number];
+export type Dialect = (typeof allDialects)[number];
 
 const allDialects = [
   'bra', // Brazilian
