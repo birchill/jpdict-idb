@@ -1,22 +1,27 @@
 export { AbortError } from './abort-error';
 export {
-  DataSeries,
-  MajorDataSeries,
+  type DataSeries,
+  type MajorDataSeries,
   allDataSeries,
   allMajorDataSeries,
   isDataSeries,
   isMajorDataSeries,
 } from './data-series';
-export { DataSeriesState } from './data-series-state';
-export { DataVersion } from './data-version';
-export { ChangeCallback, ChangeTopic, JpdictIdb } from './database';
-export { JpdictFullTextDatabase } from './database-fulltext';
-export { DownloadError, DownloadErrorCode } from './download-error';
+export type { DataSeriesState } from './data-series-state';
+export type { DataVersion } from './data-version';
+export type { ChangeCallback, ChangeTopic, JpdictIdb } from './database';
+export type { JpdictFullTextDatabase } from './database-fulltext';
+export type { DownloadError, DownloadErrorCode } from './download-error';
 export { clearCachedVersionInfo } from './download-version-info';
-export { groupSenses, PosGroup } from './grouping';
-export { NameTranslation, NameType, asNameType, isNameType } from './names';
-export { OfflineError } from './offline-error';
-export { PartInfo } from './part-info';
+export { groupSenses, type PosGroup } from './grouping';
+export {
+  type NameTranslation,
+  type NameType,
+  asNameType,
+  isNameType,
+} from './names';
+export type { OfflineError } from './offline-error';
+export type { PartInfo } from './part-info';
 export {
   getKanji,
   getNames,
@@ -25,7 +30,7 @@ export {
   getWordsWithGloss,
   getWordsWithKanji,
 } from './query';
-export {
+export type {
   ExpandedRadical,
   Gloss,
   KanjiResult,
@@ -33,29 +38,32 @@ export {
   RelatedKanji,
   WordResult,
 } from './result-types';
-export { UpdateErrorState, toUpdateErrorState } from './update-error-state';
 export {
+  type UpdateErrorState,
+  toUpdateErrorState,
+} from './update-error-state';
+export type {
   CheckingUpdateState,
   IdleUpdateState,
   UpdateState,
 } from './update-state';
 export {
   cancelUpdateWithRetry,
-  UpdateCompleteCallback,
-  UpdateErrorCallback,
+  type UpdateCompleteCallback,
+  type UpdateErrorCallback,
   updateWithRetry,
 } from './update-with-retry';
 export {
-  Accent,
-  CrossReference,
-  Dialect,
-  FieldType,
-  GlossType,
-  KanjiInfo,
-  LangSource,
-  MiscType,
-  PartOfSpeech,
-  ReadingInfo,
+  type Accent,
+  type CrossReference,
+  type Dialect,
+  type FieldType,
+  type GlossType,
+  type KanjiInfo,
+  type LangSource,
+  type MiscType,
+  type PartOfSpeech,
+  type ReadingInfo,
   asDialect,
   asFieldType,
   asKanjiInfo,
@@ -69,9 +77,9 @@ export {
   // The following types are related to the format of the input data files
   // and exposed purely for 10ten Japanese Reader and the like that work with
   // snapshots of the data
-  KanjiMeta as RawKanjiMeta,
-  ReadingMeta as RawReadingMeta,
-  WordSense as RawWordSense,
+  type KanjiMeta as RawKanjiMeta,
+  type ReadingMeta as RawReadingMeta,
+  type WordSense as RawWordSense,
   GlossTypes,
   GLOSS_TYPE_MAX,
   BITS_PER_GLOSS_TYPE,
