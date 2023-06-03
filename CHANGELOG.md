@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/birchill/jpdict-idb/compare/v1.3.0...v2.0.0) (2023-06-03)
+
+### ⚠ BREAKING CHANGES
+
+- `GlossType` is now a string union type.
+
+### Features
+
+- replace GlossType const enum with a string union ([d28cb7d](https://github.com/birchill/jpdict-idb/commit/d28cb7db525cd2d274ceb0352c95c9e1be8586dd))
+
 ## [1.3.0](https://github.com/birchill/jpdict-idb/compare/v1.2.2...v1.3.0) (2023-05-09)
 
 ### Features
