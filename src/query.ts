@@ -154,15 +154,12 @@ export async function getWords(
 
     let matchMode: MatchMode;
     if (matchType === 'exact') {
-      matchMode =
-        kanaMatching === 'exact'
-          ? MatchMode.Lexeme
-          : MatchMode.KanaEquivalentLexeme;
+      matchMode = kanaMatching === 'exact' ? 'lexeme' : 'kana-equivalent';
     } else {
       matchMode =
         kanaMatching === 'exact'
-          ? MatchMode.StartsWithLexeme
-          : MatchMode.StartsWithKanaEquivalentLexeme;
+          ? 'starts-with'
+          : 'starts-with-kana-equivalent';
     }
     results.push(toWordResult(record, term, matchMode));
     addedRecords.add(record.id);
@@ -245,13 +242,13 @@ export async function getWordsByCrossReference(
       if (r && !cursor.value.r.includes(r)) {
         continue;
       }
-      results.push(toWordResult(cursor.value, xref, MatchMode.Lexeme));
+      results.push(toWordResult(cursor.value, xref, 'lexeme'));
     }
   } else {
     const readingIndex = db!.transaction('words').store.index('r');
     const key = IDBKeyRange.only(r);
     for await (const cursor of readingIndex.iterate(key)) {
-      results.push(toWordResult(cursor.value, xref, MatchMode.Lexeme));
+      results.push(toWordResult(cursor.value, xref, 'lexeme'));
     }
   }
 
@@ -283,7 +280,7 @@ export async function getWordsWithKanji(
   for await (const cursor of kanjiComponentIndex.iterate(
     IDBKeyRange.only(lookup)
   )) {
-    results.push(toWordResult(cursor.value, lookup, MatchMode.Kanji));
+    results.push(toWordResult(cursor.value, lookup, 'kanji'));
   }
 
   return sortResultsByPriority(results);

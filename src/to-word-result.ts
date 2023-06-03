@@ -20,13 +20,12 @@ import {
   WordSense,
 } from './words';
 
-export const enum MatchMode {
-  Lexeme,
-  KanaEquivalentLexeme,
-  StartsWithLexeme,
-  StartsWithKanaEquivalentLexeme,
-  Kanji,
-}
+export type MatchMode =
+  | 'lexeme'
+  | 'kana-equivalent'
+  | 'starts-with'
+  | 'starts-with-kana-equivalent'
+  | 'kanji';
 
 export function toWordResult(
   record: WordStoreRecord,
@@ -194,15 +193,15 @@ function getMatchMetadata(
   // First build up a bitfield of all kanji matches.
   const matcher: (str: string) => boolean = (str) => {
     switch (matchMode) {
-      case MatchMode.Lexeme:
+      case 'lexeme':
         return str === search;
-      case MatchMode.KanaEquivalentLexeme:
+      case 'kana-equivalent':
         return kanaToHiragana(str) === search;
-      case MatchMode.StartsWithLexeme:
+      case 'starts-with':
         return str.startsWith(search);
-      case MatchMode.StartsWithKanaEquivalentLexeme:
+      case 'starts-with-kana-equivalent':
         return kanaToHiragana(str).startsWith(search);
-      case MatchMode.Kanji:
+      case 'kanji':
         return [...str].includes(search);
     }
   };
@@ -213,14 +212,14 @@ function getMatchMetadata(
   for (let i = 0; i < (record.k?.length || 0); i++) {
     if (kanjiMatches & (1 << i)) {
       switch (matchMode) {
-        case MatchMode.Lexeme:
-        case MatchMode.KanaEquivalentLexeme:
-        case MatchMode.StartsWithLexeme:
-        case MatchMode.StartsWithKanaEquivalentLexeme:
+        case 'lexeme':
+        case 'kana-equivalent':
+        case 'starts-with':
+        case 'starts-with-kana-equivalent':
           kanjiMatchRanges.push([i, 0, search.length]);
           break;
 
-        case MatchMode.Kanji:
+        case 'kanji':
           {
             const index = [...record.k![i]].indexOf(search);
             kanjiMatchRanges.push([i, index, index + 1]);
@@ -246,10 +245,10 @@ function getMatchMetadata(
       }
     });
   } else if (
-    matchMode === MatchMode.Lexeme ||
-    matchMode === MatchMode.KanaEquivalentLexeme ||
-    matchMode === MatchMode.StartsWithLexeme ||
-    matchMode === MatchMode.StartsWithKanaEquivalentLexeme
+    matchMode === 'lexeme' ||
+    matchMode === 'kana-equivalent' ||
+    matchMode === 'starts-with' ||
+    matchMode === 'starts-with-kana-equivalent'
   ) {
     // Case (2) from above: Find kana matches and the kanji they apply to.
     kanaMatches = arrayToBitfield(record.r, matcher);
