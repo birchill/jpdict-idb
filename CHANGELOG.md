@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/birchill/jpdict-idb/compare/v2.0.0...v2.0.1) (2023-06-03)
+
+### Bug Fixes
+
+- fix type exports ([9bd8686](https://github.com/birchill/jpdict-idb/commit/9bd8686e1808dea1be24fffaa62bf4d1dfdb75e5))
+
 ## [2.0.0](https://github.com/birchill/jpdict-idb/compare/v1.3.0...v2.0.0) (2023-06-03)
 
 ### ⚠ BREAKING CHANGES
