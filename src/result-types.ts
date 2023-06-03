@@ -42,7 +42,7 @@ export type ExtendedSense = Resolve<
 
 export type Gloss = {
   str: string;
-  type?: GlossType; // undefined = GlossType.None
+  type?: GlossType; // undefined = 'none'
   // Character offsets for matched text when doing a gloss search
   matchRange?: [start: number, end: number];
 };

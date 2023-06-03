@@ -72,5 +72,7 @@ export {
   KanjiMeta as RawKanjiMeta,
   ReadingMeta as RawReadingMeta,
   WordSense as RawWordSense,
+  GlossTypes,
   GLOSS_TYPE_MAX,
+  BITS_PER_GLOSS_TYPE,
 } from './words';

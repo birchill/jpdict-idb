@@ -12,7 +12,6 @@ import {
   getWordsWithKanji,
 } from './query';
 import { NameResult, WordResult } from './result-types';
-import { GlossType } from './words';
 
 const VERSION_INFO = {
   kanji: {
@@ -816,7 +815,7 @@ describe('query', function () {
               { str: 'one-time divorcee' },
               {
                 str: 'one x mark (i.e. one name struck from the family register)',
-                type: GlossType.Lit,
+                type: 'lit',
               },
             ],
             misc: ['uk', 'joc'],
@@ -1086,7 +1085,7 @@ describe('query', function () {
               { str: 'just like that' },
               { str: 'in the twinkling of an eye', matchRange: [7, 13] },
               { str: 'in the blink of an eye' },
-              { str: 'in the time it takes to say "ah!"', type: GlossType.Lit },
+              { str: 'in the time it takes to say "ah!"', type: 'lit' },
             ],
             pos: ['exp', 'adv'],
             match: true,

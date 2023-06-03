@@ -13,6 +13,7 @@ import {
   BITS_PER_GLOSS_TYPE,
   CrossReference,
   GlossType,
+  GlossTypes,
   KanjiMeta,
   ReadingMeta,
   WordRecord,
@@ -501,7 +502,7 @@ function expandGlosses(
   const gt = sense.gt || 0;
   const typeMask = (1 << BITS_PER_GLOSS_TYPE) - 1;
   const glossTypeAtIndex = (i: number): GlossType => {
-    return (gt >> (i * BITS_PER_GLOSS_TYPE)) & typeMask;
+    return GlossTypes[(gt >> (i * BITS_PER_GLOSS_TYPE)) & typeMask];
   };
 
   return sense.g.map((gloss, i) => {
@@ -511,7 +512,7 @@ function expandGlosses(
     const result: Gloss = { str: gloss };
 
     const type = glossTypeAtIndex(i);
-    if (type !== GlossType.None) {
+    if (type !== 'none') {
       result.type = type;
     }
 
