@@ -9,9 +9,9 @@ export {
 } from './data-series';
 export type { DataSeriesState } from './data-series-state';
 export type { DataVersion } from './data-version';
-export type { ChangeCallback, ChangeTopic, JpdictIdb } from './database';
-export type { JpdictFullTextDatabase } from './database-fulltext';
-export type { DownloadError, DownloadErrorCode } from './download-error';
+export { type ChangeCallback, type ChangeTopic, JpdictIdb } from './database';
+export { JpdictFullTextDatabase } from './database-fulltext';
+export { DownloadError, type DownloadErrorCode } from './download-error';
 export { clearCachedVersionInfo } from './download-version-info';
 export { groupSenses, type PosGroup } from './grouping';
 export {
@@ -20,7 +20,7 @@ export {
   asNameType,
   isNameType,
 } from './names';
-export type { OfflineError } from './offline-error';
+export { OfflineError } from './offline-error';
 export type { PartInfo } from './part-info';
 export {
   getKanji,
