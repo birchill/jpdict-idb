@@ -5,7 +5,7 @@
   "author": "Brian Birtles",
   "scripts": {
     "build": "rollup -c",
-    "test": "playwright-test",
+    "test": "playwright-test -r mocha",
     "prepublishOnly": "pinst --disable && rollup -c",
     "postinstall": "husky install",
     "postpublish": "pinst --enable",
@@ -59,7 +59,7 @@
     "lint-staged": "13.2.3",
     "mocha": "10.2.0",
     "pinst": "3.0.0",
-    "playwright-test": "10.0.1",
+    "playwright-test": "11.0.3",
     "prettier": "3.0.0",
     "process": "0.11.10",
     "rollup": "3.26.2",
