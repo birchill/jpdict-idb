@@ -3364,10 +3364,10 @@ playwright-core@1.35.1:
   resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.35.1.tgz#52c1e6ffaa6a8c29de1a5bdf8cce0ce290ffb81d"
   integrity sha512-pNXb6CQ7OqmGDRspEjlxE49w+4YtR6a3X6mT1hZXeJHWmsEz7SunmvZeiG/+y1yyMZdHnnn73WKYdtV1er0Xyg==
 
-playwright-test@11.0.4:
-  version "11.0.4"
-  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-11.0.4.tgz#500b0ee6780884cbfaa44cc0b7ff602a7b57e51d"
-  integrity sha512-sZYA9mzjQYYc5fM1ckufwPdtTf1tNQWdB12IM94bxkmYj9K+uJIedcnld1/C2lIDxlecHx7iK+wTo6Ob+SwMyQ==
+playwright-test@12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-12.0.0.tgz#31b6b51f92cb5bdd4fee1dbfd097f20bbfd57812"
+  integrity sha512-e2xH8osxgAA1KwNGaO8VQSYG/97K8twRh6OyuH4gSqFsEJcLNgIz6fz5CuOnMqwrq6IhKboZQd5BDojUxrMLow==
   dependencies:
     acorn-loose "^8.3.0"
     assert "^2.0.0"
