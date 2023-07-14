@@ -868,7 +868,14 @@ acorn-jsx@^5.3.2:
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"
   integrity sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==
 
-acorn@^8.7.1, acorn@^8.8.2, acorn@^8.9.0:
+acorn-loose@^8.3.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/acorn-loose/-/acorn-loose-8.3.0.tgz#0cd62461d21dce4f069785f8d3de136d5525029a"
+  integrity sha512-75lAs9H19ldmW+fAbyqHdjgdCrz0pWGXKmnqFoh8PyVd1L2RIb4RzYrSjmopeqv3E1G3/Pimu6GgLlrGbrkF7w==
+  dependencies:
+    acorn "^8.5.0"
+
+acorn@^8.5.0, acorn@^8.7.1, acorn@^8.8.2, acorn@^8.9.0:
   version "8.10.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.10.0.tgz#8be5b3907a67221a81ab23c7889c4c5526b62ec5"
   integrity sha512-F0SAmZ8iUtS//m8DmCTA0jlh6TDKkHQyK6xc6V4KDTyZKA9dnvX9/3sRTVQrWm79glUAZbnmmNcdYwUIHWVybw==
@@ -3357,12 +3364,12 @@ playwright-core@1.35.1:
   resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.35.1.tgz#52c1e6ffaa6a8c29de1a5bdf8cce0ce290ffb81d"
   integrity sha512-pNXb6CQ7OqmGDRspEjlxE49w+4YtR6a3X6mT1hZXeJHWmsEz7SunmvZeiG/+y1yyMZdHnnn73WKYdtV1er0Xyg==
 
-playwright-test@11.0.3:
-  version "11.0.3"
-  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-11.0.3.tgz#9d79986607f0f26518a0158c58f05f502f313736"
-  integrity sha512-t+G7DWfpGqIj8u2bRVjoFSIjGbl4Pved/cql8QjV4eqUcSkPHaXZubhgDKoF3vy+PpYYmeOwww9dZaKIMuBt1w==
+playwright-test@11.0.4:
+  version "11.0.4"
+  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-11.0.4.tgz#500b0ee6780884cbfaa44cc0b7ff602a7b57e51d"
+  integrity sha512-sZYA9mzjQYYc5fM1ckufwPdtTf1tNQWdB12IM94bxkmYj9K+uJIedcnld1/C2lIDxlecHx7iK+wTo6Ob+SwMyQ==
   dependencies:
-    acorn "^8.9.0"
+    acorn-loose "^8.3.0"
     assert "^2.0.0"
     buffer "^6.0.3"
     c8 "^8.0.0"
