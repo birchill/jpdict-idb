@@ -68,6 +68,7 @@
     "sinon": "15.2.0",
     "standard-version": "9.5.0",
     "ts-loader": "9.4.4",
+    "tslib": "2.6.1",
     "typescript": "5.1.6",
     "util": "0.12.5",
     "webpack": "5.88.2"
