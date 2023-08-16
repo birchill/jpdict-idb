@@ -19,6 +19,7 @@ import {
   WordRecord,
   WordSense,
 } from './words';
+import { partition } from './partition';
 
 export type MatchMode =
   | 'lexeme'
@@ -70,7 +71,7 @@ type MatchedSenseAndGlossRange = [
   sense: number,
   gloss: number,
   start: number,
-  end: number
+  end: number,
 ];
 
 export function toWordResultFromGlossLookup(
@@ -121,6 +122,25 @@ function makeWordResult(
           ...meta,
           match,
         };
+
+        // WaniKani levels are stored in the `p` (priority) field for simplicity
+        // in the form `wk{N}` where N is the level number.
+        //
+        // We need to extract any such levels and store them in the `wk` field.
+        const [rawWks, p] = partition(meta?.p || [], (p) => /^wk\d+$/.test(p));
+        const allWks = rawWks.map((p) => parseInt(p.slice(2), 10));
+        const wk = allWks.length ? Math.min(...allWks) : undefined;
+
+        if (p.length) {
+          result.p = p;
+        } else {
+          delete result.p;
+        }
+
+        if (wk) {
+          result.wk = wk;
+        }
+
         if (matchRange) {
           result.matchRange = matchRange;
         }
@@ -157,7 +177,7 @@ function getMatchMetadata(
   kanjiMatchRanges: Array<MatchedHeadwordRange>,
   kanaMatches: number,
   kanaMatchRanges: Array<MatchedHeadwordRange>,
-  senseMatches: number
+  senseMatches: number,
 ] {
   // There are three cases:
   //
@@ -291,7 +311,7 @@ function getMatchMetadataForCrossRefLookup(
   kanjiMatchRanges: Array<MatchedHeadwordRange>,
   kanaMatches: number,
   kanaMatchRanges: Array<MatchedHeadwordRange>,
-  senseMatches: number
+  senseMatches: number,
 ] {
   let kanjiMatches = 0;
   let kanjiMatchRanges: Array<MatchedHeadwordRange> = [];

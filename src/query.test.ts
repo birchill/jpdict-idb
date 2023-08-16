@@ -826,6 +826,44 @@ describe('query', function () {
     assert.deepEqual(result, expected);
   });
 
+  it('should expand WaniKani level information', async () => {
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.mock(
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1,"format":"full"}
+{"id":1562870,"k":["腕時計"],"km":[{"p":["i1","n1","nf14","wk24"]}],"r":["うでどけい"],"rm":[{"p":["i1","n1","nf14"],"a":3}],"s":[{"g":["wristwatch","watch"],"pos":["n"]}]}
+`
+    );
+
+    await db.update({ series: 'words', lang: 'en' });
+
+    const result = await getWords('腕時計');
+    const expected: Array<WordResult> = [
+      {
+        id: 1562870,
+        k: [
+          {
+            ent: '腕時計',
+            p: ['i1', 'n1', 'nf14'],
+            wk: 24,
+            match: true,
+            matchRange: [0, 3],
+          },
+        ],
+        r: [{ ent: 'うでどけい', p: ['i1', 'n1', 'nf14'], a: 3, match: true }],
+        s: [
+          {
+            g: [{ str: 'wristwatch' }, { str: 'watch' }],
+            pos: ['n'],
+            match: true,
+          },
+        ],
+      },
+    ];
+
+    assert.deepEqual(result, expected);
+  });
+
   it('should sort more common entries first', async () => {
     fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
