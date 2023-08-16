@@ -23,6 +23,9 @@ export type KanjiMeta = {
 
   // Priority information
   p?: Array<string>;
+
+  // WaniKani level
+  wk?: number;
 };
 
 export type ReadingMeta = {
