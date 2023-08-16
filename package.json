@@ -4,9 +4,9 @@
   "description": "Download and lookup jpdict data using IndexedDB",
   "author": "Brian Birtles",
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsup",
     "test": "playwright-test",
-    "prepublishOnly": "pinst --disable && rollup -c",
+    "prepublishOnly": "pinst --disable && tsup",
     "postinstall": "husky install",
     "postpublish": "pinst --enable",
     "release": "standard-version"
@@ -22,9 +22,14 @@
     "dist"
   ],
   "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "homepage": "https://github.com/birchill/jpdict-idb#readme",
   "engines": {
     "node": ">=16.0.0"
@@ -37,7 +42,6 @@
     "superstruct": "^1.0.3"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "11.1.2",
     "@types/chai": "4.3.5",
     "@types/chai-as-promised": "7.1.5",
     "@types/chai-datetime": "0.0.37",
@@ -62,13 +66,11 @@
     "playwright-test": "12.1.1",
     "prettier": "3.0.2",
     "process": "0.11.10",
-    "rollup": "3.28.0",
-    "rollup-plugin-cleaner": "1.0.0",
-    "rollup-plugin-dts": "5.3.1",
     "sinon": "15.2.0",
     "standard-version": "9.5.0",
     "ts-loader": "9.4.4",
     "tslib": "2.6.1",
+    "tsup": "^7.2.0",
     "typescript": "5.1.6",
     "util": "0.12.5",
     "webpack": "5.88.2"
