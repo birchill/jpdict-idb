@@ -18,6 +18,11 @@ jobs:
       - name: Install
         run: yarn install
 
+      - name: Set Git username
+        run: |-
+          git config --global user.name "Release It"
+          git config --global user.email "actions@users.noreply.github.com"
+
       - name: Publish
         run: yarn release-it --ci
         env:
