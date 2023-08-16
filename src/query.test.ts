@@ -78,7 +78,7 @@ describe('query', function () {
     fetchMock.mock(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":1,"format":"full","format":"full"}
-{"c":"引","r":{"on":["イン"],"kun":["ひ.く","ひ.ける"],"na":["いな","ひき","ひけ","びき"]},"m":["pull","tug","jerk","admit","install","quote","refer to"],"rad":{"x":57},"refs":{"nelson_c":1562,"nelson_n":1681,"halpern_njecd":181,"halpern_kkld":133,"halpern_kkld_2ed":160,"heisig":1232,"heisig6":1318,"henshall":77,"sh_kk":216,"sh_kk2":216,"kanji_in_context":257,"busy_people":"3.2","kodansha_compact":605,"skip":"1-3-1","sh_desc":"3h1.1","conning":422},"misc":{"sc":4,"gr":2,"freq":218,"jlpt":3,"kk":9},"comp":"⼁⼸","var":["057-hen"]}
+{"c":"引","r":{"py":["yin3"],"on":["イン"],"kun":["ひ.く","ひ.ける"],"na":["いな","ひき","ひけ","びき"]},"m":["pull","tug","jerk","admit","install","quote","refer to"],"rad":{"x":57},"refs":{"nelson_c":1562,"nelson_n":1681,"halpern_njecd":181,"halpern_kkld_2ed":160,"heisig6":1318,"henshall":77,"sh_kk2":216,"kanji_in_context":257,"busy_people":"3.2","kodansha_compact":605,"skip":"1-3-1","sh_desc":"3h1.1","conning":422},"misc":{"sc":4,"gr":2,"freq":218,"jlpt":3,"kk":9,"wk":3,"jlptn":4},"comp":"⼸⼁","var":["057-hen"]}
 `
     );
     fetchMock.mock(
@@ -98,6 +98,7 @@ describe('query', function () {
         c: '引',
         r: {
           on: ['イン'],
+          py: ['yin3'],
           kun: ['ひ.く', 'ひ.ける'],
           na: ['いな', 'ひき', 'ひけ', 'びき'],
         },
@@ -121,12 +122,9 @@ describe('query', function () {
           nelson_c: 1562,
           nelson_n: 1681,
           halpern_njecd: 181,
-          halpern_kkld: 133,
           halpern_kkld_2ed: 160,
-          heisig: 1232,
           heisig6: 1318,
           henshall: 77,
-          sh_kk: 216,
           sh_kk2: 216,
           kanji_in_context: 257,
           busy_people: '3.2',
@@ -135,20 +133,20 @@ describe('query', function () {
           sh_desc: '3h1.1',
           conning: 422,
         },
-        misc: { sc: 4, gr: 2, freq: 218, jlpt: 3, kk: 9 },
+        misc: { sc: 4, gr: 2, freq: 218, jlpt: 3, jlptn: 4, kk: 9, wk: 3 },
         comp: [
-          {
-            c: '⼁',
-            k: '｜',
-            na: ['たてぼう', 'ぼう'],
-            m: ['stick'],
-            m_lang: 'en',
-          },
           {
             c: '⼸',
             k: '弓',
             na: ['ゆみへん'],
             m: ['bow', 'bow (archery, violin)'],
+            m_lang: 'en',
+          },
+          {
+            c: '⼁',
+            k: '｜',
+            na: ['たてぼう', 'ぼう'],
+            m: ['stick'],
             m_lang: 'en',
           },
         ],

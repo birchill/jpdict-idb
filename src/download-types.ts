@@ -203,6 +203,9 @@ const MiscSchema: s.Describe<KanjiMiscInfo> = s.type({
   jlpt: s.optional(s.min(safeInteger(), 0)),
   jlptn: s.optional(s.min(safeInteger(), 0)),
   kk: s.optional(s.min(safeInteger(), 0)),
+  // As with jlpt(n), we allow 0 here even though we expect WaniKani levels to
+  // be between 1 and 60.
+  wk: s.optional(s.min(safeInteger(), 0)),
   meta: s.optional(s.array(s.string())),
 });
 

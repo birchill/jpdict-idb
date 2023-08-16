@@ -31,5 +31,6 @@ export type KanjiMiscInfo = {
   jlpt?: number;
   jlptn?: number;
   kk?: number;
+  wk?: number;
   meta?: Array<string>;
 };
