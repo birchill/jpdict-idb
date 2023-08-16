@@ -8,8 +8,7 @@
     "test": "playwright-test",
     "prepublishOnly": "pinst --disable && tsup",
     "postinstall": "husky install",
-    "postpublish": "pinst --enable",
-    "release": "standard-version"
+    "postpublish": "pinst --enable"
   },
   "repository": {
     "type": "git",
@@ -34,6 +33,9 @@
   "engines": {
     "node": ">=16.0.0"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "dependencies": {
     "@birchill/json-equalish": "^1.1.2",
     "@birchill/normal-jp": "^1.4.0",
@@ -42,6 +44,7 @@
     "superstruct": "^1.0.3"
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "7.0.0",
     "@types/chai": "4.3.5",
     "@types/chai-as-promised": "7.1.5",
     "@types/chai-datetime": "0.0.37",
@@ -66,8 +69,8 @@
     "playwright-test": "12.1.1",
     "prettier": "3.0.2",
     "process": "0.11.10",
+    "release-it": "16.1.5",
     "sinon": "15.2.0",
-    "standard-version": "9.5.0",
     "ts-loader": "9.4.4",
     "tslib": "2.6.1",
     "tsup": "7.2.0",

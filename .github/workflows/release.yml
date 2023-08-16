@@ -1,0 +1,24 @@
+name: Release
+on: workflow_dispatch
+env:
+  CI: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3.5.3
+      - uses: actions/setup-node@v3.8.0
+        with:
+          node-version: 18
+          cache: yarn
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install
+        run: yarn install
+
+      - name: Publish
+        run: yarn release-it --ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -44,7 +44,5 @@ yarn test --browser webkit
 ## Publishing
 
 ```
-yarn release
-git push --follow-tags origin main
-yarn publish
+yarn release-it
 ```
