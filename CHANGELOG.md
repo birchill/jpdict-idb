@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.1 (2023-08-17)
+
+### Bug Fixes
+
+- drop safari-14-idb-fix ([bba9a50](https://github.com/birchill/jpdict-idb/commit/bba9a50f45f3ec70abc509513bd6c6d3fe19d805))
+
 ## 2.1.0 (2023-08-17)
 
 ### Features
