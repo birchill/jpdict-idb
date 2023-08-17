@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0 (2023-08-17)
+
+### Features
+
+- add parsing for WaniKani levels attached to words ([9d3feed](https://github.com/birchill/jpdict-idb/commit/9d3feed840cbaa5bcc3fc58a3247b6db36489b5d))
+
 ## [2.0.2](https://github.com/birchill/jpdict-idb/compare/v2.0.1...v2.0.2) (2023-08-16)
 
 ### Bug Fixes
