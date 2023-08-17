@@ -6,7 +6,6 @@ import {
   openDB,
   StoreNames,
 } from 'idb/with-async-ittr';
-import idbReady from 'safari-14-idb-fix';
 
 import { DataSeries } from './data-series';
 import { DataVersion } from './data-version';
@@ -154,82 +153,80 @@ export class JpdictStore {
     /* eslint @typescript-eslint/no-this-alias: 0 */
     const self = this;
 
-    this.openPromise = idbReady().then(() =>
-      openDB<JpdictSchema>('jpdict', 4, {
-        upgrade(
-          db: IDBPDatabase<JpdictSchema>,
-          oldVersion: number,
-          _newVersion: number | null,
-          transaction: IDBPTransaction<
-            JpdictSchema,
-            StoreNames<JpdictSchema>[],
-            'versionchange'
-          >
-        ) {
-          if (oldVersion < 1) {
-            const kanjiTable = db.createObjectStore<'kanji'>('kanji', {
-              keyPath: 'c',
-            });
-            kanjiTable.createIndex('r.on', 'r.on', { multiEntry: true });
-            kanjiTable.createIndex('r.kun', 'r.kun', { multiEntry: true });
-            kanjiTable.createIndex('r.na', 'r.na', { multiEntry: true });
+    this.openPromise = openDB<JpdictSchema>('jpdict', 4, {
+      upgrade(
+        db: IDBPDatabase<JpdictSchema>,
+        oldVersion: number,
+        _newVersion: number | null,
+        transaction: IDBPTransaction<
+          JpdictSchema,
+          StoreNames<JpdictSchema>[],
+          'versionchange'
+        >
+      ) {
+        if (oldVersion < 1) {
+          const kanjiTable = db.createObjectStore<'kanji'>('kanji', {
+            keyPath: 'c',
+          });
+          kanjiTable.createIndex('r.on', 'r.on', { multiEntry: true });
+          kanjiTable.createIndex('r.kun', 'r.kun', { multiEntry: true });
+          kanjiTable.createIndex('r.na', 'r.na', { multiEntry: true });
 
-            const radicalsTable = db.createObjectStore<'radicals'>('radicals', {
-              keyPath: 'id',
-            });
-            radicalsTable.createIndex('r', 'r');
-            radicalsTable.createIndex('b', 'b');
-            radicalsTable.createIndex('k', 'k');
+          const radicalsTable = db.createObjectStore<'radicals'>('radicals', {
+            keyPath: 'id',
+          });
+          radicalsTable.createIndex('r', 'r');
+          radicalsTable.createIndex('b', 'b');
+          radicalsTable.createIndex('k', 'k');
 
-            db.createObjectStore<'version'>('version', {
-              keyPath: 'id',
-            });
-          }
-          if (oldVersion < 2) {
-            const namesTable = db.createObjectStore<'names'>('names', {
-              keyPath: 'id',
-            });
-            namesTable.createIndex('k', 'k', { multiEntry: true });
-            namesTable.createIndex('r', 'r', { multiEntry: true });
-          }
-          if (oldVersion < 3) {
-            const namesTable = transaction.objectStore('names');
-            namesTable.createIndex('h', 'h', { multiEntry: true });
-          }
-          if (oldVersion < 4) {
-            const wordsTable = db.createObjectStore<'words'>('words', {
-              keyPath: 'id',
-            });
-            wordsTable.createIndex('k', 'k', { multiEntry: true });
-            wordsTable.createIndex('r', 'r', { multiEntry: true });
+          db.createObjectStore<'version'>('version', {
+            keyPath: 'id',
+          });
+        }
+        if (oldVersion < 2) {
+          const namesTable = db.createObjectStore<'names'>('names', {
+            keyPath: 'id',
+          });
+          namesTable.createIndex('k', 'k', { multiEntry: true });
+          namesTable.createIndex('r', 'r', { multiEntry: true });
+        }
+        if (oldVersion < 3) {
+          const namesTable = transaction.objectStore('names');
+          namesTable.createIndex('h', 'h', { multiEntry: true });
+        }
+        if (oldVersion < 4) {
+          const wordsTable = db.createObjectStore<'words'>('words', {
+            keyPath: 'id',
+          });
+          wordsTable.createIndex('k', 'k', { multiEntry: true });
+          wordsTable.createIndex('r', 'r', { multiEntry: true });
 
-            wordsTable.createIndex('h', 'h', { multiEntry: true });
+          wordsTable.createIndex('h', 'h', { multiEntry: true });
 
-            wordsTable.createIndex('kc', 'kc', { multiEntry: true });
-            wordsTable.createIndex('gt_en', 'gt_en', { multiEntry: true });
-            wordsTable.createIndex('gt_l', 'gt_l', { multiEntry: true });
+          wordsTable.createIndex('kc', 'kc', { multiEntry: true });
+          wordsTable.createIndex('gt_en', 'gt_en', { multiEntry: true });
+          wordsTable.createIndex('gt_l', 'gt_l', { multiEntry: true });
+        }
+      },
+      blocked() {
+        console.log('Opening blocked');
+      },
+      blocking() {
+        if (self.db) {
+          try {
+            self.db.close();
+          } catch {
+            // Ignore
           }
-        },
-        blocked() {
-          console.log('Opening blocked');
-        },
-        blocking() {
-          if (self.db) {
-            try {
-              self.db.close();
-            } catch {
-              // Ignore
-            }
-            self.db = undefined;
-            self.state = 'idle';
-          }
-        },
-      }).then((db) => {
-        self.db = db;
-        self.state = 'open';
-        return db;
-      })
-    );
+          self.db = undefined;
+          self.state = 'idle';
+        }
+      },
+    }).then((db) => {
+      self.db = db;
+      self.state = 'open';
+      return db;
+    });
 
     try {
       await this.openPromise;

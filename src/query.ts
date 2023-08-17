@@ -4,7 +4,6 @@ import {
   openDB,
   StoreNames,
 } from 'idb/with-async-ittr';
-import idbReady from 'safari-14-idb-fix';
 import { kanaToHiragana } from '@birchill/normal-jp';
 
 import { JpdictSchema } from './store';
@@ -66,51 +65,49 @@ function open(): Promise<IDBPDatabase<JpdictSchema> | null> {
 
   _state = 'opening';
 
-  _openPromise = idbReady().then(() =>
-    openDB<JpdictSchema>('jpdict', 4, {
-      upgrade(
-        _db: IDBPDatabase<JpdictSchema>,
-        _oldVersion: number,
-        _newVersion: number | null,
-        transaction: IDBPTransaction<
-          JpdictSchema,
-          StoreNames<JpdictSchema>[],
-          'versionchange'
-        >
-      ) {
-        // If the database does not exist, do not try to create it.
-        // If it is for an old version, do not try to use it.
-        transaction.abort();
-      },
-      blocked() {
-        console.log('Opening blocked');
-      },
-      blocking() {
-        if (_db) {
-          _db.close();
-          _db = undefined;
-          _state = 'idle';
-        }
-      },
-      terminated() {
+  _openPromise = openDB<JpdictSchema>('jpdict', 4, {
+    upgrade(
+      _db: IDBPDatabase<JpdictSchema>,
+      _oldVersion: number,
+      _newVersion: number | null,
+      transaction: IDBPTransaction<
+        JpdictSchema,
+        StoreNames<JpdictSchema>[],
+        'versionchange'
+      >
+    ) {
+      // If the database does not exist, do not try to create it.
+      // If it is for an old version, do not try to use it.
+      transaction.abort();
+    },
+    blocked() {
+      console.log('Opening blocked');
+    },
+    blocking() {
+      if (_db) {
+        _db.close();
         _db = undefined;
         _state = 'idle';
-      },
+      }
+    },
+    terminated() {
+      _db = undefined;
+      _state = 'idle';
+    },
+  })
+    .then((db) => {
+      _db = db;
+      _state = 'open';
+      return db;
     })
-      .then((db) => {
-        _db = db;
-        _state = 'open';
-        return db;
-      })
-      .catch(() => {
-        _state = 'idle';
-        _db = undefined;
-        return null;
-      })
-      .finally(() => {
-        _openPromise = undefined;
-      })
-  );
+    .catch(() => {
+      _state = 'idle';
+      _db = undefined;
+      return null;
+    })
+    .finally(() => {
+      _openPromise = undefined;
+    });
 
   return _openPromise!;
 }
@@ -404,7 +401,7 @@ async function lookUpGlosses(
     [
       record: WordStoreRecord,
       confidence: number,
-      matchedRanges: Array<MatchedRange>
+      matchedRanges: Array<MatchedRange>,
     ]
   >
 > {

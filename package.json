@@ -40,7 +40,6 @@
     "@birchill/json-equalish": "^1.1.2",
     "@birchill/normal-jp": "^1.4.0",
     "idb": "^7.1.1",
-    "safari-14-idb-fix": "^3.0.0",
     "superstruct": "^1.0.3"
   },
   "devDependencies": {
