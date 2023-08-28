@@ -2,6 +2,8 @@
 
 ## 2.1.2 (2023-08-28)
 
+- update dependencies
+
 ## 2.1.1 (2023-08-17)
 
 ### Bug Fixes
