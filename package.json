@@ -43,7 +43,7 @@
     "superstruct": "^1.0.3"
   },
   "devDependencies": {
-    "@release-it/conventional-changelog": "7.0.0",
+    "@release-it/conventional-changelog": "7.0.1",
     "@types/chai": "4.3.5",
     "@types/chai-as-promised": "7.1.5",
     "@types/chai-datetime": "0.0.37",
