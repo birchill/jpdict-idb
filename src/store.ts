@@ -361,7 +361,9 @@ export class JpdictStore {
   }) {
     await this.open();
 
-    const tx = this.db!.transaction(series, 'readwrite');
+    const tx = this.db!.transaction(series, 'readwrite', {
+      durability: 'relaxed',
+    });
     const table = tx.store;
 
     try {
