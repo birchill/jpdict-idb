@@ -77,6 +77,9 @@
     "util": "0.12.5",
     "webpack": "5.88.2"
   },
+  "overrides": {
+    "conventional-changelog-conventionalcommits": "^7.0.2"
+  },
   "lint-staged": {
     "*.{js,ts,md}": [
       "prettier --write"
