@@ -1282,7 +1282,7 @@ arrify@^3.0.0:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-3.0.0.tgz#ccdefb8eaf2a1d2ab0da1ca2ce53118759fd46bc"
   integrity sha512-tLkvA81vQG/XqE2mjDkGQHoOINtMHtysSnemrmoGe6PydDPMRbVugqyk4A6V/WDWEfm3l+0d8anA9r8cv/5Jaw==
 
-assert@^2.0.0:
+assert@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/assert/-/assert-2.1.0.tgz#6d92a238d05dc02e7427c881fb8be81c8448b2dd"
   integrity sha512-eLHpSK/Y4nhMJ07gDaAzoX/XAKS8PSaojml3M0DM4JpV1LAi5JOJ/p6H/XWrl8L+DzVEvVCW1z3vWAaB9oTsQw==
@@ -3999,10 +3999,10 @@ nanoid@3.3.3:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.3.tgz#fd8e8b7aa761fe807dba2d1b98fb7241bb724a25"
   integrity sha512-p1sjXuopFs0xg+fPASzQ28agW1oHD7xDsd9Xkf3T15H3c/cifrFHVwrh74PdoklAPi+i7MdRsE47vm2r6JoB+w==
 
-nanoid@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-4.0.2.tgz#140b3c5003959adbebf521c170f282c5e7f9fb9e"
-  integrity sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==
+nanoid@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-5.0.1.tgz#3e95d775a8bc8a98afbf0a237e2bbc6a71b0662e"
+  integrity sha512-vWeVtV5Cw68aML/QaZvqN/3QQXc6fBfIieAlu05m7FZW2Dgb+3f0xc0TTxuJW+7u30t7iSDTV/j3kVI0oJqIfQ==
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -4285,17 +4285,10 @@ p-timeout@^5.0.2:
   resolved "https://registry.yarnpkg.com/p-timeout/-/p-timeout-5.1.0.tgz#b3c691cf4415138ce2d9cfe071dba11f0fee085b"
   integrity sha512-auFDyzzzGZZZdHz3BtET9VEz0SE/uMEAx7uWfGPucfzEwwe/xH0iVeZibQmANYE/hp9T2+UUZT5m+BKyrDp3Ew==
 
-p-timeout@^6.0.0, p-timeout@^6.1.2:
+p-timeout@^6.1.2:
   version "6.1.2"
   resolved "https://registry.yarnpkg.com/p-timeout/-/p-timeout-6.1.2.tgz#22b8d8a78abf5e103030211c5fc6dee1166a6aa5"
   integrity sha512-UbD77BuZ9Bc9aABo74gfXhNvzC9Tx7SxtHSh1fxvx3jTLLYvmVhiQZZrJzqqU0jKbN32kb5VOKiLEQI/3bIjgQ==
-
-p-wait-for@5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/p-wait-for/-/p-wait-for-5.0.2.tgz#1546a15e64accf1897377cb1507fa4c756fffe96"
-  integrity sha512-lwx6u1CotQYPVju77R+D0vFomni/AqRfqLmqQ8hekklqZ6gAY9rONh7lBQ0uxWMkC2AuX9b2DVAl8To0NyP1JA==
-  dependencies:
-    p-timeout "^6.0.0"
 
 pac-proxy-agent@^7.0.0:
   version "7.0.1"
@@ -4459,13 +4452,13 @@ playwright-core@1.37.1:
   resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.37.1.tgz#cb517d52e2e8cb4fa71957639f1cd105d1683126"
   integrity sha512-17EuQxlSIYCmEMwzMqusJ2ztDgJePjrbttaefgdsiqeLWidjYz9BxXaTaZWxH1J95SHGk6tjE+dwgWILJoUZfA==
 
-playwright-test@12.3.0:
-  version "12.3.0"
-  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-12.3.0.tgz#b6127366554448b142dc3b9f4ae96fe21ff52755"
-  integrity sha512-5H0AzuVS37GQ7JbniCwDCJ9zAjsUNwfD46nrzS9JvyAQqTQgBfXpxdevUHOrm+w4ILoqnyMnjsDQR1chdxTvsw==
+playwright-test@12.3.1:
+  version "12.3.1"
+  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-12.3.1.tgz#3a61f5be791e9efa030e1b030e904862509f8d22"
+  integrity sha512-BQLxaokBaIWhLEAxcS5TXtRo8RWQljnZr9ixrpksaPFLo4KdkH0Q01fNehDgifgkYSPn2IsdZGZnBQSmO5beFw==
   dependencies:
     acorn-loose "^8.3.0"
-    assert "^2.0.0"
+    assert "^2.1.0"
     buffer "^6.0.3"
     c8 "^8.0.1"
     camelcase "^8.0.0"
@@ -4480,10 +4473,9 @@ playwright-test@12.3.0:
     lilconfig "^2.1.0"
     lodash "^4.17.21"
     merge-options "^3.0.4"
-    nanoid "^4.0.2"
+    nanoid "^5.0.1"
     ora "^7.0.1"
     p-timeout "^6.1.2"
-    p-wait-for "5.0.2"
     path-browserify "^1.0.1"
     playwright-core "1.37.1"
     polka "^0.5.2"
@@ -4494,7 +4486,6 @@ playwright-test@12.3.0:
     source-map "0.6.1"
     source-map-support "^0.5.21"
     stream-browserify "^3.0.0"
-    strip-ansi "^7.1.0"
     tempy "^3.1.0"
     test-exclude "^6.0.0"
     util "^0.12.5"
