@@ -68,7 +68,7 @@
     "playwright-test": "12.3.5",
     "prettier": "3.0.3",
     "process": "0.11.10",
-    "release-it": "16.2.0",
+    "release-it": "16.2.1",
     "sinon": "16.0.0",
     "ts-loader": "9.4.4",
     "tslib": "2.6.2",
