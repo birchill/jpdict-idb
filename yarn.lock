@@ -829,10 +829,10 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.1.tgz#aa22750962f3bf0e79d753d3cc067f010c95f194"
   integrity sha512-LG4opVs2ANWZ1TJoKc937iMmNstM/d0ae1vNbnBvBhqCSezgVUOzcLCqbI5elV8Vy6WKwKjaqR+zO9VKirBBCA==
 
-"@types/fetch-mock@7.3.6":
-  version "7.3.6"
-  resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-7.3.6.tgz#ec4a72d320cb779f01348af975f786908a641245"
-  integrity sha512-vE4GcV+NzDKKiCtIHO+/+1osbr9sUe5fl1nGlEdwxOXNvJnnXCpC0y6lAqj3S/NlJMEKnGWeCFZWy79vQA4eNA==
+"@types/fetch-mock@7.3.7":
+  version "7.3.7"
+  resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-7.3.7.tgz#de913c0d905068c340072cca3e342fc2c335332e"
+  integrity sha512-VKtaL2UUTFLXN+JoBOhF0elvQ5eu7ViSVAJDnogsDz4ygWV8/SaAKfJjFbZkHeV/jpAotObjitXM+VZcs+mwGQ==
 
 "@types/http-cache-semantics@^4.0.1":
   version "4.0.1"
