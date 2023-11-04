@@ -883,10 +883,10 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.5.1.tgz#0480eeb7221eb9bc398ad7432c9d7e14b1a5a367"
   integrity sha512-cJRQXpObxfNKkFAZbJl2yjWtJCqELQIdShsogr1d2MilP8dKD9TE/nEKHkJgUNHdGKCQaf9HbIynuV2csLGVLg==
 
-"@types/sinon@10.0.20":
-  version "10.0.20"
-  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-10.0.20.tgz#f1585debf4c0d99f9938f4111e5479fb74865146"
-  integrity sha512-2APKKruFNCAZgx3daAyACGzWuJ028VVCUDk6o2rw/Z4PXT0ogwdV4KUegW0MwVs0Zu59auPXbbuBJHF12Sx1Eg==
+"@types/sinon@17.0.0":
+  version "17.0.0"
+  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-17.0.0.tgz#c5e5ee3ca6ab825fe18ef4b0aa74fedf1250baa1"
+  integrity sha512-oN4AeDMFCeNZrAffCjhLcwwVymRZL2c9mljUmhPnd0eiM06d4ELDg0Q0TSvnZXrCIFlSA859qIdcfu1HapswPQ==
   dependencies:
     "@types/sinonjs__fake-timers" "*"
 
