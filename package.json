@@ -46,7 +46,7 @@
     "@release-it/conventional-changelog": "7.0.2",
     "@types/chai": "4.3.9",
     "@types/chai-as-promised": "7.1.7",
-    "@types/chai-datetime": "0.0.38",
+    "@types/chai-datetime": "0.0.39",
     "@types/chai-like": "1.1.2",
     "@types/fetch-mock": "7.3.7",
     "@types/mocha": "10.0.3",
