@@ -791,10 +791,10 @@
   dependencies:
     "@types/chai" "*"
 
-"@types/chai-datetime@0.0.38":
-  version "0.0.38"
-  resolved "https://registry.yarnpkg.com/@types/chai-datetime/-/chai-datetime-0.0.38.tgz#a7fee4fdbe5bac36b7a18528ceb1f6ba758985fb"
-  integrity sha512-XU3VlbloJGxeEfWS7d44hMl6AqZ2JpoeukS95dl7BftPzYUKxQuzTl6FPs96y7IjJfFkCnyIljgH+jakHfTp0Q==
+"@types/chai-datetime@0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@types/chai-datetime/-/chai-datetime-0.0.39.tgz#4b2c8f5e780bd72a61bab756937a8c57b1d1a821"
+  integrity sha512-MCCWsAg74zFRq1B07c9MUWUGRffTgnMROLHhcKG9xb97iLEyt+U9RQt9Qd3cMo+n+9SXXljcP3OM4dJxZaTxKQ==
   dependencies:
     "@types/chai" "*"
 
