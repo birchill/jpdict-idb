@@ -65,7 +65,7 @@
     "lint-staged": "15.0.2",
     "mocha": "10.2.0",
     "pinst": "3.0.0",
-    "playwright-test": "12.4.3",
+    "playwright-test": "12.6.0",
     "prettier": "3.0.3",
     "process": "0.11.10",
     "release-it": "16.2.1",
