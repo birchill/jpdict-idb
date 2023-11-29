@@ -864,6 +864,52 @@ describe('query', function () {
     assert.deepEqual(result, expected);
   });
 
+  it('should expand Bunpro level information', async () => {
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.mock(
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1,"format":"full"}
+{"id":1610740,"k":["違いない","違い無い"],"km":[{"p":["i1","bv4","bg3"],"bg":"に違いない"}],"r":["ちがいない"],"rm":[{"p":["i1"],"a":4}],"s":[{"g":["sure","no mistaking it","for certain","without doubt"],"pos":["exp","adj-i"],"inf":"oft. as に違いない"}]}
+`
+    );
+
+    await db.update({ series: 'words', lang: 'en' });
+
+    const result = await getWords('違いない');
+    const expected: Array<WordResult> = [
+      {
+        id: 1610740,
+        k: [
+          {
+            ent: '違いない',
+            p: ['i1'],
+            match: true,
+            bv: { l: 4 },
+            bg: { l: 3, src: 'に違いない' },
+            matchRange: [0, 4],
+          },
+          { ent: '違い無い', match: false },
+        ],
+        r: [{ ent: 'ちがいない', p: ['i1'], a: 4, match: true }],
+        s: [
+          {
+            g: [
+              { str: 'sure' },
+              { str: 'no mistaking it' },
+              { str: 'for certain' },
+              { str: 'without doubt' },
+            ],
+            pos: ['exp', 'adj-i'],
+            inf: 'oft. as に違いない',
+            match: true,
+          },
+        ],
+      },
+    ];
+
+    assert.deepEqual(result, expected);
+  });
+
   it('should sort more common entries first', async () => {
     fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(

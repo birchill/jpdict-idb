@@ -1,6 +1,6 @@
 import { KanjiMiscInfo, KanjiReading, Radical } from './kanji';
 import { NameRecord } from './names';
-import { Resolve } from './type-helpers';
+import { Overwrite, Resolve } from './type-helpers';
 import { GlossType, KanjiMeta, ReadingMeta, WordSense } from './words';
 
 // -------------------------------------------------------------------------
@@ -23,7 +23,14 @@ export type ExtendedKanjiEntry = Resolve<
     // If set, indicates that the match occurred on this headword and
     // indicates the range of characters that matched.
     matchRange?: [start: number, end: number];
-  } & KanjiMeta
+  } & Overwrite<
+    KanjiMeta,
+    {
+      wk?: number;
+      bv?: { l: number; src?: string };
+      bg?: { l: number; src?: string };
+    }
+  >
 >;
 
 export type ExtendedKanaEntry = Resolve<
@@ -33,7 +40,14 @@ export type ExtendedKanaEntry = Resolve<
     // If set, indicates that the match occurred on this headword and
     // indicates the range of characters that matched.
     matchRange?: [start: number, end: number];
-  } & ReadingMeta
+  } & Overwrite<
+    ReadingMeta,
+    {
+      wk?: number;
+      bv?: { l: number; src?: string };
+      bg?: { l: number; src?: string };
+    }
+  >
 >;
 
 export type ExtendedSense = Resolve<
