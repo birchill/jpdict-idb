@@ -19,7 +19,6 @@ import {
   WordRecord,
   WordSense,
 } from './words';
-import { partition } from './partition';
 
 export type MatchMode =
   | 'lexeme'
@@ -119,7 +118,7 @@ function makeWordResult(
       (key, match, matchRange, meta) => {
         const result: ExtendedKanjiEntry = {
           ent: key,
-          ...meta,
+          ...(meta ? stripFields(meta, ['bv', 'bg']) : undefined),
           match,
         };
 
@@ -127,11 +126,43 @@ function makeWordResult(
         // in the form `wk{N}` where N is the level number.
         //
         // We need to extract any such levels and store them in the `wk` field.
-        const [rawWks, p] = partition(meta?.p || [], (p) => /^wk\d+$/.test(p));
-        const allWks = rawWks.map((p) => parseInt(p.slice(2), 10));
-        const wk = allWks.length ? Math.min(...allWks) : undefined;
+        //
+        // Likewise for Bunpro levels which need to be combined with an `bv` /
+        // `bg` fields since these contain the original source text for a fuzzy
+        // match.
+        let wk: number | undefined;
+        let bv: number | undefined;
+        let bg: number | undefined;
 
-        if (p.length) {
+        const p = meta?.p?.filter((p) => {
+          if (/^wk\d+$/.test(p)) {
+            const wkLevel = parseInt(p.slice(2), 10);
+            if (typeof wk === 'undefined' || wkLevel < wk) {
+              wk = wkLevel;
+            }
+            return false;
+          }
+
+          if (/^bv\d+$/.test(p)) {
+            const bvLevel = parseInt(p.slice(2), 10);
+            if (typeof bv === 'undefined' || bvLevel < bv) {
+              bv = bvLevel;
+            }
+            return false;
+          }
+
+          if (/^bg\d+$/.test(p)) {
+            const bgLevel = parseInt(p.slice(2), 10);
+            if (typeof bg === 'undefined' || bgLevel < bg) {
+              bg = bgLevel;
+            }
+            return false;
+          }
+
+          return true;
+        });
+
+        if (p?.length) {
           result.p = p;
         } else {
           delete result.p;
@@ -139,6 +170,20 @@ function makeWordResult(
 
         if (wk) {
           result.wk = wk;
+        }
+
+        if (typeof bv === 'number') {
+          result.bv = Object.assign(
+            { l: bv },
+            meta?.bv ? { src: meta?.bv } : undefined
+          );
+        }
+
+        if (typeof bg === 'number') {
+          result.bg = Object.assign(
+            { l: bg },
+            meta?.bg ? { src: meta?.bg } : undefined
+          );
         }
 
         if (matchRange) {
@@ -155,9 +200,53 @@ function makeWordResult(
       (key, match, matchRange, meta) => {
         const result: ExtendedKanaEntry = {
           ent: key,
-          ...meta,
+          ...(meta ? stripFields(meta, ['bv', 'bg']) : undefined),
           match,
         };
+
+        let bv: number | undefined;
+        let bg: number | undefined;
+
+        const p = meta?.p?.filter((p) => {
+          if (/^bv\d+$/.test(p)) {
+            const bvLevel = parseInt(p.slice(2), 10);
+            if (typeof bv === 'undefined' || bvLevel < bv) {
+              bv = bvLevel;
+            }
+            return false;
+          }
+
+          if (/^bg\d+$/.test(p)) {
+            const bgLevel = parseInt(p.slice(2), 10);
+            if (typeof bg === 'undefined' || bgLevel < bg) {
+              bg = bgLevel;
+            }
+            return false;
+          }
+
+          return true;
+        });
+
+        if (p?.length) {
+          result.p = p;
+        } else {
+          delete result.p;
+        }
+
+        if (typeof bv === 'number') {
+          result.bv = Object.assign(
+            { l: bv },
+            meta?.bv ? { src: meta?.bv } : undefined
+          );
+        }
+
+        if (typeof bg === 'number') {
+          result.bg = Object.assign(
+            { l: bg },
+            meta?.bg ? { src: meta?.bg } : undefined
+          );
+        }
+
         if (matchRange) {
           result.matchRange = matchRange;
         }

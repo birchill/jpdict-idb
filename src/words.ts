@@ -24,8 +24,11 @@ export type KanjiMeta = {
   // Priority information
   p?: Array<string>;
 
-  // WaniKani level
-  wk?: number;
+  // Bunpro vocab fuzzy match source text
+  bv?: string;
+
+  // Bunpro grammar fuzzy match source text
+  bg?: string;
 };
 
 export type ReadingMeta = {
@@ -46,6 +49,12 @@ export type ReadingMeta = {
 
   // Pitch accent information.
   a?: number | Array<Accent>;
+
+  // Bunpro vocab fuzzy match source text
+  bv?: string;
+
+  // Bunpro grammar fuzzy match source text
+  bg?: string;
 };
 
 export type Accent = {
