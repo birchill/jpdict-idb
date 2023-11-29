@@ -223,15 +223,17 @@ export type FieldType = (typeof allFieldTypes)[number];
 // prettier-ignore
 const allFieldTypes = [
   'agric', 'anat', 'archeol', 'archit', 'art', 'astron', 'audvid', 'aviat',
-  'baseb', 'biochem', 'biol', 'bot', 'Buddh', 'bus', 'cards', 'chem', 'Christn',
-  'cloth', 'comp', 'cryst', 'dent', 'ecol', 'econ', 'elec', 'electr', 'embryo',
-  'engr', 'ent', 'film', 'finc', 'fish', 'food', 'gardn', 'genet', 'geogr',
-  'geol', 'geom', 'go', 'golf', 'gramm', 'grmyth', 'hanaf', 'horse', 'kabuki',
-  'law', 'ling', 'logic', 'MA', 'mahj', 'manga', 'math', 'mech', 'med', 'met',
-  'mil', 'mining', 'music', 'noh', 'ornith', 'paleo', 'pathol', 'pharm', 'phil',
-  'photo', 'physics', 'physiol', 'politics', 'print', 'psy', 'psyanal', 'psych',
-  'rail', 'rommyth', 'Shinto', 'shogi', 'ski', 'sports', 'stat', 'stockm',
-  'sumo', 'telec', 'tradem', 'tv', 'vidg', 'zool',
+  'baseb', 'biochem', 'biol', 'bot', 'boxing', 'Buddh', 'bus', 'cards', 'chem',
+  'chmyth', 'Christn', 'civeng', 'cloth', 'comp', 'cryst', 'dent', 'ecol',
+  'econ', 'elec', 'electr', 'embryo', 'engr', 'ent', 'figskt', 'film', 'finc',
+  'fish', 'food', 'gardn', 'genet', 'geogr', 'geol', 'geom', 'go', 'golf',
+  'gramm', 'grmyth', 'hanaf', 'horse', 'internet', 'jpmyth', 'kabuki', 'law',
+  'ling', 'logic', 'MA', 'mahj', 'manga', 'math', 'mech', 'med', 'met', 'mil',
+  'min', 'mining', 'motor', 'music', 'noh', 'ornith', 'paleo', 'pathol',
+  'pharm', 'phil', 'photo', 'physics', 'physiol', 'politics', 'print',
+  'prowres', 'psy', 'psyanal', 'psych', 'rail', 'rommyth', 'Shinto', 'shogi',
+  'ski', 'sports', 'stat', 'stockm', 'sumo', 'surg', 'telec', 'tradem', 'tv',
+  'vet', 'vidg', 'zool',
 ] as const;
 
 export function isFieldType(a: unknown): a is FieldType {
@@ -255,8 +257,8 @@ const allMiscTypes = [
   'net-sl', 'obj', 'obs', 'obsc', 'on-mim', 'organization', 'oth', 'person',
   'place', 'poet', 'pol', 'product', 'proverb', 'quote', 'rare', 'relig',
   'sens', 'serv', 'ship', 'sl', 'station', 'surname', 'uk', 'unclass', 'vulg',
-  'work', 'X', 'yoji', ] as
-  const;
+  'work', 'X', 'yoji',
+] as const;
 
 export function isMiscType(a: unknown): a is MiscType {
   return typeof a === 'string' && allMiscTypes.includes(a as MiscType);
