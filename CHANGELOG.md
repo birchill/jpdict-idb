@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/birchill/jpdict-idb/compare/v2.1.3...v2.2.0) (2023-11-29)
+
+### Features
+
+- add new field types ([901b01e](https://github.com/birchill/jpdict-idb/commit/901b01e00f4a55dd037066a9a91a087a5e9f3953))
+- add parsing of Bunpro data ([5f7d71c](https://github.com/birchill/jpdict-idb/commit/5f7d71cc724cfcb4b9b56258c107822fbd64dd28))
+
 ## 2.1.3 (2023-09-09)
 
 ## 2.1.2 (2023-08-28)
