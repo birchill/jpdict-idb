@@ -39,7 +39,7 @@
   "dependencies": {
     "@birchill/json-equalish": "^1.1.2",
     "@birchill/normal-jp": "^1.5.0",
-    "idb": "^7.1.1",
+    "idb": "^8.0.0",
     "superstruct": "^1.0.3"
   },
   "devDependencies": {

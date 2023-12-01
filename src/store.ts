@@ -5,7 +5,7 @@ import {
   IDBPTransaction,
   openDB,
   StoreNames,
-} from 'idb/with-async-ittr';
+} from 'idb';
 
 import { DataSeries } from './data-series';
 import { DataVersion } from './data-version';
