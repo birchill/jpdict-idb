@@ -1,9 +1,4 @@
-import {
-  IDBPDatabase,
-  IDBPTransaction,
-  openDB,
-  StoreNames,
-} from 'idb/with-async-ittr';
+import { IDBPDatabase, IDBPTransaction, openDB, StoreNames } from 'idb';
 import { kanaToHiragana } from '@birchill/normal-jp';
 
 import { JpdictSchema } from './store';
