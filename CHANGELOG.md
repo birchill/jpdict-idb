@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.2.1](https://github.com/birchill/jpdict-idb/compare/v2.2.0...v2.2.1) (2023-12-02)
+
+### Bug Fixes
+
+- **deps:** update dependency idb to v8 ([4671e0f](https://github.com/birchill/jpdict-idb/commit/4671e0fe1f65e85db3b960fa02038cbc8e73b54d))
+
 ## [2.2.0](https://github.com/birchill/jpdict-idb/compare/v2.1.3...v2.2.0) (2023-11-29)
 
 ### Features
