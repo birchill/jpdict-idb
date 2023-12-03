@@ -62,7 +62,7 @@
     "eslint-config-prettier": "9.1.0",
     "fetch-mock": "9.11.0",
     "husky": "8.0.3",
-    "lint-staged": "15.1.0",
+    "lint-staged": "15.2.0",
     "mocha": "10.2.0",
     "pinst": "3.0.0",
     "playwright-test": "14.0.0",
