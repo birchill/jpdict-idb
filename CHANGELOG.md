@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.3.0](https://github.com/birchill/jpdict-idb/compare/v2.2.1...v2.3.0) (2023-12-08)
+
+### Features
+
+- add rk reading info ([6326ea2](https://github.com/birchill/jpdict-idb/commit/6326ea26fc02e7ec7721c8a735f09fb68185bf35))
+
 ## [2.2.1](https://github.com/birchill/jpdict-idb/compare/v2.2.0...v2.2.1) (2023-12-02)
 
 ### Bug Fixes
