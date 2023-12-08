@@ -187,6 +187,8 @@ const allReadingInfo = [
   'ok',
   // word usually written using kanji alone
   'uK',
+  // rarely-used kana form
+  'rk',
   // search-only kana form
   'sk',
 ] as const;
