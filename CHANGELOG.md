@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.3.1](https://github.com/birchill/jpdict-idb/compare/v2.3.0...v2.3.1) (2023-12-09)
+
+### Bug Fixes
+
+- drop no-longer-used uK reading info type ([dd6fd9b](https://github.com/birchill/jpdict-idb/commit/dd6fd9b946d263ff4647e433750bd02d960f1025))
+
 ## [2.3.0](https://github.com/birchill/jpdict-idb/compare/v2.2.1...v2.3.0) (2023-12-08)
 
 ### Features
