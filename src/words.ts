@@ -185,8 +185,6 @@ const allReadingInfo = [
   'ik',
   // out-dated or obsolete kana usage
   'ok',
-  // word usually written using kanji alone
-  'uK',
   // rarely-used kana form
   'rk',
   // search-only kana form
