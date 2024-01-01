@@ -1,5 +1,4 @@
-import chai, { assert } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { assert, Assertion, use } from 'chai';
 import chaiLike from 'chai-like';
 import fetchMock from 'fetch-mock';
 
@@ -9,8 +8,7 @@ import { DownloadError } from './download-error';
 import { clearCachedVersionInfo } from './download-version-info';
 import { isObject } from './is-object';
 
-chai.use(chaiLike);
-chai.use(chaiAsPromised);
+use(chaiLike);
 
 declare global {
   /* eslint @typescript-eslint/no-namespace: 0 */
@@ -21,12 +19,12 @@ declare global {
   }
 }
 
-chai.assert.likeEqual = function (
+assert.likeEqual = function (
   actual: any,
   expected: any,
   message?: string | undefined
 ) {
-  const test = new chai.Assertion(actual, message, chai.assert, true);
+  const test = new Assertion(actual, message, assert, true);
   test.like(expected);
 };
 
@@ -1302,7 +1300,7 @@ describe('download', () => {
 
     abortController.abort();
 
-    await assert.isRejected(downloader.next(), AbortError);
+    assert.instanceOf(await downloader.next().catch((e) => e), AbortError);
   });
 });
 

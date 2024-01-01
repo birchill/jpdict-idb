@@ -1,6 +1,5 @@
-import chai, { assert } from 'chai';
+import { assert, use } from 'chai';
 import chaiDateTime from 'chai-datetime';
-import chaiAsPromised from 'chai-as-promised';
 import fetchMock from 'fetch-mock';
 import sinon from 'sinon';
 
@@ -8,8 +7,7 @@ import { JpdictIdb } from './database';
 import { clearCachedVersionInfo } from './download-version-info';
 import { cancelUpdateWithRetry, updateWithRetry } from './update-with-retry';
 
-chai.use(chaiDateTime);
-chai.use(chaiAsPromised);
+use(chaiDateTime);
 
 const fastSetTimeout = (cb: () => void) => {
   return self.setTimeout(cb, 0);
@@ -110,7 +108,10 @@ describe('updateWithRetry', function () {
         onUpdateError: ({ error }) => reject(error),
       });
     });
-    return assert.isRejected(retryPromise, /Forced error/);
+    return assert.match(
+      (await retryPromise.catch((e) => e))?.message,
+      /Forced error/
+    );
   });
 
   it('should retry a network error', async () => {
@@ -631,7 +632,7 @@ describe('updateWithRetry', function () {
       });
     });
 
-    await assert.isRejected(updateResult, constraintError);
+    assert.strictEqual(await updateResult.catch((e) => e), constraintError);
 
     // Wait a moment to check there are no further errors reported
     await waitForAnimationFrames(1);
