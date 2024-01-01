@@ -1,5 +1,4 @@
-import chai, { assert } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { assert, use } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import fetchMock from 'fetch-mock';
 import sinon from 'sinon';
@@ -9,8 +8,7 @@ import { JpdictIdb } from './database';
 import { DownloadError } from './download-error';
 import { clearCachedVersionInfo } from './download-version-info';
 
-chai.use(chaiAsPromised);
-chai.use(chaiDateTime);
+use(chaiDateTime);
 
 const VERSION_INFO = {
   kanji: {
@@ -187,10 +185,11 @@ describe('JpdictIdb', function () {
     const firstUpdate = db.update({ series: 'kanji', lang: 'en' });
     const secondUpdate = db.update({ series: 'kanji', lang: 'fr' });
 
-    await Promise.all([
-      assert.isRejected(firstUpdate, AbortError),
+    const [firstUpdateResult] = await Promise.all([
+      firstUpdate.catch((e) => e),
       secondUpdate,
     ]);
+    assert.instanceOf(firstUpdateResult, AbortError);
 
     assert.equal(db.kanji.version?.lang, 'fr');
   });
@@ -263,7 +262,7 @@ describe('JpdictIdb', function () {
     const update = db.update({ series: 'kanji', lang: 'en' });
     db.cancelUpdate('kanji');
 
-    await assert.isRejected(update, AbortError);
+    assert.instanceOf(await update.catch((e) => e), AbortError);
 
     assert.deepEqual(db.kanji.updateState, { type: 'idle', lastCheck: null });
     assert.deepEqual(db.radicals.updateState, {
@@ -297,7 +296,7 @@ describe('JpdictIdb', function () {
 
     const update = db.update({ series: 'words', lang: 'en' });
 
-    await assert.isRejected(update, /aborted/);
+    assert.match((await update.catch((e) => e))?.message, /aborted/);
 
     assert.deepEqual(db.words.updateState, { type: 'idle', lastCheck: null });
 
@@ -333,7 +332,7 @@ describe('JpdictIdb', function () {
 
     const update = db.update({ series: 'words', lang: 'en' });
 
-    await assert.isRejected(update, /aborted/);
+    assert.match((await update.catch((e) => e))?.message, /aborted/);
 
     assert.equal(db.words.updateState.type, 'idle');
     assert.isDefined(db.words.updateState.lastCheck);

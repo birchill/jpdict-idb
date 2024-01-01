@@ -1,9 +1,6 @@
-import chai, { assert } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { assert } from 'chai';
 
 import { JpdictStore } from './store';
-
-chai.use(chaiAsPromised);
 
 describe('store', () => {
   it('should handle multiple simultaneous opens', async () => {

@@ -1,5 +1,4 @@
-import chai, { assert } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { assert } from 'chai';
 import fetchMock from 'fetch-mock';
 
 import { DataVersion } from './data-version';
@@ -8,8 +7,6 @@ import { clearCachedVersionInfo } from './download-version-info';
 import { JpdictStore } from './store';
 import { ProgressEvent, UpdateEvent } from './update-events';
 import { update } from './update';
-
-chai.use(chaiAsPromised);
 
 const KANJI_VERSION_1_0_0 = {
   kanji: {
