@@ -65,7 +65,7 @@
     "mocha": "10.2.0",
     "pinst": "3.0.0",
     "playwright-test": "14.0.0",
-    "prettier": "3.2.2",
+    "prettier": "3.2.3",
     "process": "0.11.10",
     "release-it": "17.0.1",
     "sinon": "17.0.1",
