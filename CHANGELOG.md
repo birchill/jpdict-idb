@@ -1,5 +1,7 @@
 # Changelog
 
+## [2.3.2](https://github.com/birchill/jpdict-idb/compare/v2.3.1...v2.3.2) (2024-01-22)
+
 ## [2.3.1](https://github.com/birchill/jpdict-idb/compare/v2.3.0...v2.3.1) (2023-12-09)
 
 ### Bug Fixes
