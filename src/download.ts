@@ -58,7 +58,7 @@ export type CurrentVersion = VersionNumber & {
 // Configuration constants
 //
 
-const BASE_URL = 'https://data.10ten.study/';
+const BASE_URL = 'https://data.10ten.life/';
 
 const DOWNLOAD_TIMEOUT = 20_000;
 
@@ -357,8 +357,8 @@ async function* getEvents({
     format === 'patch'
       ? `${commonUrlStart}-patch.jsonl`
       : partInfo
-      ? `${commonUrlStart}-${partInfo.part}.jsonl`
-      : `${commonUrlStart}.jsonl`;
+        ? `${commonUrlStart}-${partInfo.part}.jsonl`
+        : `${commonUrlStart}.jsonl`;
 
   let response;
   try {
