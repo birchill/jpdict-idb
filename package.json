@@ -73,7 +73,7 @@
     "tsup": "8.0.1",
     "typescript": "5.3.3",
     "util": "0.12.5",
-    "webpack": "5.90.0"
+    "webpack": "5.90.1"
   },
   "overrides": {
     "conventional-changelog-conventionalcommits": "^7.0.2"
