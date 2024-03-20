@@ -71,7 +71,7 @@
     "ts-loader": "9.5.1",
     "tslib": "2.6.2",
     "tsup": "8.0.2",
-    "typescript": "5.4.2",
+    "typescript": "5.4.3",
     "util": "0.12.5",
     "webpack": "5.91.0"
   },
