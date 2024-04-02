@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.4.0](https://github.com/birchill/jpdict-idb/compare/v2.3.2...v2.4.0) (2024-04-02)
+
+### Features
+
+- prioritize kana matches when searching with kana ([e1bbad2](https://github.com/birchill/jpdict-idb/commit/e1bbad25918588e54eeb765fc9ff86ddae515351))
+
 ## [2.3.2](https://github.com/birchill/jpdict-idb/compare/v2.3.1...v2.3.2) (2024-01-22)
 
 ## [2.3.1](https://github.com/birchill/jpdict-idb/compare/v2.3.0...v2.3.1) (2023-12-09)
