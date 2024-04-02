@@ -1,19 +1,102 @@
-import { WordResult } from './result-types';
+import type { ExtendedKanaEntry, WordResult } from './result-types';
 
 // As with Array.prototype.sort, sorts `results` in-place, but returns the
 // result to support chaining.
-export function sortResultsByPriority(
-  results: Array<WordResult>
+export function sortWordResults(
+  results: Array<WordResult>,
+  { searchLength }: { searchLength?: number } = {}
 ): Array<WordResult> {
-  const idToScore: Map<number, number> = new Map();
+  const sortMeta: Map<
+    number,
+    { excessChars: number | undefined; priority: number; type: number }
+  > = new Map();
+
   for (const result of results) {
-    idToScore.set(result.id, getPriority(result));
+    // Calculate the number of excess characters in the matching headword
+    const matchingHeadword =
+      result.k.find((k) => k.matchRange) || result.r.find((r) => r.matchRange);
+    const excessChars =
+      searchLength && matchingHeadword
+        ? matchingHeadword.ent.length - searchLength
+        : undefined;
+
+    // Determine the headword match type
+    //
+    // 1 = match on a kanji, or kana which is not just the reading for a kanji
+    // 2 = match on a kana reading for a kanji
+    //
+    // TODO: Don't bother doing this unless the input is all kana
+    const kanaReading = result.r.find((r) => !!r.matchRange);
+    const rt = kanaReading ? getKanaHeadwordType(kanaReading, result) : 1;
+
+    // Priority
+    const priority = getPriority(result);
+
+    sortMeta.set(result.id, { excessChars, priority, type: rt });
   }
+
   results.sort((a, b) => {
-    return idToScore.get(b.id)! - idToScore.get(a.id)!;
+    const metaA = sortMeta.get(a.id)!;
+    const metaB = sortMeta.get(b.id)!;
+
+    if (
+      metaA.excessChars !== undefined &&
+      metaB.excessChars !== undefined &&
+      metaA.excessChars !== metaB.excessChars
+    ) {
+      return metaA.excessChars - metaB.excessChars;
+    }
+
+    if (metaA.type !== metaB.type) {
+      return metaA.type - metaB.type;
+    }
+
+    return metaB.priority - metaA.priority;
   });
 
   return results;
+}
+
+function getKanaHeadwordType(r: ExtendedKanaEntry, result: WordResult): 1 | 2 {
+  // We don't want to prioritize readings marked as `ok` etc. or else we'll end
+  // up prioritizing words like `檜` and `羆` being prioritized when searching
+  // for `ひ`.
+  const isReadingObscure =
+    r.i?.includes('ok') ||
+    r.i?.includes('rk') ||
+    r.i?.includes('sk') ||
+    r.i?.includes('ik');
+
+  if (isReadingObscure) {
+    return 2;
+  }
+
+  // Kana headwords are type 1 (i.e. they are a primary headword, not just a
+  // reading for a kanji headword) if:
+  //
+  // (a) the entry has no kanji headwords or all the kanji headwords are marked
+  //     as `rK`, `sK`, or `iK`.
+  if (
+    !result.k.length ||
+    result.k.every(
+      (k) => k.i?.includes('rK') || k.i?.includes('sK') || k.i?.includes('iK')
+    )
+  ) {
+    return 1;
+  }
+
+  // (b) all senses for the entry have a `uk` (usually kana) `misc` field
+  //     and the reading is not marked as `ok` (old kana usage).
+  //
+  // We wanted to make the condition here be just one sense being marked as `uk`
+  // but then you get words like `梓` being prioritized when searching for `し`
+  // because of one sense out of many being usually kana.
+  if (result.s.every((s) => s.misc?.includes('uk'))) {
+    return 1;
+  }
+
+  // (c) the headword is marked as `nokanji`
+  return r.app === 0 ? 1 : 2;
 }
 
 export function getPriority(result: WordResult): number {
@@ -102,51 +185,4 @@ export function getPriorityScore(p: string): number {
   }
 
   return 0;
-}
-
-// A variant on sortResultsByPriority that is useful for substring matching.
-//
-// We want to make sure exact matches sort first. So we have:
-//
-// * Find the matching entry (i.e. the one with matchRange set) and
-//   get its full length.
-//
-//   Sort by the number of excess characters such that entries with
-//   fewer excess characters sort first.
-//
-// * Then sort by priority value.
-//
-export function sortResultsByPriorityAndMatchLength(
-  results: Array<WordResult>,
-  searchLength: number
-): Array<WordResult> {
-  const sortMeta: Map<
-    number,
-    { excessChars: number | undefined; priority: number }
-  > = new Map();
-
-  for (const result of results) {
-    const matchingHeadword =
-      result.k.find((k) => k.matchRange) || result.r.find((r) => r.matchRange);
-    const excessChars = matchingHeadword
-      ? matchingHeadword.ent.length - searchLength
-      : undefined;
-    const priority = getPriority(result);
-    sortMeta.set(result.id, { excessChars, priority });
-  }
-
-  results.sort((a, b) => {
-    const metaA = sortMeta.get(a.id)!;
-    const metaB = sortMeta.get(b.id)!;
-    if (
-      typeof metaA.excessChars !== 'undefined' &&
-      typeof metaB.excessChars !== 'undefined' &&
-      metaA.excessChars !== metaB.excessChars
-    ) {
-      return metaA.excessChars - metaB.excessChars;
-    }
-    return metaB.priority - metaA.priority;
-  });
-
-  return results;
 }

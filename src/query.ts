@@ -15,11 +15,7 @@ import {
   toWordResult,
   toWordResultFromGlossLookup,
 } from './to-word-result';
-import {
-  getPriority,
-  sortResultsByPriority,
-  sortResultsByPriorityAndMatchLength,
-} from './word-result-sorting';
+import { getPriority, sortWordResults } from './word-result-sorting';
 import { CrossReference } from './words';
 import {
   KanjiResult,
@@ -199,9 +195,9 @@ export async function getWords(
   //
   let sortedResult: Array<WordResult>;
   if (matchType === 'exact') {
-    sortedResult = sortResultsByPriority(results);
+    sortedResult = sortWordResults(results);
   } else {
-    sortedResult = sortResultsByPriorityAndMatchLength(results, lookup.length);
+    sortedResult = sortWordResults(results, { searchLength: lookup.length });
   }
 
   if (limit) {
@@ -244,7 +240,7 @@ export async function getWordsByCrossReference(
     }
   }
 
-  return sortResultsByPriority(results);
+  return sortWordResults(results);
 }
 
 export async function getWordsWithKanji(
@@ -275,7 +271,7 @@ export async function getWordsWithKanji(
     results.push(toWordResult(cursor.value, lookup, 'kanji'));
   }
 
-  return sortResultsByPriority(results);
+  return sortWordResults(results);
 }
 
 type GlossSearchResultMeta = {
