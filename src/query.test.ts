@@ -968,6 +968,26 @@ describe('query', function () {
     assert.deepEqual(result, expected);
   });
 
+  it('should sort kana matches first when searching on kana', async () => {
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.mock(
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":3,"format":"full"}
+{"id":1308090,"k":["市"],"km":[{"p":["i1","wk3","wi39","bv4"]}],"r":["し"],"rm":[{"p":["i1"],"a":1}],"s":[{"g":["city"],"pos":["n","n-suf"]},{"g":["stad {i.h.b. Japanse gemeente","municipaliteit met een bevolking van 50.000 inwoners of meer}"],"lang":"nl"},{"g":["ville"],"lang":"fr"},{"g":["Stadt (als öffentliche Verwaltungseinheit)"],"lang":"de"},{"g":["város"],"lang":"hu"},{"g":["город ((ср.) まち【町】)","{～[の]} городской; муниципальный"],"lang":"ru"},{"g":["ciudad"],"lang":"es"},{"g":["stad"],"lang":"sv"}]}
+{"id":1579470,"k":["四","４","肆"],"km":[{"p":["i1","n1","nf01","wk2"]}],"r":["し","よん","よ"],"rm":[{"p":["i1"],"a":1},{"app":1,"p":["i1","n1","nf01","wi12518"],"a":1},{"app":1,"a":1}],"s":[{"g":["four","4"],"pos":["num"],"inf":"肆 is used in legal documents"},{"g":["vier"],"lang":"nl"},{"g":["quatre"],"lang":"fr"},{"g":["Ruine","Überrest","eine Spur von etw","Druckstock","Holzschnitt (das Kanji steht eigentlich für den Trompetenbaum oder Katalpa; aus dessen Holz wurden die Druckstöcke angefertigt)","…wind","Wind…","Nahrung","Essen","die Pferde eines Vierspänners"],"lang":"de"},{"g":["Vierspänner","vier","4"],"lang":"de"},{"g":["négy"],"lang":"hu"},{"g":["четыре","четыре ((при отвлечённом счёте, ср.) ひ【一】, ふ【二】, み【三】)"],"lang":"ru"},{"g":["štiri"],"lang":"sl"},{"g":["cuatro (usado en documentos legales)","cuatro"],"lang":"es"}]}
+{"id":2086640,"r":["し"],"rm":[{"p":["s1"],"a":1}],"s":[{"g":["and","besides","moreover","what's more","not only ... but also"],"pos":["prt","conj"]},{"g":["because","since"],"pos":["prt","conj"],"inf":"usu. indicates one of several reasons"},{"g":["the thing is","for one thing"],"pos":["prt","conj"],"inf":"at sentence end; gives reason for an unstated but deducible conclusion"},{"g":["(à la fin d'une phrase) indique l'une (de plusieurs) raisons"],"lang":"fr"}]}
+`
+    );
+    await db.update({ series: 'words', lang: 'en' });
+
+    const result = await getWords('し');
+
+    assert.deepEqual(
+      result.map((record) => record.id),
+      [2086640, 1308090, 1579470]
+    );
+  });
+
   it('should sort only using matched headwords', async () => {
     fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
