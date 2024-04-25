@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.5.0](https://github.com/birchill/jpdict-idb/compare/v2.4.0...v2.5.0) (2024-04-25)
+
+### Features
+
+- don't restrict senses when matching on search-only forms ([f2713c5](https://github.com/birchill/jpdict-idb/commit/f2713c585bd72ba6f395581d743c6444042f04da))
+
+### Bug Fixes
+
+- fix search-only sense restrictions logic ([cd18cf7](https://github.com/birchill/jpdict-idb/commit/cd18cf737b497b567d324d1db81b301efd330425))
+
 ## [2.4.0](https://github.com/birchill/jpdict-idb/compare/v2.3.2...v2.4.0) (2024-04-02)
 
 ### Features
