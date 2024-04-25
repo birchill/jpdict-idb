@@ -340,8 +340,8 @@ function getMatchMetadata(
           }
           break;
       }
+      searchOnlyHeadwordMatch ||= !!record.km?.[i]?.i?.includes('sK');
     }
-    searchOnlyHeadwordMatch ||= !!record.km?.[i]?.i?.includes('sK');
   }
 
   let kanaMatches = 0;

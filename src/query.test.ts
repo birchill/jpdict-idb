@@ -779,6 +779,36 @@ describe('query', function () {
     });
   });
 
+  it('should ignore sense restrictions when matching on search-only headwords', async () => {
+    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.mock(
+      'end:words/en/2.0.0.jsonl',
+      `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1,"format":"full"}
+{"id":1419550,"k":["断ち切る","裁ち切る","截ち切る","断切る","断ちきる","絶ち切る","絶ちきる","たち切る"],"km":[{"p":["n2","nf26"]},{"i":["rK"]},{"i":["rK"]},{"i":["sK"]},{"i":["sK"]},{"i":["sK"]},{"i":["sK"]},{"i":["sK"]}],"r":["たちきる"],"rm":[{"p":["n2","nf26"],"a":[{"i":3},{"i":0}]}],"s":[{"g":["to cut (cloth, paper, etc.)","to cut off"],"pos":["v5r","vt"],"yref":[{"id":2191780,"k":"断ち切り"}]},{"g":["to sever (ties)","to break off (relations)","to give up (an attachment, habit, etc.)","to stop (e.g. a vicious cycle)"],"kapp":1,"pos":["v5r","vt"]},{"g":["to cut off (a supply route, enemy's retreat, etc.)","to block","to break up (e.g. an intelligence network)"],"kapp":1,"pos":["v5r","vt"]}]}
+`
+    );
+
+    await db.update({ series: 'words', lang: 'en' });
+
+    // First search on a restricted sense
+    let result = await getWords('裁ち切る');
+    assert.nestedInclude(result[0], {
+      's.length': 3,
+      's[0].match': true,
+      's[1].match': false,
+      's[2].match': false,
+    });
+
+    // Then search on a search-only sense
+    result = await getWords('断切る');
+    assert.nestedInclude(result[0], {
+      's.length': 3,
+      's[0].match': true,
+      's[1].match': true,
+      's[2].match': true,
+    });
+  });
+
   it('should expand gloss type information', async () => {
     fetchMock.mock('end:version-en.json', VERSION_INFO);
     fetchMock.mock(
