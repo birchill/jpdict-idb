@@ -280,6 +280,8 @@ function getMatchMetadata(
   //       -- Have only a rapp field, and the corresponding r entry matches,
   //          should match.
   //       -- Have no kapp or rapp field should match.
+  //       UNLESS the the k entries matched on "sK" (search-only kanji) in which
+  //       case we should include all senses.
   //
   // 2) We matched on a reading (kana) entry
   //
@@ -291,6 +293,8 @@ function getMatchMetadata(
   //       -- Have a kapp field, and the corresponding k entry matches,
   //          should match.
   //       -- Have no rapp or kapp field should match.
+  //       UNLESS the the r entries matched on "sk" (search-only kana) in which
+  //       case we should include all senses.
   //
   // 3) We matched on a hiragana index
   //
@@ -318,6 +322,7 @@ function getMatchMetadata(
 
   // Fill out any match information
   const kanjiMatchRanges: Array<MatchedHeadwordRange> = [];
+  let searchOnlyHeadwordMatch = false;
   for (let i = 0; i < (record.k?.length || 0); i++) {
     if (kanjiMatches & (1 << i)) {
       switch (matchMode) {
@@ -336,6 +341,7 @@ function getMatchMetadata(
           break;
       }
     }
+    searchOnlyHeadwordMatch ||= !!record.km?.[i]?.i?.includes('sK');
   }
 
   let kanaMatches = 0;
@@ -345,6 +351,10 @@ function getMatchMetadata(
     // Case (1) from above: Find corresponding kana matches
     kanaMatches = kanaMatchesForKanji(record, kanjiMatches);
     senseMatches = arrayToBitfield(record.s, (sense) => {
+      if (searchOnlyHeadwordMatch) {
+        return true;
+      }
+
       if (typeof sense.kapp !== 'undefined') {
         return !!(sense.kapp & kanjiMatches);
       } else if (typeof sense.rapp !== 'undefined') {
@@ -363,7 +373,19 @@ function getMatchMetadata(
     kanaMatches = arrayToBitfield(record.r, matcher);
     kanjiMatches = kanjiMatchesForKana(record, kanaMatches);
 
+    // Fill out kana match range information
+    for (let i = 0; i < record.r.length; i++) {
+      if (kanaMatches & (1 << i)) {
+        kanaMatchRanges.push([i, 0, search.length]);
+        searchOnlyHeadwordMatch ||= !!record.rm?.[i]?.i?.includes('sk');
+      }
+    }
+
     senseMatches = arrayToBitfield(record.s, (sense) => {
+      if (searchOnlyHeadwordMatch) {
+        return true;
+      }
+
       if (typeof sense.rapp !== 'undefined') {
         return !!(sense.rapp & kanaMatches);
       } else if (typeof sense.kapp !== 'undefined') {
@@ -372,14 +394,6 @@ function getMatchMetadata(
         return true;
       }
     });
-
-    // Fill out kana match range information
-    for (let i = 0; i < record.r.length; i++) {
-      if (kanaMatches & (1 << i)) {
-        kanaMatchRanges.push([i, 0, search.length]);
-        break;
-      }
-    }
   }
 
   return [
