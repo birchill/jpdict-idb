@@ -4740,15 +4740,15 @@ pirates@^4.0.1:
   resolved "https://registry.yarnpkg.com/pirates/-/pirates-4.0.6.tgz#3018ae32ecfcff6c29ba2267cbf21166ac1f36b9"
   integrity sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==
 
-playwright-core@1.41.1:
-  version "1.41.1"
-  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.41.1.tgz#9c152670010d9d6f970f34b68e3e935d3c487431"
-  integrity sha512-/KPO5DzXSMlxSX77wy+HihKGOunh3hqndhqeo/nMxfigiKzogn8kfL0ZBDu0L1RKgan5XHCPmn6zXd2NUJgjhg==
+playwright-core@^1.41.1:
+  version "1.43.1"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.43.1.tgz#0eafef9994c69c02a1a3825a4343e56c99c03b02"
+  integrity sha512-EI36Mto2Vrx6VF7rm708qSnesVQKbxEWvPrfA1IPY6HgczBplDx7ENtx+K2n4kJ41sLLkuGfmb0ZLSSXlDhqPg==
 
-playwright-test@14.1.1:
-  version "14.1.1"
-  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-14.1.1.tgz#cb3b4152bf7f63a180c8c881f7479814f1d6f36c"
-  integrity sha512-Lexel05zzb0oxwiUw44fHiQV62ltPp/xL5n+YAkb3bvJCZT0Et4o6iXMKrOteored42xEFqQ7pmChZv70K5iYA==
+playwright-test@14.1.2:
+  version "14.1.2"
+  resolved "https://registry.yarnpkg.com/playwright-test/-/playwright-test-14.1.2.tgz#f9d4b7458da70e5dfbbb72b8f2d38fb05f947e66"
+  integrity sha512-s8ovYbuZB+7N3GVzqVfE5o5IwXEJEnVL/6L1uvp5IRjqkUGFy1y7CPT63jFbtv6sZb/a3SC5j4woJixZObI4NQ==
   dependencies:
     acorn-loose "^8.3.0"
     assert "^2.1.0"
@@ -4771,7 +4771,7 @@ playwright-test@14.1.1:
     ora "^7.0.1"
     p-timeout "^6.1.2"
     path-browserify "^1.0.1"
-    playwright-core "1.41.1"
+    playwright-core "^1.41.1"
     polka "^0.5.2"
     premove "^4.0.0"
     process "^0.11.10"
