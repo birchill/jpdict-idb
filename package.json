@@ -75,7 +75,7 @@
     "typescript": "5.4.5",
     "typescript-eslint": "7.13.1",
     "util": "0.12.5",
-    "webpack": "5.92.0"
+    "webpack": "5.92.1"
   },
   "overrides": {
     "conventional-changelog-conventionalcommits": "^8.0.0"
