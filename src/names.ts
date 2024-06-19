@@ -27,7 +27,7 @@ export type NameTranslation = {
 
 // NameType
 
-export type NameType = typeof allNameTypes[number];
+export type NameType = (typeof allNameTypes)[number];
 
 const allNameTypes = [
   'char',
