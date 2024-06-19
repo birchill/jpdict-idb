@@ -21,6 +21,11 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Lint
+        run: |-
+          yarn eslint src "*.js" "*.ts"
+          yarn prettier --check src "*.js" "*.ts"
+
       - name: Install Playwright
         run: npx playwright install --with-deps
 
