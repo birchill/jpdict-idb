@@ -71,7 +71,7 @@
     "sinon": "18.0.0",
     "ts-loader": "9.5.1",
     "tslib": "2.6.3",
-    "tsup": "8.2.2",
+    "tsup": "8.2.3",
     "typescript": "5.5.4",
     "typescript-eslint": "7.17.0",
     "util": "0.12.5",
