@@ -3,5 +3,5 @@
  */
 export type Overwrite<T, U> = Omit<T, Extract<keyof T, keyof U>> & U;
 
-/* eslint @typescript-eslint/ban-types: 0 */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export type Resolve<T> = T extends Function ? T : { [K in keyof T]: T[K] };
