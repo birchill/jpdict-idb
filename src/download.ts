@@ -92,7 +92,7 @@ export async function hasLanguage({
       signal,
     });
     return !!result;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

@@ -388,7 +388,7 @@ export class JpdictStore {
       tx.done.catch(() => {});
       try {
         tx.abort();
-      } catch (_) {
+      } catch {
         // As above, ignore exceptions from aborting the transaction.
       }
 
@@ -457,7 +457,7 @@ async function atOrNearQuota(): Promise<boolean> {
       typeof estimate.quota !== 'undefined' &&
       estimate.usage / estimate.quota > 0.9
     );
-  } catch (_e) {
+  } catch {
     return false;
   }
 }
