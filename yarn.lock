@@ -700,6 +700,11 @@
   resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-7.3.8.tgz#2fd769cb7881ac029d06ab2c23a254a9f208a034"
   integrity sha512-ztsIGiyUvD0GaqPc9/hb8k20gnr6lupqA6SFtqt+8v2mtHhNO/Ebb6/b7N6af/7x0A7s1C8nxrEGzajMBqz8qA==
 
+"@types/glob-to-regexp@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@types/glob-to-regexp/-/glob-to-regexp-0.4.4.tgz#409e71290253203185b1ea8a3d6ea406a4bdc902"
+  integrity sha512-nDKoaKJYbnn1MZxUY0cA1bPmmgZbg0cTq7Rh13d0KWYNOiKbqoR+2d89SnRPszGh7ROzSwZ/GOjZ4jPbmmZ6Eg==
+
 "@types/http-cache-semantics@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@types/http-cache-semantics/-/http-cache-semantics-4.0.1.tgz#0ea7b61496902b95890dc4c3a116b60cb8dae812"
@@ -2341,13 +2346,14 @@ fetch-blob@^3.1.2, fetch-blob@^3.1.4:
     node-domexception "^1.0.0"
     web-streams-polyfill "^3.0.3"
 
-fetch-mock@11.1.0:
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/fetch-mock/-/fetch-mock-11.1.0.tgz#2e0790aba226547e454252253048adc087824eff"
-  integrity sha512-Ng8pIwjVymfQgLGj0Sv1xpsmHc6PvzJyHFxb2yF8TfiiKg03dZDFAI9ST7dOb+GwCcFwE11O/rXht5UHgO94dw==
+fetch-mock@11.1.1:
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/fetch-mock/-/fetch-mock-11.1.1.tgz#33440be6d184f52f1d8bc48a15b9e631589fd5e2"
+  integrity sha512-2lZ42bnMar9MBfNR0nza5wM4ZDwLxb+ZbNR4sEvpqOOBzZ+V6cZVVhLBHj8+AAEInF4vp2/tbRM8WlGX5mPhiA==
   dependencies:
+    "@types/glob-to-regexp" "^0.4.4"
     dequal "^2.0.3"
-    globrex "^0.1.2"
+    glob-to-regexp "^0.4.1"
     is-subset "^0.1.1"
     regexparam "^3.0.0"
 
@@ -2659,11 +2665,6 @@ globby@^13.2.2:
     ignore "^5.2.4"
     merge2 "^1.4.1"
     slash "^4.0.0"
-
-globrex@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/globrex/-/globrex-0.1.2.tgz#dd5d9ec826232730cd6793a5e33a9302985e6098"
-  integrity sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==
 
 gopd@^1.0.1:
   version "1.0.1"
