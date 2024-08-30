@@ -225,6 +225,7 @@ const KanjiDownloadRecordSchema: s.Describe<KanjiDownloadRecord> = s.type({
   rad: RadicalStruct,
   refs: s.record(s.string(), s.union([s.string(), s.number()])),
   misc: MiscSchema,
+  st: s.optional(s.string()),
   comp: s.optional(s.string()),
   var: s.optional(s.array(s.string())),
   cf: s.optional(s.union([s.string(), s.array(s.string())])),

@@ -6,6 +6,7 @@ export type KanjiRecord = {
   rad: Radical;
   refs: Record<string, string | number>;
   misc: KanjiMiscInfo;
+  st?: string;
   comp?: string;
   var?: Array<string>;
   cf?: string | Array<string>;
