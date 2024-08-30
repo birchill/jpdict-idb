@@ -75,6 +75,7 @@ export type KanjiResult = {
   rad: ExpandedRadical;
   refs: Record<string, string | number>;
   misc: KanjiMiscInfo;
+  st?: string;
   comp: Array<{
     c: string;
     na: Array<string>;
