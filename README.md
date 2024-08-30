@@ -25,24 +25,24 @@ the tokenization / stop word code for generating and querying the gloss indices.
 ## Building
 
 ```
-yarn build
+pnpm build
 ```
 
 ## Running tests
 
 ```
-yarn test
+pnpm test
 ```
 
 Testing using Firefox / WebKit:
 
 ```
-yarn test --browser firefox
-yarn test --browser webkit
+pnpm test --browser firefox
+pnpm test --browser webkit
 ```
 
 ## Publishing
 
 ```
-yarn release-it
+pnpm release-it
 ```

@@ -7,6 +7,7 @@
     "build": "tsup",
     "test": "playwright-test",
     "prepublishOnly": "pinst --disable && tsup",
+    "preinstall": "npx --yes only-allow pnpm",
     "postinstall": "husky",
     "postpublish": "pinst --enable"
   },
