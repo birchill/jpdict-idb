@@ -219,7 +219,7 @@ function getDownloadList({
   //    level.
   //
   // 3. We are resuming a full download
-  //    i.e. we need to download all the remaining parts _and_ the any
+  //    i.e. we need to download all the remaining parts _and_ any
   //    subsequent patches.
   //
   // 4. We are patching an existing series
