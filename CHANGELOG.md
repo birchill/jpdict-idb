@@ -1,6 +1,10 @@
 # Changelog
 
-## 2.5.1 (2024-09-06)
+## [2.6.0](https://github.com/birchill/jpdict-idb/compare/v2.5.0...v2.6.0) (2024-09-06)
+
+### Features
+
+- add `st` field to kanji entry type ([a58039f](https://github.com/birchill/jpdict-idb/commit/a58039fc370b8dff86eedd49a6f92f2b3512e506))
 
 ## [2.5.0](https://github.com/birchill/jpdict-idb/compare/v2.4.0...v2.5.0) (2024-04-25)
 
