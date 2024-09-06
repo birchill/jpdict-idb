@@ -1,5 +1,7 @@
 # Changelog
 
+## 2.5.1 (2024-09-06)
+
 ## [2.5.0](https://github.com/birchill/jpdict-idb/compare/v2.4.0...v2.5.0) (2024-04-25)
 
 ### Features
