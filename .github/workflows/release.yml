@@ -1,5 +1,11 @@
 name: Release
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (optional)'
+        required: false
+        type: string
 env:
   CI: true
 
@@ -11,9 +17,11 @@ jobs:
       - uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
+
       - uses: pnpm/action-setup@v4
         with:
           version: latest
+
       - uses: actions/setup-node@v4.0.3
         with:
           node-version: 20
@@ -28,8 +36,16 @@ jobs:
           git config --global user.name "Release It"
           git config --global user.email "actions@users.noreply.github.com"
 
+      - name: Publish default version
+        if: ${{ inputs.version == '' }}
+        run: yarn release-it --ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish
-        run: pnpm release-it --ci
+        if: ${{ inputs.version }}
+        run: yarn release-it --ci -i ${{ inputs.version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
