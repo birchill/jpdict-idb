@@ -55,8 +55,8 @@ importers:
         specifier: 5.1.1
         version: 5.1.1
       chai-datetime:
-        specifier: 1.8.0
-        version: 1.8.0
+        specifier: 1.8.1
+        version: 1.8.1
       chai-like:
         specifier: 1.1.1
         version: 1.1.1(chai@5.1.1)
@@ -1084,8 +1084,8 @@ packages:
   caniuse-lite@1.0.30001653:
     resolution: {integrity: sha512-XGWQVB8wFQ2+9NZwZ10GxTYC5hk0Fa+q8cSkr0tgvMhYhMHP/QC+WTgrePMDBWiWc/pV+1ik82Al20XOK25Gcw==}
 
-  chai-datetime@1.8.0:
-    resolution: {integrity: sha512-qBG84K8oQNz8LWacuzmCBfdoeG2UBFfbGKTSQj6lS+sjuzGUdBvjJxfZfGA4zDAMiCSqApKcuqSLO0lQQ25cHw==}
+  chai-datetime@1.8.1:
+    resolution: {integrity: sha512-GqQPq+l1yQI/c6sG2rvGkrM5SrmBm1ox/cmRjIA+g4632kLYGRWSIQR02qCeCkwabjYyCZNsHAKMV6gCsSV/1Q==}
 
   chai-like@1.1.1:
     resolution: {integrity: sha512-VKa9z/SnhXhkT1zIjtPACFWSoWsqVoaz1Vg+ecrKo5DCKVlgL30F/pEyEvXPBOVwCgLZcWUleCM/C1okaKdTTA==}
@@ -4166,7 +4166,7 @@ snapshots:
 
   caniuse-lite@1.0.30001653: {}
 
-  chai-datetime@1.8.0:
+  chai-datetime@1.8.1:
     dependencies:
       chai: 5.1.1
 

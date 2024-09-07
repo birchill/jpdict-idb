@@ -55,7 +55,7 @@
     "@types/sinon": "17.0.3",
     "@typescript-eslint/parser": "8.4.0",
     "chai": "5.1.1",
-    "chai-datetime": "1.8.0",
+    "chai-datetime": "1.8.1",
     "chai-like": "1.1.1",
     "eslint": "9.10.0",
     "fetch-mock": "11.1.3",
