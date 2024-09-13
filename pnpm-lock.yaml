@@ -58,8 +58,8 @@ importers:
         specifier: 1.8.1
         version: 1.8.1
       chai-like:
-        specifier: 1.1.1
-        version: 1.1.1(chai@5.1.1)
+        specifier: 1.1.2
+        version: 1.1.2(chai@5.1.1)
       eslint:
         specifier: 9.10.0
         version: 9.10.0
@@ -1099,10 +1099,10 @@ packages:
   chai-datetime@1.8.1:
     resolution: {integrity: sha512-GqQPq+l1yQI/c6sG2rvGkrM5SrmBm1ox/cmRjIA+g4632kLYGRWSIQR02qCeCkwabjYyCZNsHAKMV6gCsSV/1Q==}
 
-  chai-like@1.1.1:
-    resolution: {integrity: sha512-VKa9z/SnhXhkT1zIjtPACFWSoWsqVoaz1Vg+ecrKo5DCKVlgL30F/pEyEvXPBOVwCgLZcWUleCM/C1okaKdTTA==}
+  chai-like@1.1.2:
+    resolution: {integrity: sha512-CA+g487Nmez+uTUK65eDLWw/l5voIO7svrpPxbDLiHBTLB6G6fL6U5HfBYvkhAIRJjn2trSFkM0urrtMnTcwew==}
     peerDependencies:
-      chai: 2 - 4
+      chai: 2 - 5
 
   chai@5.1.1:
     resolution: {integrity: sha512-pT1ZgP8rPNqUgieVaEY+ryQr6Q4HXNg8Ei9UnLUrjN4IA7dvQC5JB+/kxVcPNDHyBcc/26CXPkbNzq3qwrOEKA==}
@@ -4203,7 +4203,7 @@ snapshots:
     dependencies:
       chai: 5.1.1
 
-  chai-like@1.1.1(chai@5.1.1):
+  chai-like@1.1.2(chai@5.1.1):
     dependencies:
       chai: 5.1.1
 
