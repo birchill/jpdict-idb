@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.6.1](https://github.com/birchill/jpdict-idb/compare/v2.6.0...v2.6.1) (2024-10-05)
+
+### Bug Fixes
+
+- prioritize entries where most senses are "usually kana" when looking up by kana ([55892d7](https://github.com/birchill/jpdict-idb/commit/55892d7de7fad7759f8ac30924b6b13f5cc5b0aa))
+
 ## [2.6.0](https://github.com/birchill/jpdict-idb/compare/v2.5.0...v2.6.0) (2024-09-06)
 
 ### Features
