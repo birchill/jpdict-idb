@@ -26,7 +26,7 @@ importers:
         version: 9.12.0
       '@release-it/conventional-changelog':
         specifier: 9.0.0
-        version: 9.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.0.0)(release-it@17.9.0(typescript@5.6.3))
+        version: 9.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.0.0)(release-it@17.10.0(typescript@5.6.3))
       '@types/chai':
         specifier: 5.0.0
         version: 5.0.0
@@ -91,8 +91,8 @@ importers:
         specifier: 0.11.10
         version: 0.11.10
       release-it:
-        specifier: 17.9.0
-        version: 17.9.0(typescript@5.6.3)
+        specifier: 17.10.0
+        version: 17.10.0(typescript@5.6.3)
       sinon:
         specifier: 19.0.2
         version: 19.0.2
@@ -2578,8 +2578,8 @@ packages:
     resolution: {integrity: sha512-+crtS5QjFRqFCoQmvGduwYWEBng99ZvmFvF+cUJkGYF1L1BfU8C6Zp9T7f5vPAwyLkUExpvK+ANVZmGU49qi4Q==}
     engines: {node: '>=12'}
 
-  release-it@17.9.0:
-    resolution: {integrity: sha512-KAZqvYcfYI/Rva8yr7vzVruM3mN8kuUR1WeQfOtGrc4ub7bGYf8eN91NOXC73LJE1uNpVlppF5xB8KOvKtQosg==}
+  release-it@17.10.0:
+    resolution: {integrity: sha512-00cXYEl7RFD5NnjXpwaH9JFjpwe8w3NcfUd4XPxrKQkszp1xppPo42zK9eSbxStKyPA5CVk2KmKPDPDiAKVJTA==}
     engines: {node: ^18.18.0 || ^20.9.0 || ^22.0.0}
     hasBin: true
 
@@ -3519,13 +3519,13 @@ snapshots:
 
   '@polka/url@1.0.0-next.25': {}
 
-  '@release-it/conventional-changelog@9.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.0.0)(release-it@17.9.0(typescript@5.6.3))':
+  '@release-it/conventional-changelog@9.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.0.0)(release-it@17.10.0(typescript@5.6.3))':
     dependencies:
       concat-stream: 2.0.0
       conventional-changelog: 6.0.0(conventional-commits-filter@5.0.0)
       conventional-recommended-bump: 10.0.0
       git-semver-tags: 8.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.0.0)
-      release-it: 17.9.0(typescript@5.6.3)
+      release-it: 17.10.0(typescript@5.6.3)
       semver: 7.6.3
     transitivePeerDependencies:
       - conventional-commits-filter
@@ -5578,7 +5578,7 @@ snapshots:
     dependencies:
       rc: 1.2.8
 
-  release-it@17.9.0(typescript@5.6.3):
+  release-it@17.10.0(typescript@5.6.3):
     dependencies:
       '@iarna/toml': 2.2.5
       '@octokit/rest': 20.1.1
