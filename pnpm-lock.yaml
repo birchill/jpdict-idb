@@ -64,8 +64,8 @@ importers:
         specifier: 9.13.0
         version: 9.13.0
       fetch-mock:
-        specifier: 11.1.5
-        version: 11.1.5
+        specifier: 12.0.0
+        version: 12.0.0
       globals:
         specifier: 15.11.0
         version: 15.11.0
@@ -1568,14 +1568,9 @@ packages:
       picomatch:
         optional: true
 
-  fetch-mock@11.1.5:
-    resolution: {integrity: sha512-KHmZDnZ1ry0pCTrX4YG5DtThHi0MH+GNI9caESnzX/nMJBrvppUHMvLx47M0WY9oAtKOMiPfZDRpxhlHg89BOA==}
-    engines: {node: '>=8.0.0'}
-    peerDependencies:
-      node-fetch: '*'
-    peerDependenciesMeta:
-      node-fetch:
-        optional: true
+  fetch-mock@12.0.0:
+    resolution: {integrity: sha512-JSsjzoRN4rYqHa2/+8ushJGDsK9HGNTdBZo6Hrpu3KFN7Y03nRCt2VJ2WG4OUvyTUukOQ4TQIfjcFcEkMPGZ0Q==}
+    engines: {node: '>=18.11.0'}
 
   figures@6.1.0:
     resolution: {integrity: sha512-d+l3qxjSesT4V7v2fh+QnmFnUWv9lSpjarhShNTgBOfA0ttejbQUAlHLitbjkoRiDulW0OPoQPYIGhIC8ohejg==}
@@ -1962,8 +1957,9 @@ packages:
     resolution: {integrity: sha512-Dnz92NInDqYckGEUJv689RbRiTSEHCQ7wOVeALbkOz999YpqT46yMRIGtSNl2iCL1waAZSx40+h59NV/EwzV/A==}
     engines: {node: '>=18'}
 
-  is-subset@0.1.1:
-    resolution: {integrity: sha512-6Ybun0IkarhmEqxXCNw/C0bna6Zb/TkfUX9UbwJtK6ObwAVCxmAP308WWTHviM/zAqXk05cdhYsUsZeGQh99iw==}
+  is-subset-of@3.1.10:
+    resolution: {integrity: sha512-avvaYgVmYWyaZ1NDFiv4y9JGkrE2je3op1Po4VYKKJKR8H2qVPsg1GZuuXl5elCTxTlwAIsrAjWAs4BVrISFRw==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   is-typed-array@1.1.13:
     resolution: {integrity: sha512-uZ25/bUAlUY5fR4OKT4rZQEBrzQWYV9ZJYGGsUmEJ6thodVJ1HX64ePQ6Z0qPWP+m+Uq6e9UugrE38jeYsDSMw==}
@@ -2968,6 +2964,10 @@ packages:
 
   typedarray@0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
+
+  typedescriptor@3.0.2:
+    resolution: {integrity: sha512-hyVbaCUd18UiXk656g/imaBLMogpdijIEpnhWYrSda9rhvO4gOU16n2nh7xG5lv/rjumnZzGOdz0CEGTmFe0fQ==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   typescript-eslint@8.11.0:
     resolution: {integrity: sha512-cBRGnW3FSlxaYwU8KfAewxFK5uzeOAp0l2KebIlPDOT5olVi65KDG/yjBooPBG0kGW/HLkoz1c/iuBFehcS3IA==}
@@ -4574,12 +4574,12 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.2
 
-  fetch-mock@11.1.5:
+  fetch-mock@12.0.0:
     dependencies:
       '@types/glob-to-regexp': 0.4.4
       dequal: 2.0.3
       glob-to-regexp: 0.4.1
-      is-subset: 0.1.1
+      is-subset-of: 3.1.10
       regexparam: 3.0.0
 
   figures@6.1.0:
@@ -4942,7 +4942,9 @@ snapshots:
 
   is-stream@4.0.1: {}
 
-  is-subset@0.1.1: {}
+  is-subset-of@3.1.10:
+    dependencies:
+      typedescriptor: 3.0.2
 
   is-typed-array@1.1.13:
     dependencies:
@@ -5994,6 +5996,8 @@ snapshots:
   type-fest@4.26.0: {}
 
   typedarray@0.0.6: {}
+
+  typedescriptor@3.0.2: {}
 
   typescript-eslint@8.11.0(eslint@9.13.0)(typescript@5.6.3):
     dependencies:
