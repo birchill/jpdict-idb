@@ -194,8 +194,6 @@ const ReadingsStruct: s.Describe<KanjiReading> = s.type({
 const RadicalStruct: s.Describe<Radical> = s.type({
   x: s.min(safeInteger(), 0),
   nelson: s.optional(s.min(safeInteger(), 0)),
-  name: s.optional(s.array(s.string())),
-  var: s.optional(s.string()),
 });
 
 const MiscSchema: s.Describe<KanjiMiscInfo> = s.type({
