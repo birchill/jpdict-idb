@@ -100,17 +100,26 @@ const downloadWordsV1From110 = () => {
 };
 
 describe('download', () => {
+  before(() => {
+    fetchMock.mockGlobal();
+  });
+
+  after(() => {
+    fetchMock.unmockGlobal();
+  });
+
   beforeEach(() => {
     clearCachedVersionInfo();
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.removeRoutes();
+    fetchMock.clearHistory();
   });
 
   it('should download the initial version information', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":0,"format":"full"}
 `
@@ -138,7 +147,7 @@ describe('download', () => {
   });
 
   it('should fail if there is no version file available', async () => {
-    fetchMock.mock('end:version-en.json', 404);
+    fetchMock.route('end:version-en.json', 404);
 
     try {
       await drainEvents(downloadKanjiV1(), { wrapError: true });
@@ -152,7 +161,7 @@ describe('download', () => {
   });
 
   it('should fail if the version file is corrupt', async () => {
-    fetchMock.mock('end:version-en.json', 'yer');
+    fetchMock.route('end:version-en.json', 'yer');
 
     try {
       await drainEvents(downloadKanjiV1(), { wrapError: true });
@@ -165,7 +174,7 @@ describe('download', () => {
   });
 
   it('should fail if the version file is missing required fields', async () => {
-    fetchMock.mock('end:version-en.json', {
+    fetchMock.route('end:version-en.json', {
       kanji: {
         '1': {
           major: 1,
@@ -187,7 +196,7 @@ describe('download', () => {
   });
 
   it('should fail if the version file has invalid fields', async () => {
-    fetchMock.mock('end:version-en.json', {
+    fetchMock.route('end:version-en.json', {
       kanji: { '1': { ...KANJI_VERSION_1_0_0.kanji['1'], major: 0 } },
     });
 
@@ -202,7 +211,7 @@ describe('download', () => {
   });
 
   it('should fail if the requested major version is not available', async () => {
-    fetchMock.mock('end:version-en.json', {
+    fetchMock.route('end:version-en.json', {
       kanji: {
         '2': {
           ...KANJI_VERSION_1_0_0.kanji['1'],
@@ -223,8 +232,9 @@ describe('download', () => {
   });
 
   it('should fail if the first file is not available', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock('end:kanji/en/1.0.0.jsonl', 404);
+    fetchMock
+      .route('end:version-en.json', KANJI_VERSION_1_0_0)
+      .route('end:kanji/en/1.0.0.jsonl', 404);
 
     try {
       await drainEvents(downloadKanjiV1(), { wrapError: true });
@@ -236,8 +246,7 @@ describe('download', () => {
   });
 
   it('should fail if the first file does not match', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0).route(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":1,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":0,"format":"full"}
 `
@@ -253,8 +262,7 @@ describe('download', () => {
   });
 
   it('should fail if the format of the first file does not match', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0).route(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":1,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":0,"format":"patch"}
 `
@@ -270,8 +278,7 @@ describe('download', () => {
   });
 
   it('should fail if the part specification of the first file does not match', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0).route(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":1,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":0,"format":"full"}
 `
@@ -287,8 +294,8 @@ describe('download', () => {
   });
 
   it('should download the first file', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":2,"format":"full"}
@@ -361,8 +368,8 @@ describe('download', () => {
   });
 
   it('should fail if not header record appears', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
@@ -380,8 +387,8 @@ describe('download', () => {
   });
 
   it('should fail if the header appears mid-stream', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
@@ -400,8 +407,8 @@ describe('download', () => {
   });
 
   it('should fail if multiple header records appear', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":2,"format":"full"}
@@ -421,8 +428,8 @@ describe('download', () => {
   });
 
   it('should fail if a record in a full file has a patch type (_) field', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
@@ -440,8 +447,8 @@ describe('download', () => {
   });
 
   it('should fail if a line is not an object (string)', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
@@ -459,8 +466,8 @@ describe('download', () => {
   });
 
   it('should fail if a line is not an object (array)', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
@@ -478,8 +485,8 @@ describe('download', () => {
   });
 
   it('should fail if a line is not an object (invalid object)', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
@@ -497,8 +504,8 @@ describe('download', () => {
   });
 
   it('should fetch all parts of an initial multi-part download', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.2-1.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":2,"part":1,"format":"full"}
@@ -506,7 +513,7 @@ describe('download', () => {
 {"id":1000010,"r":["ヾ"],"s":[{"g":["voiced repetition mark in katakana"],"pos":["unc"],"gt":1}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.2-2.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":2,"part":2,"format":"full"}
@@ -514,7 +521,7 @@ describe('download', () => {
 {"id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.2-3.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":1,"part":3,"format":"full"}
@@ -670,8 +677,8 @@ describe('download', () => {
   });
 
   it('should fetch all patches when updating a complete current version', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.1-patch.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":3,"format":"patch"}
@@ -680,7 +687,7 @@ describe('download', () => {
 {"_":"-","id":1000050}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.2-patch.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":1,"format":"patch"}
@@ -737,8 +744,8 @@ describe('download', () => {
   });
 
   it('should fail if a record in a patch file does NOT have a patch-type (_) field', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.1-patch.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":2,"format":"patch"}
@@ -757,8 +764,8 @@ describe('download', () => {
   });
 
   it('should fail in a record in a patch file has an unrecognized patch-type (_) field', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.1-patch.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":2,"format":"patch"}
@@ -777,15 +784,15 @@ describe('download', () => {
   });
 
   it('should fail if one of the patches is missing', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.1-patch.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":1,"format":"patch"}
 {"_":"+","id":1000020,"r":["ゝ"],"s":[{"g":["repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
 `
     );
-    fetchMock.mock('end:words/en/1.1.2-patch.jsonl', 404);
+    fetchMock.route('end:words/en/1.1.2-patch.jsonl', 404);
 
     try {
       await drainEvents(downloadWordsV1From110(), { wrapError: true });
@@ -797,8 +804,8 @@ describe('download', () => {
   });
 
   it('should fail if one of the patches is corrupt', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.1-patch.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":1,"format":"patch"}
@@ -816,8 +823,8 @@ describe('download', () => {
   });
 
   it('should fail if one of the patches is corrupt', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.1-patch.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":1,"format":"full"}
@@ -835,8 +842,8 @@ describe('download', () => {
   });
 
   it('should resume a multi-part initial download including subsequent patches', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.0-2.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":0,"dateOfCreation":"2022-04-05"},"records":2,"part":2,"format":"full"}
@@ -844,7 +851,7 @@ describe('download', () => {
 {"id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.0-3.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":0,"dateOfCreation":"2022-04-05"},"records":2,"part":3,"format":"full"}
@@ -852,7 +859,7 @@ describe('download', () => {
 {"id":1000050,"k":["仝"],"r":["どうじょう"],"s":[{"g":["\\"as above\\" mark"],"pos":["n"]}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.1-patch.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":1,"dateOfCreation":"2022-04-05"},"records":2,"format":"patch"}
@@ -860,7 +867,7 @@ describe('download', () => {
 {"_":"+","id":1000090,"k":["○","〇"],"r":["まる"],"s":[{"g":["circle"],"pos":["n"],"xref":[{"k":"丸","r":"まる","sense":1}],"inf":"sometimes used for zero"},{"g":["\\"correct\\"","\\"good\\""],"pos":["n"],"xref":[{"k":"二重丸"}],"inf":"when marking a test, homework, etc."},{"g":["*","_"],"pos":["unc"],"xref":[{"k":"〇〇","sense":1}],"inf":"placeholder used to censor individual characters or indicate a space to be filled in"},{"g":["period","full stop"],"pos":["n"],"xref":[{"k":"句点"}]},{"g":["maru mark","semivoiced sound","p-sound"],"pos":["n"],"xref":[{"k":"半濁点"}]}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.2-patch.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":2,"format":"patch"}
@@ -974,8 +981,8 @@ describe('download', () => {
   });
 
   it('should NOT resume a multi-part initial download if there are more than 10 patches since', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_20_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_20_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.20-1.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":2,"part":1,"format":"full"}
@@ -983,7 +990,7 @@ describe('download', () => {
 {"id":1000010,"r":["ヾ"],"s":[{"g":["voiced repetition mark in katakana"],"pos":["unc"],"gt":1}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.20-2.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":2,"part":2,"format":"full"}
@@ -991,7 +998,7 @@ describe('download', () => {
 {"id":1000030,"r":["ゞ"],"s":[{"g":["voiced repetition mark in hiragana"],"pos":["unc"],"gt":1}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.20-3.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":20,"dateOfCreation":"2022-04-05"},"records":1,"part":3,"format":"full"}
@@ -1082,7 +1089,7 @@ describe('download', () => {
 
   it('should fail when the latest version is less than the current version', async () => {
     // Set the latest version to 1.0.1
-    fetchMock.mock('end:version-en.json', {
+    fetchMock.route('end:version-en.json', {
       kanji: { '1': { ...KANJI_VERSION_1_0_0.kanji['1'], patch: 1 } },
     });
 
@@ -1111,7 +1118,7 @@ describe('download', () => {
   });
 
   it('should do nothing when the latest version equals the current version', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
 
     const abortController = new AbortController();
     const events = await drainEvents(
@@ -1131,10 +1138,10 @@ describe('download', () => {
   });
 
   it('should reset and fetch the latest version when there is a new minor version', async () => {
-    fetchMock.mock('end:version-en.json', {
+    fetchMock.route('end:version-en.json', {
       kanji: { '1': { ...KANJI_VERSION_1_0_0.kanji['1'], minor: 2, patch: 3 } },
     });
-    fetchMock.mock(
+    fetchMock.route(
       'end:kanji/en/1.2.3.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":2,"patch":3,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":1,"format":"full"}
@@ -1175,7 +1182,7 @@ describe('download', () => {
   });
 
   it('should reset and fetch the latest version when there is a new major version we support', async () => {
-    fetchMock.mock('end:version-en.json', {
+    fetchMock.route('end:version-en.json', {
       kanji: {
         '1': {
           major: 1,
@@ -1200,7 +1207,7 @@ describe('download', () => {
         },
       },
     });
-    fetchMock.mock(
+    fetchMock.route(
       'end:kanji/en/2.3.4.jsonl',
       `
 {"type":"header","version":{"major":2,"minor":3,"patch":4,"databaseVersion":"176","dateOfCreation":"2020-07-09"},"records":1,"format":"full"}
@@ -1241,8 +1248,8 @@ describe('download', () => {
   });
 
   it('should request the appropriate language', async () => {
-    fetchMock.mock('end:version-fr.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-fr.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/fr/1.0.0.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"176","dateOfCreation":"2020-07-09"},"records":1,"format":"full"}
@@ -1260,26 +1267,26 @@ describe('download', () => {
     );
 
     assert.isFalse(
-      fetchMock.called('end:version-en.json'),
+      fetchMock.callHistory.called('end:version-en.json'),
       'Should NOT get en version'
     );
     assert.isTrue(
-      fetchMock.called('end:version-fr.json'),
+      fetchMock.callHistory.called('end:version-fr.json'),
       'Should get fr version'
     );
     assert.isFalse(
-      fetchMock.called('end:kanji/en/1.0.0.jsonl'),
+      fetchMock.callHistory.called('end:kanji/en/1.0.0.jsonl'),
       'Should NOT get en database file'
     );
     assert.isTrue(
-      fetchMock.called('end:kanji/fr/1.0.0.jsonl'),
+      fetchMock.callHistory.called('end:kanji/fr/1.0.0.jsonl'),
       'Should get fr database file'
     );
   });
 
   it('should cancel any fetches if the download is canceled', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"2019-173","dateOfCreation":"2019-06-22"},"records":2,"format":"full"}
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
