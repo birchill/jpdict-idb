@@ -44,13 +44,22 @@ const VERSION_INFO = {
 describe('updateWithRetry', function () {
   let db: JpdictIdb;
 
+  before(() => {
+    fetchMock.mockGlobal();
+  });
+
+  after(() => {
+    fetchMock.unmockGlobal();
+  });
+
   beforeEach(() => {
     db = new JpdictIdb();
     clearCachedVersionInfo();
   });
 
   afterEach(async () => {
-    fetchMock.restore();
+    fetchMock.removeRoutes();
+    fetchMock.clearHistory();
     sinon.restore();
     if (db) {
       await db.destroy();
@@ -58,13 +67,13 @@ describe('updateWithRetry', function () {
   });
 
   it('should call the onUpdateComplete callback on success', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', VERSION_INFO);
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -82,13 +91,13 @@ describe('updateWithRetry', function () {
   });
 
   it('should call the onUpdateError callback on complete failure', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', VERSION_INFO);
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -115,14 +124,14 @@ describe('updateWithRetry', function () {
   });
 
   it('should retry a network error', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.route('end:version-en.json', VERSION_INFO);
     fetchMock.once('end:.jsonl', 404);
-    fetchMock.mock(
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -164,13 +173,13 @@ describe('updateWithRetry', function () {
   });
 
   it('should wait until it is online', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', VERSION_INFO);
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -205,14 +214,14 @@ describe('updateWithRetry', function () {
   });
 
   it('should wait until it is online even when re-trying a network error', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
-    fetchMock.mock('end:.jsonl', 404, { repeat: 2 });
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', VERSION_INFO);
+    fetchMock.route('end:.jsonl', 404, { repeat: 2 });
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -271,14 +280,14 @@ describe('updateWithRetry', function () {
   });
 
   it('should coalesce overlapping requests', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.route('end:version-en.json', VERSION_INFO);
     fetchMock.once('end:.jsonl', 404);
-    fetchMock.mock(
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -314,14 +323,14 @@ describe('updateWithRetry', function () {
   });
 
   it('should NOT coalesce overlapping requests when the updateNow flag is set', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.route('end:version-en.json', VERSION_INFO);
     fetchMock.once('end:.jsonl', 404);
-    fetchMock.mock(
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -361,25 +370,25 @@ describe('updateWithRetry', function () {
   });
 
   it('should NOT coalesce overlapping requests when the requested language changes', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
-    fetchMock.mock('end:version-fr.json', VERSION_INFO);
+    fetchMock.route('end:version-en.json', VERSION_INFO);
+    fetchMock.route('end:version-fr.json', VERSION_INFO);
     fetchMock.once('end:.jsonl', 404);
-    fetchMock.mock(
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:kanji/fr/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/fr/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -420,14 +429,14 @@ describe('updateWithRetry', function () {
   });
 
   it('should allow canceling the retries', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.route('end:version-en.json', VERSION_INFO);
     fetchMock.once('end:.jsonl', 404);
-    fetchMock.mock(
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -463,14 +472,14 @@ describe('updateWithRetry', function () {
   });
 
   it('should cancel the retries when the database is deleted', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
+    fetchMock.route('end:version-en.json', VERSION_INFO);
     fetchMock.once('end:.jsonl', 404);
-    fetchMock.mock(
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -504,9 +513,9 @@ describe('updateWithRetry', function () {
   });
 
   it('should reset the timeout after each successful download', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
-    fetchMock.mock('end:.jsonl', 404, { repeat: 2 });
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', VERSION_INFO);
+    fetchMock.route('end:.jsonl', 404, { repeat: 2 });
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
@@ -514,7 +523,7 @@ describe('updateWithRetry', function () {
 
     // Make radical file fail only once
     let callCount = 0;
-    fetchMock.mock('end:radicals/en/4.0.0.jsonl', () => {
+    fetchMock.route('end:radicals/en/4.0.0.jsonl', () => {
       if (callCount++) {
         return `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `;
@@ -567,14 +576,14 @@ describe('updateWithRetry', function () {
   });
 
   it('should retry when saving to the database fails', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', VERSION_INFO);
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `
@@ -596,14 +605,14 @@ describe('updateWithRetry', function () {
   });
 
   it('should give up after saving to the database fails too many times', async () => {
-    fetchMock.mock('end:version-en.json', VERSION_INFO);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', VERSION_INFO);
+    fetchMock.route(
       'end:kanji/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:radicals/en/4.0.0.jsonl',
       `{"type":"header","version":{"major":4,"minor":0,"patch":0,"dateOfCreation":"2019-09-06"},"records":0,"format":"full"}
 `

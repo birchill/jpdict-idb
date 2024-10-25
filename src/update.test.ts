@@ -109,6 +109,14 @@ describe('update', function () {
     events.push(event);
   };
 
+  before(() => {
+    fetchMock.mockGlobal();
+  });
+
+  after(() => {
+    fetchMock.unmockGlobal();
+  });
+
   beforeEach(() => {
     clearCachedVersionInfo();
     controller = new AbortController();
@@ -118,13 +126,14 @@ describe('update', function () {
   });
 
   afterEach(() => {
-    fetchMock.restore();
+    fetchMock.removeRoutes();
+    fetchMock.clearHistory();
     return store.destroy();
   });
 
   it('should produce updatestart/updateend events after reading the version', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
@@ -143,8 +152,8 @@ describe('update', function () {
   });
 
   it('should update the dbversion table', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
@@ -157,22 +166,22 @@ describe('update', function () {
   });
 
   it('should not write part information after downloading all parts in a multi-part series', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.2-1.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":1,"part":1,"format":"full"}
 {"id":1000000,"r":["ヽ"],"s":[{"g":["repetition mark in katakana"],"pos":["unc"],"xref":[{"k":"一の字点"}],"gt":1}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.2-2.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":1,"part":2,"format":"full"}
 {"id":1000360,"r":["あっさり","アッサリ"],"rm":[{"p":["i1"],"a":3},{"a":3}],"s":[{"g":["easily","readily","quickly","flatly (refuse)"],"pos":["adv","adv-to","vs"],"misc":["on-mim"]},{"g":["lightly (seasoned food, applied make-up, etc.)","plainly","simply"],"pos":["adv","adv-to","vs"],"misc":["on-mim"]}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.2-3.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":1,"part":3,"format":"full"}
@@ -187,8 +196,8 @@ describe('update', function () {
   });
 
   it('should add entries to the kanji table', async () => {
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":2,"format":"full"}
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
@@ -226,8 +235,8 @@ describe('update', function () {
 
   it('should delete entries from the kanji table', async () => {
     // Initial update
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.once('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":2,"format":"full"}
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
@@ -238,11 +247,8 @@ describe('update', function () {
 
     // Subsequent patch that deletes the first record
     clearCachedVersionInfo();
-    fetchMock.mock(
-      { url: 'end:version-en.json', overwriteRoutes: true },
-      KANJI_VERSION_1_0_1
-    );
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_1);
+    fetchMock.route(
       'end:kanji/en/1.0.1-patch.jsonl',
       `{"type":"header","version":{"major":1,"minor":0,"patch":1,"databaseVersion":"176","dateOfCreation":"2019-07-10"},"records":1,"format":"patch"}
 {"_":"-","c":"㐂"}
@@ -264,8 +270,8 @@ describe('update', function () {
   });
 
   it('should produce progress events', async () => {
-    fetchMock.mock('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', WORDS_VERSION_1_1_2_PARTS_3);
+    fetchMock.route(
       'end:words/en/1.1.2-1.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":26,"part":1,"format":"full"}
@@ -297,7 +303,7 @@ describe('update', function () {
 {"id":1000320,"k":["彼処","彼所"],"km":[{"i":["rK"]},{"i":["rK"]}],"r":["あそこ","あすこ","かしこ","アソコ","あしこ","あこ"],"rm":[{"p":["i1"],"a":0},{"a":0},{"a":1},{"app":0,"a":0},{"i":["ok"]},{"i":["ok"],"a":1}],"s":[{"g":["there","over there","that place","yonder","you-know-where"],"pos":["pn"],"xref":[{"r":"どこ","sense":1},{"r":"ここ","sense":1},{"r":"そこ","sense":1}],"misc":["uk"],"inf":"place physically distant from both speaker and listener"},{"g":["genitals","private parts","nether regions"],"rapp":11,"pos":["n"],"misc":["col","uk"]},{"g":["that far","that much","that point"],"pos":["n"],"xref":[{"r":"あれほど"}],"misc":["uk"],"inf":"something psychologically distant from both speaker and listener"}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.2-2.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":58,"part":2,"format":"full"}
@@ -361,7 +367,7 @@ describe('update', function () {
 {"id":1001060,"r":["うろうろ","ウロウロ"],"rm":[{"p":["i1"],"a":1},{"a":1}],"s":[{"g":["restlessly","aimlessly","without purpose"],"pos":["adv","adv-to"],"misc":["on-mim"]},{"g":["to loiter","to drift","to hang about doing nothing","to wander aimlessly","to be restless"],"pos":["vs"],"xref":[{"k":"彷徨く","sense":1}],"misc":["on-mim"]},{"g":["to be restless","to fuss","to be in a fidget"],"pos":["vs"],"misc":["on-mim"]}]}
 `
     );
-    fetchMock.mock(
+    fetchMock.route(
       'end:words/en/1.1.2-3.jsonl',
       `
 {"type":"header","version":{"major":1,"minor":1,"patch":2,"dateOfCreation":"2022-04-05"},"records":3,"part":3,"format":"full"}
@@ -433,8 +439,8 @@ describe('update', function () {
 
   it('should delete everything when doing a full update', async () => {
     // Initial update
-    fetchMock.mock('end:version-en.json', KANJI_VERSION_1_0_0);
-    fetchMock.mock(
+    fetchMock.once('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route(
       'end:kanji/en/1.0.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":2,"format":"full"}
 {"c":"㐂","r":{},"m":[],"rad":{"x":1},"refs":{"nelson_c":265,"halpern_njecd":2028},"misc":{"sc":6}}
@@ -445,11 +451,8 @@ describe('update', function () {
 
     // Subsequent minor version only includes the second record
     clearCachedVersionInfo();
-    fetchMock.mock(
-      { url: 'end:version-en.json', overwriteRoutes: true },
-      KANJI_VERSION_1_1_0
-    );
-    fetchMock.mock(
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_1_0);
+    fetchMock.route(
       'end:kanji/en/1.1.0.jsonl',
       `{"type":"header","version":{"major":1,"minor":1,"patch":0,"databaseVersion":"177","dateOfCreation":"2019-07-11"},"records":1,"format":"full"}
 {"c":"㐆","r":{},"m":["to follow","to trust to","to put confidence in","to depend on","to turn around","to turn the body"],"rad":{"x":4},"refs":{},"misc":{"sc":6}}
