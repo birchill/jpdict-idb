@@ -64,8 +64,8 @@ importers:
         specifier: 9.13.0
         version: 9.13.0
       fetch-mock:
-        specifier: 12.0.0
-        version: 12.0.0
+        specifier: 12.0.1
+        version: 12.0.1
       globals:
         specifier: 15.11.0
         version: 15.11.0
@@ -1578,8 +1578,8 @@ packages:
       picomatch:
         optional: true
 
-  fetch-mock@12.0.0:
-    resolution: {integrity: sha512-JSsjzoRN4rYqHa2/+8ushJGDsK9HGNTdBZo6Hrpu3KFN7Y03nRCt2VJ2WG4OUvyTUukOQ4TQIfjcFcEkMPGZ0Q==}
+  fetch-mock@12.0.1:
+    resolution: {integrity: sha512-LvEDBqntk/X1oaZq9VDQZNOcr1j1hNTeHuvtohO/WsPzwGqBYxHjanoDpuauAmHASE8G5PaImG/MBuQEc0HFrw==}
     engines: {node: '>=18.11.0'}
 
   figures@6.1.0:
@@ -4597,7 +4597,7 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.2
 
-  fetch-mock@12.0.0:
+  fetch-mock@12.0.1:
     dependencies:
       '@types/glob-to-regexp': 0.4.4
       dequal: 2.0.3
