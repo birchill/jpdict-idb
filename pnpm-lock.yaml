@@ -12,13 +12,13 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2
       '@birchill/normal-jp':
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.5.2
+        version: 1.5.2
       idb:
         specifier: ^8.0.0
         version: 8.0.0
       superstruct:
-        specifier: ^2.0.0
+        specifier: ^2.0.2
         version: 2.0.2
     devDependencies:
       '@eslint/js':
@@ -142,8 +142,8 @@ packages:
   '@birchill/json-equalish@1.1.2':
     resolution: {integrity: sha512-oXsOtXbuxai0iq8bXZKa0S2AkGEEhigu2WcZUbYwRbv4EtHJvT6jqSg5kNtWeI+6frv7ixIbJbuWP6AbNtj7Sw==}
 
-  '@birchill/normal-jp@1.5.0':
-    resolution: {integrity: sha512-yL0XXk6Wl4jrJtfT2HJ/NDiZoepgJMWx3CLM0MzUyXFVFWvdgVPe+DWjH/z6Rps7tDqSS6CtVXL9hW0qncpAUA==}
+  '@birchill/normal-jp@1.5.2':
+    resolution: {integrity: sha512-FcETRUNQcfJ8Jc+f3uh5nEejTcwZRUqZVDW0svyKR1wUKo6Z5UdeXMffu0e3jQbWxxrZc7Pc8JuNQONXo9fvbw==}
 
   '@conventional-changelog/git-client@1.0.1':
     resolution: {integrity: sha512-PJEqBwAleffCMETaVm/fUgHldzBE35JFk3/9LL6NUA5EXa3qednu+UT6M7E5iBu3zIQZCULYIiZ90fBYHt6xUw==}
@@ -3214,7 +3214,7 @@ snapshots:
 
   '@birchill/json-equalish@1.1.2': {}
 
-  '@birchill/normal-jp@1.5.0': {}
+  '@birchill/normal-jp@1.5.2': {}
 
   '@conventional-changelog/git-client@1.0.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.0.0)':
     dependencies:
