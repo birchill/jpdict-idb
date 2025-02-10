@@ -82,8 +82,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       playwright-test:
-        specifier: 14.1.7
-        version: 14.1.7
+        specifier: 14.1.8
+        version: 14.1.8
       prettier:
         specifier: 3.5.0
         version: 3.5.0
@@ -2560,8 +2560,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright-test@14.1.7:
-    resolution: {integrity: sha512-pskq/DFHdtoj+SPFAuUpAVFxFx3LybgW2bxlTgBOoWTMUgS0PXC4O+tdELxC0D1z4r48uloWo283LB6uvXnHCw==}
+  playwright-test@14.1.8:
+    resolution: {integrity: sha512-eOVLOLFTp5Teo5G72fu166bk4q/D9A9aM42tPHN1AbDIU8fTPGfphYcbWPG/MwNOht9FVjKu1ug4M9SVy1T6YQ==}
     engines: {node: '>=16.0.0'}
     hasBin: true
 
@@ -2798,9 +2798,9 @@ packages:
   sinon@19.0.2:
     resolution: {integrity: sha512-euuToqM+PjO4UgXeLETsfQiuoyPXlqFezr6YZDFwHR3t4qaX0fZUe1MfPMznTL5f8BWrVS89KduLdMUsxFCO6g==}
 
-  sirv@2.0.4:
-    resolution: {integrity: sha512-94Bdh3cC2PKrbgSOUqTiGPWVZeSiXfKOVZNJniWoqrWrRkB1CJzBU3NEbiTsPcYy1lDsANA/THzS+9WBiy5nfQ==}
-    engines: {node: '>= 10'}
+  sirv@3.0.0:
+    resolution: {integrity: sha512-BPwJGUeDaDCHihkORDchNyyTvWFhcusy1XMmhEVTQTwGeybFbp8YEmB+njbPnth1FibULBSBVwCQni25XlCUDg==}
+    engines: {node: '>=18'}
 
   slash@5.1.0:
     resolution: {integrity: sha512-ZA6oR3T/pEyuqwMgAKT0/hAv8oAXckzbkmR0UkUosQ+Mc4RxGoJkRmwHgHufaenlyAgE1Mxgpdcrf75y6XcnDg==}
@@ -5616,7 +5616,7 @@ snapshots:
 
   playwright-core@1.50.1: {}
 
-  playwright-test@14.1.7:
+  playwright-test@14.1.8:
     dependencies:
       acorn-loose: 8.4.0
       assert: 2.1.0
@@ -5644,7 +5644,7 @@ snapshots:
       premove: 4.0.0
       process: 0.11.10
       sade: 1.8.1
-      sirv: 2.0.4
+      sirv: 3.0.0
       source-map: 0.6.1
       source-map-support: 0.5.21
       stream-browserify: 3.0.0
@@ -5919,7 +5919,7 @@ snapshots:
       nise: 6.1.1
       supports-color: 7.2.0
 
-  sirv@2.0.4:
+  sirv@3.0.0:
     dependencies:
       '@polka/url': 1.0.0-next.28
       mrmime: 2.0.0
