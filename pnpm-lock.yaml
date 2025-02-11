@@ -82,8 +82,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       playwright-test:
-        specifier: 14.1.8
-        version: 14.1.8
+        specifier: 14.1.9
+        version: 14.1.9
       prettier:
         specifier: 3.5.0
         version: 3.5.0
@@ -2560,8 +2560,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright-test@14.1.8:
-    resolution: {integrity: sha512-eOVLOLFTp5Teo5G72fu166bk4q/D9A9aM42tPHN1AbDIU8fTPGfphYcbWPG/MwNOht9FVjKu1ug4M9SVy1T6YQ==}
+  playwright-test@14.1.9:
+    resolution: {integrity: sha512-L6HkKrcaW+qhaIPPOsoR1HDDR3bQdKeQCcpLkCbebZDG1ikSzMwmF3HAcEtAUXbmRwZcvB1dPoxQi6jlCF/f+A==}
     engines: {node: '>=16.0.0'}
     hasBin: true
 
@@ -5616,7 +5616,7 @@ snapshots:
 
   playwright-core@1.50.1: {}
 
-  playwright-test@14.1.8:
+  playwright-test@14.1.9:
     dependencies:
       acorn-loose: 8.4.0
       assert: 2.1.0
