@@ -52,14 +52,14 @@ importers:
         specifier: 8.24.0
         version: 8.24.0(eslint@9.20.1)(typescript@5.7.3)
       chai:
-        specifier: 5.1.2
-        version: 5.1.2
+        specifier: 5.2.0
+        version: 5.2.0
       chai-datetime:
         specifier: 1.8.1
         version: 1.8.1
       chai-like:
         specifier: 1.1.3
-        version: 1.1.3(chai@5.1.2)
+        version: 1.1.3(chai@5.2.0)
       eslint:
         specifier: 9.20.1
         version: 9.20.1
@@ -1237,8 +1237,8 @@ packages:
     peerDependencies:
       chai: 2 - 5
 
-  chai@5.1.2:
-    resolution: {integrity: sha512-aGtmf24DW6MLHHG5gCx4zaI3uBq3KRtxeVs0DjFH6Z0rDNbsvTxFASFvdj79pxjxZ8/5u3PIiN3IwEIQkiiuPw==}
+  chai@5.2.0:
+    resolution: {integrity: sha512-mCuXncKXk5iCLhfhwTc0izo0gtEmpz5CtG2y8GiOINBlMVS6v8TMRc5TaLWKS6692m9+dVVfzgeVxR5UxWHTYw==}
     engines: {node: '>=12'}
 
   chalk@4.1.2:
@@ -4231,13 +4231,13 @@ snapshots:
 
   chai-datetime@1.8.1:
     dependencies:
-      chai: 5.1.2
+      chai: 5.2.0
 
-  chai-like@1.1.3(chai@5.1.2):
+  chai-like@1.1.3(chai@5.2.0):
     dependencies:
-      chai: 5.1.2
+      chai: 5.2.0
 
-  chai@5.1.2:
+  chai@5.2.0:
     dependencies:
       assertion-error: 2.0.1
       check-error: 2.1.1
