@@ -8,8 +8,7 @@ export type KanjiRecord = {
   misc: KanjiMiscInfo;
   st?: string;
   comp?: string;
-  var?: Array<string>;
-  cf?: string | Array<string>;
+  cf?: string;
 };
 
 export type KanjiReading = {

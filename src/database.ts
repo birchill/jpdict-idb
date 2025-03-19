@@ -16,7 +16,7 @@ import { UpdateState } from './update-state';
 import { update } from './update';
 
 const MAJOR_VERSION: { [series in DataSeries]: number } = {
-  kanji: 4,
+  kanji: 5,
   radicals: 4,
   names: 3,
   words: 2,

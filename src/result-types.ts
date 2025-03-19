@@ -1,4 +1,4 @@
-import { KanjiMiscInfo, KanjiReading, Radical } from './kanji';
+import { KanjiMiscInfo, KanjiReading } from './kanji';
 import { NameRecord } from './names';
 import { Overwrite, Resolve } from './type-helpers';
 import { GlossType, KanjiMeta, ReadingMeta, WordSense } from './words';
@@ -76,41 +76,58 @@ export type KanjiResult = {
   refs: Record<string, string | number>;
   misc: KanjiMiscInfo;
   st?: string;
-  comp: Array<{
-    c: string;
-    na: Array<string>;
-    // An optional field indicating the kanji character to link to.
-    //
-    // For example, if the component is ⺮, one might want to look up other
-    // kanji with that component, but they also might want to look up the
-    // corresponding kanji for the component, i.e. 竹.
-    //
-    // For kanji / katakana components this is empty. For radical components
-    // this is the kanji of the base radical, if any.
-    k?: string;
-    m: Array<string>;
-    m_lang: string;
-  }>;
+  comp: Array<KanjiComponentInfo & { sub?: Array<KanjiComponentInfo> }>;
   var?: Array<string>;
   cf: Array<RelatedKanji>;
 };
 
-export type ExpandedRadical = Resolve<
-  Omit<Radical, 'name'> & {
-    b?: string;
-    k?: string;
+export type KanjiComponentFields = {
+  /** The character for this component */
+  c: string;
+  /** The name(s) of this component */
+  na: Array<string>;
+  /**
+   * An optional field indicating the kanji character to link to.
+   *
+   * For example, if the component is ⺮, one might want to look up other
+   * kanji with that component, but they also might want to look up the
+   * corresponding kanji for the component, i.e. 竹.
+   *
+   * For kanji / katakana components this is empty. For radical components
+   * this is the kanji of the base radical, if any.
+   */
+  k?: string;
+  /** Meaning of the component */
+  m: Array<string>;
+  /** The language of the meanings in the `m` field */
+  m_lang: string;
+};
+
+export type KanjiComponentInfo = KanjiComponentFields & {
+  base?: KanjiComponentFields;
+  /**
+   * True if this component is the kanji's radical (and not simply because
+   * the component was found in the radical data).
+   */
+  is_rad?: boolean;
+};
+
+export type ExpandedRadical = {
+  x: {
+    r: number;
+    c: string;
     na: Array<string>;
     m: Array<string>;
     m_lang: string;
-    base?: {
-      b?: string;
-      k?: string;
-      na: Array<string>;
-      m: Array<string>;
-      m_lang: string;
-    };
-  }
->;
+  };
+  nelson?: {
+    r: number;
+    c: string;
+    na: Array<string>;
+    m: Array<string>;
+    m_lang: string;
+  };
+};
 
 export type RelatedKanji = {
   c: string;

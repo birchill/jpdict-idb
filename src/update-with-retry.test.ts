@@ -15,7 +15,7 @@ const fastSetTimeout = (cb: () => void) => {
 
 const VERSION_INFO = {
   kanji: {
-    '4': {
+    '5': {
       major: 4,
       minor: 0,
       patch: 0,
