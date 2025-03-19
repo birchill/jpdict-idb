@@ -11,6 +11,9 @@ importers:
       '@birchill/json-equalish':
         specifier: ^1.1.2
         version: 1.1.2
+      '@birchill/kanji-component-string-utils':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@birchill/normal-jp':
         specifier: ^1.5.2
         version: 1.6.0
@@ -135,6 +138,9 @@ packages:
 
   '@birchill/json-equalish@1.1.2':
     resolution: {integrity: sha512-oXsOtXbuxai0iq8bXZKa0S2AkGEEhigu2WcZUbYwRbv4EtHJvT6jqSg5kNtWeI+6frv7ixIbJbuWP6AbNtj7Sw==}
+
+  '@birchill/kanji-component-string-utils@1.0.1':
+    resolution: {integrity: sha512-2Wc+6n0UZNbmazPzyRuERnOGTEvv+fFsC4ZzbLTOkx83JGmLUAKToNEWjaxZ8sZrXu3VZY8UpqdS/izom2WxiA==}
 
   '@birchill/normal-jp@1.6.0':
     resolution: {integrity: sha512-mYZr4JZElWUwzs8QaOzp9ufi4VzVmi+1ERU+nGb4kSW66s80Te1c88zUx+jnl3RmUzP7Q/WENEvuYNH9+eOPdg==}
@@ -3251,6 +3257,8 @@ snapshots:
   '@bcoe/v8-coverage@1.0.2': {}
 
   '@birchill/json-equalish@1.1.2': {}
+
+  '@birchill/kanji-component-string-utils@1.0.1': {}
 
   '@birchill/normal-jp@1.6.0': {}
 

@@ -12,8 +12,8 @@ use(chaiDateTime);
 
 const VERSION_INFO = {
   kanji: {
-    '4': {
-      major: 4,
+    '5': {
+      major: 5,
       minor: 0,
       patch: 0,
       databaseVersion: '175',
@@ -86,8 +86,8 @@ describe('JpdictIdb', function () {
     fetchMock
       .route('end:version-en.json', VERSION_INFO)
       .route(
-        'end:kanji/en/4.0.0.jsonl',
-        `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
+        'end:kanji/en/5.0.0.jsonl',
+        `{"type":"header","version":{"major":5,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
       )
       .route(
@@ -99,7 +99,7 @@ describe('JpdictIdb', function () {
     await db.update({ series: 'kanji', lang: 'en' });
 
     assert.deepEqual(db.kanji.version, {
-      ...VERSION_INFO.kanji['4'],
+      ...VERSION_INFO.kanji['5'],
       lang: 'en',
     });
     assert.equal(db.kanji.state, 'ok');
@@ -117,8 +117,8 @@ describe('JpdictIdb', function () {
     fetchMock
       .route('end:version-en.json', VERSION_INFO)
       .route(
-        'end:kanji/en/4.0.0.jsonl',
-        `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
+        'end:kanji/en/5.0.0.jsonl',
+        `{"type":"header","version":{"major":5,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
       )
       .route(
@@ -147,8 +147,8 @@ describe('JpdictIdb', function () {
     fetchMock
       .route('end:version-en.json', VERSION_INFO)
       .route(
-        'end:kanji/en/4.0.0.jsonl',
-        `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
+        'end:kanji/en/5.0.0.jsonl',
+        `{"type":"header","version":{"major":5,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
       )
       .route(
@@ -163,7 +163,7 @@ describe('JpdictIdb', function () {
     await Promise.all([firstUpdate, secondUpdate]);
 
     assert.equal(
-      fetchMock.callHistory.calls('end:kanji/en/4.0.0.jsonl').length,
+      fetchMock.callHistory.calls('end:kanji/en/5.0.0.jsonl').length,
       1,
       'Should only fetch things once'
     );
@@ -173,8 +173,8 @@ describe('JpdictIdb', function () {
     fetchMock
       .route('end:version-en.json', VERSION_INFO)
       .route(
-        'end:kanji/en/4.0.0.jsonl',
-        `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
+        'end:kanji/en/5.0.0.jsonl',
+        `{"type":"header","version":{"major":5,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
       )
       .route(
@@ -184,8 +184,8 @@ describe('JpdictIdb', function () {
       )
       .route('end:version-fr.json', VERSION_INFO)
       .route(
-        'end:kanji/fr/4.0.0.jsonl',
-        `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
+        'end:kanji/fr/5.0.0.jsonl',
+        `{"type":"header","version":{"major":5,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
       )
       .route(
@@ -210,8 +210,8 @@ describe('JpdictIdb', function () {
     fetchMock
       .route('end:version-en.json', VERSION_INFO)
       .route(
-        'end:kanji/en/4.0.0.jsonl',
-        `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
+        'end:kanji/en/5.0.0.jsonl',
+        `{"type":"header","version":{"major":5,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
       )
       .route(
@@ -230,7 +230,7 @@ describe('JpdictIdb', function () {
 
     await Promise.all([kanjiUpdate, namesUpdate]);
 
-    assert.equal(db.kanji.version?.major, 4);
+    assert.equal(db.kanji.version?.major, 5);
     assert.equal(db.radicals.version?.major, 4);
     assert.equal(db.names.version?.major, 3);
   });
@@ -264,8 +264,8 @@ describe('JpdictIdb', function () {
     fetchMock
       .route('end:version-en.json', VERSION_INFO)
       .route(
-        'end:kanji/en/4.0.0.jsonl',
-        `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
+        'end:kanji/en/5.0.0.jsonl',
+        `{"type":"header","version":{"major":5,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
       )
       .route(
@@ -362,8 +362,8 @@ describe('JpdictIdb', function () {
     fetchMock
       .route('end:version-en.json', VERSION_INFO)
       .route(
-        'end:kanji/en/4.0.0.jsonl',
-        `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
+        'end:kanji/en/5.0.0.jsonl',
+        `{"type":"header","version":{"major":5,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
       )
       .route(
@@ -392,8 +392,8 @@ describe('JpdictIdb', function () {
     fetchMock
       .route('end:version-en.json', VERSION_INFO)
       .route(
-        'end:kanji/en/4.0.0.jsonl',
-        `{"type":"header","version":{"major":4,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
+        'end:kanji/en/5.0.0.jsonl',
+        `{"type":"header","version":{"major":5,"minor":0,"patch":0,"databaseVersion":"175","dateOfCreation":"2019-07-09"},"records":0,"format":"full"}
 `
       )
       .route(
