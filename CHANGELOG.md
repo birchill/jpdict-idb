@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.0.0](https://github.com/birchill/jpdict-idb/compare/v2.6.1...v3.0.0) (2025-03-21)
+
+### ⚠ BREAKING CHANGES
+
+- The type of `KanjiResult['comp']` has been updated to
+  support nested kanji components.
+- The type of `KanjiResult['rad']` to simplify the
+  fields. Whether or not a component is the radical is determined by the
+  `is_rad` field on `KanjiResult['comp']`.
+
+### Features
+
+- drop `name` and `var` members from `Radical` type ([acc30a4](https://github.com/birchill/jpdict-idb/commit/acc30a4f8eb2615144fccfb54878653a2a2f97be))
+- support version 5 of kanji data ([5f66838](https://github.com/birchill/jpdict-idb/commit/5f66838ca930b574971d440863fb9205b7402eda))
+
 ## [2.6.1](https://github.com/birchill/jpdict-idb/compare/v2.6.0...v2.6.1) (2024-10-05)
 
 ### Bug Fixes
