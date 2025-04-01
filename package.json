@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@birchill/json-equalish": "^1.1.2",
-    "@birchill/kanji-component-string-utils": "^1.0.1",
+    "@birchill/kanji-component-string-utils": "^2.0.0",
     "@birchill/normal-jp": "^1.5.2",
     "idb": "^8.0.0",
     "superstruct": "^2.0.2"
