@@ -1,8 +1,8 @@
 import {
   parse as parseComponents,
+  type BaseComponent,
   type Components,
   type RootComponent,
-  type SubComponent,
 } from '@birchill/kanji-component-string-utils';
 import { kanaToHiragana } from '@birchill/normal-jp';
 import { IDBPDatabase, IDBPTransaction, openDB, StoreNames } from 'idb';
@@ -786,13 +786,18 @@ async function getComponentsForKanji({
     const comp: KanjiResult['comp'] = [];
     const components = parseComponents(record.comp || '');
 
+    const hasExplicitRadical = some(
+      iterateComponents(components),
+      ({ component }) => !!component.is_rad
+    );
+
     for (const component of components) {
       const compInfo:
         | (KanjiComponentInfo & { sub?: Array<KanjiComponentInfo> })
         | null = getComponentInfo({
         component,
         kanjiMap,
-        kanjiRadical: record.rad,
+        radicalCheck: hasExplicitRadical ? !!component.is_rad : record.rad.x,
         radicalMap,
         lang,
         logWarningMessage,
@@ -807,7 +812,7 @@ async function getComponentsForKanji({
             getComponentInfo({
               component: sub,
               kanjiMap,
-              kanjiRadical: record.rad,
+              radicalCheck: hasExplicitRadical ? !!sub.is_rad : record.rad.x,
               radicalMap,
               lang,
               logWarningMessage,
@@ -829,7 +834,7 @@ function* iterateComponents(
   components: Components
 ): Generator<
   | { component: RootComponent; parent: null }
-  | { component: SubComponent; parent: RootComponent }
+  | { component: BaseComponent; parent: RootComponent }
 > {
   for (const component of components) {
     yield { component, parent: null };
@@ -839,24 +844,42 @@ function* iterateComponents(
   }
 }
 
+// This is only needed until Safari supports `Iterator.from`.
+function some<T>(iter: Iterable<T>, predicate: (item: T) => boolean): boolean {
+  for (const item of iter) {
+    if (predicate(item)) return true;
+  }
+  return false;
+}
+
 function getComponentInfo({
   component: { c, var: variant },
   kanjiMap,
-  kanjiRadical,
+  radicalCheck,
   radicalMap,
   lang,
   logWarningMessage,
 }: {
-  component: SubComponent;
+  component: BaseComponent;
   kanjiMap: Map<string, KanjiStoreRecord>;
-  kanjiRadical: KanjiStoreRecord['rad'];
+  /**
+   * Value to check to see if this component is the radical component for the
+   * kanji.
+   *
+   * It's type varies as follows:
+   *
+   * - `boolean` if this kanji has an explicit radical annotation (and `true`
+   *   if _this_ component is that radical, `false` otherwise), otherwise
+   * - `number` indicating the radical number of the kanji
+   */
+  radicalCheck: boolean | number;
   radicalMap: Map<string, Array<RadicalComponentInfo>>;
   lang: string;
   logWarningMessage: (msg: string) => void;
 }): KanjiComponentInfo | null {
   const matchingRadicals = radicalMap.get(c);
   if (matchingRadicals?.length) {
-    let radical: RadicalComponentInfo | null = null;
+    let radical: Readonly<RadicalComponentInfo> | null = null;
     if (matchingRadicals.length === 1) {
       radical = matchingRadicals[0];
     } else if (matchingRadicals.length > 1) {
@@ -875,7 +898,11 @@ function getComponentInfo({
 
     if (radical) {
       const result: KanjiComponentInfo = stripFields(radical, ['id', 'r']);
-      if (kanjiRadical.x === radical.r) {
+      if (
+        typeof radicalCheck === 'boolean'
+          ? radicalCheck
+          : radical.r === radicalCheck
+      ) {
         result.is_rad = true;
       }
       return result;
