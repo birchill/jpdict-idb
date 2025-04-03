@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.1.0](https://github.com/birchill/jpdict-idb/compare/v3.0.0...v3.1.0) (2025-04-03)
+
+### Features
+
+- handle explicit radical annotations in component data ([24cc837](https://github.com/birchill/jpdict-idb/commit/24cc837c0418cd4a23f3673bb72276824e59a057))
+
 ## [3.0.0](https://github.com/birchill/jpdict-idb/compare/v2.6.1...v3.0.0) (2025-03-21)
 
 ### ⚠ BREAKING CHANGES
