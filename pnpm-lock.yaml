@@ -31,8 +31,8 @@ importers:
         specifier: 10.0.1
         version: 10.0.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.0.0)(release-it@19.0.2(@types/node@22.15.3))
       '@types/chai':
-        specifier: 5.2.1
-        version: 5.2.1
+        specifier: 5.2.2
+        version: 5.2.2
       '@types/chai-datetime':
         specifier: 1.0.0
         version: 1.0.0
@@ -890,8 +890,8 @@ packages:
   '@types/chai-like@1.1.3':
     resolution: {integrity: sha512-AEGBQz8wcPhvytKR5EP3HiQrmUeg6HP/ZgNnGWnLaQA4fyZ7kDS1/wbSBLN4CBTMobK4wM2SpksVWzTXWQ8r3w==}
 
-  '@types/chai@5.2.1':
-    resolution: {integrity: sha512-iu1JLYmGmITRzUgNiLMZD3WCoFzpYtueuyAgHTXqgwSRAMIlFTnZqG6/xenkpUGRJEzSfklUTI4GNSzks/dc0w==}
+  '@types/chai@5.2.2':
+    resolution: {integrity: sha512-8kB30R7Hwqf40JPiKhVzodJs2Qc1ZJ5zuT3uzw5Hq/dhNCl3G3l83jfpdI1e20BP348+fV7VIL/+FxaXkqBmWg==}
 
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
@@ -3919,13 +3919,13 @@ snapshots:
 
   '@types/chai-datetime@1.0.0':
     dependencies:
-      '@types/chai': 5.2.1
+      '@types/chai': 5.2.2
 
   '@types/chai-like@1.1.3':
     dependencies:
-      '@types/chai': 5.2.1
+      '@types/chai': 5.2.2
 
-  '@types/chai@5.2.1':
+  '@types/chai@5.2.2':
     dependencies:
       '@types/deep-eql': 4.0.2
 
