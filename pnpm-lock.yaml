@@ -98,7 +98,7 @@ importers:
         version: 21.0.0
       ts-loader:
         specifier: 9.5.2
-        version: 9.5.2(typescript@5.8.3)(webpack@5.100.0(esbuild@0.25.0))
+        version: 9.5.2(typescript@5.8.3)(webpack@5.100.1(esbuild@0.25.0))
       tslib:
         specifier: 2.8.1
         version: 2.8.1
@@ -115,8 +115,8 @@ importers:
         specifier: 0.12.5
         version: 0.12.5
       webpack:
-        specifier: 5.100.0
-        version: 5.100.0(esbuild@0.25.0)
+        specifier: 5.100.1
+        version: 5.100.1(esbuild@0.25.0)
 
 packages:
 
@@ -3066,8 +3066,8 @@ packages:
     resolution: {integrity: sha512-yd1RBzSGanHkitROoPFd6qsrxt+oFhg/129YzheDGqeustzX0vTZJZsSsQjVQC4yzBQ56K55XU8gaNCtIzOnTg==}
     engines: {node: '>=10.13.0'}
 
-  webpack@5.100.0:
-    resolution: {integrity: sha512-H8yBSBTk+BqxrINJnnRzaxU94SVP2bjd7WmA+PfCphoIdDpeQMJ77pq9/4I7xjLq38cB1bNKfzYPZu8pB3zKtg==}
+  webpack@5.100.1:
+    resolution: {integrity: sha512-YJB/ESPUe2Locd0NKXmw72Dx8fZQk1gTzI6rc9TAT4+Sypbnhl8jd8RywB1bDsDF9Dy1RUR7gn3q/ZJTd0OZZg==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     peerDependencies:
@@ -5864,14 +5864,14 @@ snapshots:
       type-fest: 2.19.0
       unique-string: 3.0.0
 
-  terser-webpack-plugin@5.3.11(esbuild@0.25.0)(webpack@5.100.0(esbuild@0.25.0)):
+  terser-webpack-plugin@5.3.11(esbuild@0.25.0)(webpack@5.100.1(esbuild@0.25.0)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
       schema-utils: 4.3.2
       serialize-javascript: 6.0.2
       terser: 5.38.0
-      webpack: 5.100.0(esbuild@0.25.0)
+      webpack: 5.100.1(esbuild@0.25.0)
     optionalDependencies:
       esbuild: 0.25.0
 
@@ -5934,7 +5934,7 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-loader@9.5.2(typescript@5.8.3)(webpack@5.100.0(esbuild@0.25.0)):
+  ts-loader@9.5.2(typescript@5.8.3)(webpack@5.100.1(esbuild@0.25.0)):
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.18.1
@@ -5942,7 +5942,7 @@ snapshots:
       semver: 7.7.1
       source-map: 0.7.4
       typescript: 5.8.3
-      webpack: 5.100.0(esbuild@0.25.0)
+      webpack: 5.100.1(esbuild@0.25.0)
 
   tslib@2.8.1: {}
 
@@ -6064,7 +6064,7 @@ snapshots:
 
   webpack-sources@3.3.3: {}
 
-  webpack@5.100.0(esbuild@0.25.0):
+  webpack@5.100.1(esbuild@0.25.0):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.8
@@ -6088,7 +6088,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.2
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.11(esbuild@0.25.0)(webpack@5.100.0(esbuild@0.25.0))
+      terser-webpack-plugin: 5.3.11(esbuild@0.25.0)(webpack@5.100.1(esbuild@0.25.0))
       watchpack: 2.4.2
       webpack-sources: 3.3.3
     transitivePeerDependencies:
