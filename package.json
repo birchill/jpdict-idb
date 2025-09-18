@@ -67,7 +67,7 @@
     "playwright-test": "14.1.12",
     "prettier": "3.6.2",
     "process": "0.11.10",
-    "release-it": "19.0.4",
+    "release-it": "19.0.5",
     "sinon": "21.0.0",
     "ts-loader": "9.5.4",
     "tsdown": "0.15.2",
