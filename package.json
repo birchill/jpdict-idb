@@ -4,9 +4,9 @@
   "description": "Download and lookup jpdict data using IndexedDB",
   "author": "Brian Birtles",
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "playwright-test",
-    "prepublishOnly": "pinst --disable && tsup",
+    "prepublishOnly": "pinst --disable && tsdown",
     "preinstall": "npx --yes only-allow pnpm",
     "postinstall": "husky",
     "postpublish": "pinst --enable"
@@ -70,8 +70,8 @@
     "release-it": "19.0.4",
     "sinon": "21.0.0",
     "ts-loader": "9.5.4",
+    "tsdown": "0.15.2",
     "tslib": "2.8.1",
-    "tsup": "8.5.0",
     "typescript": "5.9.2",
     "typescript-eslint": "8.44.0",
     "util": "0.12.5",
