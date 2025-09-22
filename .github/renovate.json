@@ -9,6 +9,13 @@
       "automergeType": "branch"
     },
     {
+      "matchPackageNames": ["tsdown"],
+      "matchCurrentVersion": "/^0\\./",
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
       "matchDepTypes": ["devDependencies"],
       "addLabels": ["dev"]
     },
