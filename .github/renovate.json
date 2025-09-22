@@ -1,5 +1,9 @@
 {
-  "extends": ["config:base", ":dependencyDashboard", ":pinOnlyDevDependencies"],
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":pinOnlyDevDependencies"
+  ],
   "labels": ["dependencies"],
   "packageRules": [
     {
@@ -20,7 +24,7 @@
       "addLabels": ["dev"]
     },
     {
-      "packageNames": ["node"],
+      "matchPackageNames": ["node"],
       "enabled": false
     },
     {
