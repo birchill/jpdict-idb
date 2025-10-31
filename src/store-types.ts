@@ -85,10 +85,7 @@ export type NameStoreRecord = NameDownloadRecord & {
 };
 
 export function toNameStoreRecord(entry: NameDownloadRecord): NameStoreRecord {
-  return {
-    ...entry,
-    h: keysToHiragana([...(entry.k || []), ...entry.r]),
-  };
+  return { ...entry, h: keysToHiragana([...(entry.k || []), ...entry.r]) };
 }
 
 export function getStoreIdForNameRecord(
@@ -114,10 +111,7 @@ export type KanjiStoreRecord = Overwrite<
 export function toKanjiStoreRecord(
   record: KanjiDownloadRecord
 ): KanjiStoreRecord {
-  return {
-    ...record,
-    c: record.c.codePointAt(0) as number,
-  };
+  return { ...record, c: record.c.codePointAt(0) as number };
 }
 
 export function getStoreIdForKanjiRecord(

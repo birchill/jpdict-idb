@@ -9,9 +9,7 @@ import { isAbortError } from './error-parsing.js';
 // so that a timeout can be distinguished from a deliberate abort.
 export async function fetchWithTimeout(
   resource: RequestInfo,
-  options: {
-    timeout: number | null;
-  } & RequestInit
+  options: { timeout: number | null } & RequestInit
 ): Promise<Response> {
   // Set up abort controller
   const controller = new AbortController();

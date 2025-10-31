@@ -256,11 +256,7 @@ describe('update', function () {
     );
 
     await updateKanji({
-      currentVersion: {
-        major: 1,
-        minor: 0,
-        patch: 0,
-      },
+      currentVersion: { major: 1, minor: 0, patch: 0 },
       majorVersion: 1,
     });
 
@@ -459,11 +455,7 @@ describe('update', function () {
 `
     );
     await updateKanji({
-      currentVersion: {
-        major: 1,
-        minor: 0,
-        patch: 0,
-      },
+      currentVersion: { major: 1, minor: 0, patch: 0 },
       majorVersion: 1,
     });
 

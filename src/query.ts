@@ -335,11 +335,7 @@ export async function getWordsWithGloss(
       const priority = getPriority(result);
 
       results.push(result);
-      resultMeta.set(record.id, {
-        confidence,
-        priority,
-        localizedMatch: true,
-      });
+      resultMeta.set(record.id, { confidence, priority, localizedMatch: true });
     }
   }
 
@@ -620,15 +616,7 @@ async function getRadicalForKanji({
       // But rather than crash fatally, just fill in some nonsense data
       // instead.
       logWarningMessage(`Failed to find radical: ${record.rad.x}`);
-      rad = {
-        x: {
-          r: record.rad.x,
-          c: '�',
-          na: [''],
-          m: [''],
-          m_lang: lang,
-        },
-      };
+      rad = { x: { r: record.rad.x, c: '�', na: [''], m: [''], m_lang: lang } };
     }
 
     return rad;
@@ -919,12 +907,7 @@ function getComponentInfo({
         na = kanjiRecord.r.on;
       }
 
-      return {
-        c,
-        na,
-        m: kanjiRecord.m,
-        m_lang: kanjiRecord.m_lang || lang,
-      };
+      return { c, na, m: kanjiRecord.m, m_lang: kanjiRecord.m_lang || lang };
     }
   }
 
@@ -937,12 +920,7 @@ function getComponentInfo({
     //
     // For now we handle Japanese simply because that seems likely.
     if (lang === 'ja') {
-      return {
-        c,
-        na: [c],
-        m: [`片仮名の${c}`],
-        m_lang: lang,
-      };
+      return { c, na: [c], m: [`片仮名の${c}`], m_lang: lang };
     } else {
       const asRoman = katakanaToRoman[codepoint - 0x30a1]![1];
       // NOTE: We only currently deal with a very limited number of
@@ -969,12 +947,7 @@ function getComponentInfo({
           `Generating katakana record for unknown language: ${lang}`
         );
       }
-      return {
-        c,
-        na: [c],
-        m: [`katakana ${asRoman}`],
-        m_lang: lang,
-      };
+      return { c, na: [c], m: [`katakana ${asRoman}`], m_lang: lang };
     }
   }
 

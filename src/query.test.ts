@@ -24,28 +24,13 @@ const VERSION_INFO = {
     },
   },
   radicals: {
-    '4': {
-      major: 4,
-      minor: 0,
-      patch: 0,
-      dateOfCreation: '2019-09-06',
-    },
+    '4': { major: 4, minor: 0, patch: 0, dateOfCreation: '2019-09-06' },
   },
   names: {
-    '3': {
-      major: 3,
-      minor: 0,
-      patch: 0,
-      dateOfCreation: '2020-08-22',
-    },
+    '3': { major: 3, minor: 0, patch: 0, dateOfCreation: '2020-08-22' },
   },
   words: {
-    '2': {
-      major: 2,
-      minor: 0,
-      patch: 0,
-      dateOfCreation: '2020-10-12',
-    },
+    '2': { major: 2, minor: 0, patch: 0, dateOfCreation: '2020-10-12' },
   },
 };
 
@@ -193,12 +178,7 @@ describe('query', function () {
 
     const result = await getKanji({ kanji: ['通'], lang: 'en' });
     assert.deepEqual(result[0]?.comp, [
-      {
-        c: 'マ',
-        na: ['マ'],
-        m: ['katakana ma'],
-        m_lang: 'en',
-      },
+      { c: 'マ', na: ['マ'], m: ['katakana ma'], m_lang: 'en' },
       {
         c: '⽤',
         k: '用',
@@ -255,13 +235,7 @@ describe('query', function () {
         r: { on: ['キョウ'], kun: ['むね', 'むな-'] },
         m: ['bosom', 'breast', 'chest', 'heart', 'feelings'],
         rad: {
-          x: {
-            r: 130,
-            c: '⾁',
-            na: ['にく'],
-            m: ['meat'],
-            m_lang: 'en',
-          },
+          x: { r: 130, c: '⾁', na: ['にく'], m: ['meat'], m_lang: 'en' },
         },
         refs: {
           nelson_c: 3768,
@@ -288,13 +262,7 @@ describe('query', function () {
             na: ['にくづき'],
             m: ['meat'],
             m_lang: 'en',
-            base: {
-              c: '⾁',
-              k: '肉',
-              na: ['にく'],
-              m: ['meat'],
-              m_lang: 'en',
-            },
+            base: { c: '⾁', k: '肉', na: ['にく'], m: ['meat'], m_lang: 'en' },
             is_rad: true,
           },
           {
@@ -351,13 +319,7 @@ describe('query', function () {
         r: { on: ['キン'], kun: ['すじ'] },
         m: ['muscle', 'sinew', 'tendon', 'fiber', 'plot', 'plan', 'descent'],
         rad: {
-          x: {
-            r: 118,
-            c: '⽵',
-            na: ['たけ'],
-            m: ['bamboo'],
-            m_lang: 'en',
-          },
+          x: { r: 118, c: '⽵', na: ['たけ'], m: ['bamboo'], m_lang: 'en' },
         },
         refs: {
           nelson_c: 3395,
@@ -399,13 +361,7 @@ describe('query', function () {
             na: ['にくづき'],
             m: ['meat'],
             m_lang: 'en',
-            base: {
-              c: '⾁',
-              k: '肉',
-              na: ['にく'],
-              m: ['meat'],
-              m_lang: 'en',
-            },
+            base: { c: '⾁', k: '肉', na: ['にく'], m: ['meat'], m_lang: 'en' },
           },
           {
             c: '⼒',
@@ -1083,19 +1039,9 @@ describe('query', function () {
             match: true,
             matchRange: [0, 1],
           },
-          {
-            ent: '僊人',
-            match: false,
-          },
+          { ent: '僊人', match: false },
         ],
-        r: [
-          {
-            ent: 'せんにん',
-            p: ['n2', 'nf34', 's2'],
-            a: 3,
-            match: true,
-          },
-        ],
+        r: [{ ent: 'せんにん', p: ['n2', 'nf34', 's2'], a: 3, match: true }],
         s: [
           {
             g: [

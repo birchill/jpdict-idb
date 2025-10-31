@@ -154,18 +154,11 @@ async function doUpdate<Series extends DataSeries>({
           ) {
             delete versionToWrite.partInfo;
           }
-          await store.updateDataVersion({
-            series,
-            version: versionToWrite,
-          });
+          await store.updateDataVersion({ series, version: versionToWrite });
 
           // Final progress event
           const totalProgress = currentFile / totalFiles;
-          callback({
-            type: 'progress',
-            fileProgress: 1,
-            totalProgress,
-          });
+          callback({ type: 'progress', fileProgress: 1, totalProgress });
           lastReportedTotalProgress = totalProgress;
 
           callback({ type: 'fileend', version: versionToWrite });

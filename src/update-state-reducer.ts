@@ -18,10 +18,7 @@ export function reducer(state: UpdateState, action: UpdateAction): UpdateState {
       };
 
     case 'end':
-      return {
-        type: 'idle',
-        lastCheck: action.checkDate,
-      };
+      return { type: 'idle', lastCheck: action.checkDate };
 
     case 'error':
       return { type: 'idle', lastCheck: action.checkDate || state.lastCheck };

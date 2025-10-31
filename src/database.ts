@@ -371,10 +371,7 @@ export class JpdictIdb {
     } catch (e) {
       // We should only update the last-check date if we actually made some
       // sort of update.
-      reducer({
-        type: 'error',
-        checkDate: wroteSomething ? checkDate : null,
-      });
+      reducer({ type: 'error', checkDate: wroteSomething ? checkDate : null });
       throw e;
     }
   }

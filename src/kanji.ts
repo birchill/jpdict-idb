@@ -18,11 +18,7 @@ export type KanjiReading = {
   py?: Array<string>;
 };
 
-export type Radical = {
-  x: number;
-  nelson?: number;
-  name?: Array<string>;
-};
+export type Radical = { x: number; nelson?: number; name?: Array<string> };
 
 export type KanjiMiscInfo = {
   gr?: number;

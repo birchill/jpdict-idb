@@ -129,9 +129,7 @@ export function validateWordDownloadRecord(
 export type WordDownloadDeleteRecord = Pick<WordDownloadRecord, 'id'>;
 
 const WordDownloadDeleteRecordSchema: s.Describe<WordDownloadDeleteRecord> =
-  s.type({
-    id: WordIdSchema,
-  });
+  s.type({ id: WordIdSchema });
 
 export function validateWordDownloadDeleteRecord(
   record: unknown
@@ -173,9 +171,7 @@ export function validateNameDownloadRecord(
 export type NameDownloadDeleteRecord = Pick<NameDownloadRecord, 'id'>;
 
 const NameDownloadDeleteRecordSchema: s.Describe<NameDownloadDeleteRecord> =
-  s.type({
-    id: NameIdSchema,
-  });
+  s.type({ id: NameIdSchema });
 
 export function validateNameDownloadDeleteRecord(
   record: unknown
@@ -244,9 +240,7 @@ export function validateKanjiDownloadRecord(
 export type KanjiDownloadDeleteRecord = Pick<KanjiDownloadRecord, 'c'>;
 
 const KanjiDownloadDeleteRecordSchema: s.Describe<KanjiDownloadDeleteRecord> =
-  s.type({
-    c: KanjiIdSchema,
-  });
+  s.type({ c: KanjiIdSchema });
 
 export function validateKanjiDownloadDeleteRecord(
   record: unknown
@@ -295,9 +289,7 @@ export function validateRadicalDownloadRecord(
 export type RadicalDownloadDeleteRecord = Pick<RadicalDownloadRecord, 'id'>;
 
 const RadicalDownloadDeleteRecordSchema: s.Describe<RadicalDownloadDeleteRecord> =
-  s.type({
-    id: RadicalIdSchema,
-  });
+  s.type({ id: RadicalIdSchema });
 
 export function validateRadicalDownloadDeleteRecord(
   record: unknown

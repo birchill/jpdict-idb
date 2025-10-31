@@ -51,9 +51,7 @@ export type RecordEvent = {
 // Helper types
 //
 
-export type CurrentVersion = VersionNumber & {
-  partInfo?: PartInfo;
-};
+export type CurrentVersion = VersionNumber & { partInfo?: PartInfo };
 
 //
 // Configuration constants
@@ -141,16 +139,8 @@ export async function* download({
 }
 
 type DownloadFileSpec =
-  | {
-      format: 'full';
-      version: VersionNumber;
-      partInfo?: PartInfo;
-    }
-  | {
-      format: 'patch';
-      version: VersionNumber;
-      partInfo?: never;
-    };
+  | { format: 'full'; version: VersionNumber; partInfo?: PartInfo }
+  | { format: 'patch'; version: VersionNumber; partInfo?: never };
 
 function getDownloadList({
   currentVersion,
@@ -163,10 +153,7 @@ function getDownloadList({
     patch: number;
     parts?: number;
   };
-}): {
-  type: 'reset' | 'update';
-  files: Array<DownloadFileSpec>;
-} {
+}): { type: 'reset' | 'update'; files: Array<DownloadFileSpec> } {
   // Check the local database is not ahead of what we're about to download
   //
   // This can happen when the version file gets cached because we can
@@ -240,10 +227,7 @@ function getDownloadList({
           minor: latestVersion.minor,
           patch: latestVersion.patch,
         },
-        partInfo: {
-          part: nextPart,
-          parts: latestVersion.parts,
-        },
+        partInfo: { part: nextPart, parts: latestVersion.parts },
       });
       nextPart++;
     }
@@ -289,10 +273,7 @@ function getDownloadList({
           minor: currentVersion.minor,
           patch: currentVersion.patch,
         },
-        partInfo: {
-          part: nextPart,
-          parts: currentVersion.partInfo.parts,
-        },
+        partInfo: { part: nextPart, parts: currentVersion.partInfo.parts },
       });
       nextPart++;
     }
@@ -339,9 +320,7 @@ const HeaderLineStruct = s.type({
   format: s.enums(['patch', 'full']),
 });
 
-const PatchLineStruct = s.type({
-  _: s.enums(['+', '-', '~']),
-});
+const PatchLineStruct = s.type({ _: s.enums(['+', '-', '~']) });
 
 async function* getEvents({
   baseUrl,
@@ -442,10 +421,7 @@ async function* getEvents({
           totalRecords: line.records,
           version: {
             ...line.version,
-            partInfo: {
-              part: line.part,
-              parts: partInfo!.parts,
-            },
+            partInfo: { part: line.part, parts: partInfo!.parts },
             lang,
           },
         };
@@ -453,10 +429,7 @@ async function* getEvents({
         fileStartEvent = {
           type: 'filestart',
           totalRecords: line.records,
-          version: {
-            ...line.version,
-            lang,
-          },
+          version: { ...line.version, lang },
         };
       }
 
