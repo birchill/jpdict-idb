@@ -1,21 +1,15 @@
 import { jsonEqualish } from '@birchill/json-equalish';
 
 import { AbortError } from './abort-error.js';
-import {
-  allDataSeries,
-  allMajorDataSeries,
-  DataSeries,
-  MajorDataSeries,
-} from './data-series.js';
-import { DataSeriesState } from './data-series-state.js';
-import { DataVersion } from './data-version.js';
+import type { DataSeries, MajorDataSeries } from './data-series.js';
+import { allDataSeries, allMajorDataSeries } from './data-series.js';
+import type { DataSeriesState } from './data-series-state.js';
+import type { DataVersion } from './data-version.js';
 import { hasLanguage } from './download.js';
 import { JpdictStore } from './store.js';
-import {
-  UpdateAction,
-  reducer as updateReducer,
-} from './update-state-reducer.js';
-import { UpdateState } from './update-state.js';
+import type { UpdateAction } from './update-state-reducer.js';
+import { reducer as updateReducer } from './update-state-reducer.js';
+import type { UpdateState } from './update-state.js';
 import { update } from './update.js';
 
 const MAJOR_VERSION: { [series in DataSeries]: number } = {
@@ -67,7 +61,7 @@ export class JpdictIdb {
 
   private verbose = false;
   private readyPromise: Promise<any>;
-  private changeListeners: ChangeCallback[] = [];
+  private changeListeners: Array<ChangeCallback> = [];
   private inProgressUpdates: {
     [series in MajorDataSeries]: InProgressUpdate | undefined;
   } = { words: undefined, kanji: undefined, names: undefined };

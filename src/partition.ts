@@ -3,10 +3,10 @@
  * given test and another of all those that fail it.
  */
 export function partition<T>(
-  array: readonly T[],
+  array: ReadonlyArray<T>,
   test: (elem: T) => boolean
-): [pass: T[], fail: T[]] {
-  return array.reduce<[pass: T[], fail: T[]]>(
+): [pass: Array<T>, fail: Array<T>] {
+  return array.reduce<[pass: Array<T>, fail: Array<T>]>(
     (acc, elem) => {
       const [pass, fail] = acc;
 

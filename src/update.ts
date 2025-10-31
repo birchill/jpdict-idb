@@ -1,13 +1,14 @@
 import { AbortError } from './abort-error.js';
-import { DataSeries } from './data-series.js';
-import { DataVersion } from './data-version.js';
+import type { DataSeries } from './data-series.js';
+import type { DataVersion } from './data-version.js';
 import {
   validateDownloadDeleteRecord,
   validateDownloadRecord,
 } from './download-types.js';
-import { CurrentVersion, download, RecordEvent } from './download.js';
-import { JpdictStore, RecordUpdate } from './store.js';
-import { UpdateEvent } from './update-events.js';
+import type { CurrentVersion, RecordEvent } from './download.js';
+import { download } from './download.js';
+import type { JpdictStore, RecordUpdate } from './store.js';
+import type { UpdateEvent } from './update-events.js';
 
 export type UpdateCallback = (action: UpdateEvent) => void;
 

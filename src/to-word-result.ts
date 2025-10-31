@@ -1,24 +1,23 @@
 import { kanaToHiragana } from '@birchill/normal-jp';
 
-import {
+import type {
   ExtendedKanaEntry,
   ExtendedKanjiEntry,
   ExtendedSense,
   Gloss,
   WordResult,
 } from './result-types.js';
-import { WordStoreRecord } from './store-types.js';
+import type { WordStoreRecord } from './store-types.js';
 import { stripFields } from './utils.js';
-import {
-  BITS_PER_GLOSS_TYPE,
+import type {
   CrossReference,
   GlossType,
-  GlossTypes,
   KanjiMeta,
   ReadingMeta,
   WordRecord,
   WordSense,
 } from './words.js';
+import { BITS_PER_GLOSS_TYPE, GlossTypes } from './words.js';
 
 export type MatchMode =
   | 'lexeme'

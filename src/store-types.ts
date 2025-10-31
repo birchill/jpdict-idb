@@ -1,6 +1,6 @@
 import { kanaToHiragana } from '@birchill/normal-jp';
 
-import {
+import type {
   KanjiDownloadDeleteRecord,
   KanjiDownloadRecord,
   NameDownloadDeleteRecord,
@@ -11,8 +11,8 @@ import {
   WordDownloadRecord,
 } from './download-types.js';
 import { hasHiragana } from './japanese.js';
-import { Overwrite } from './type-helpers.js';
-import { KanjiMeta, ReadingMeta } from './words.js';
+import type { Overwrite } from './type-helpers.js';
+import type { KanjiMeta, ReadingMeta } from './words.js';
 
 // ----------------------------------------------------------------------------
 //

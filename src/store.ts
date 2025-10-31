@@ -1,29 +1,25 @@
-import {
-  DBSchema,
-  deleteDB,
-  IDBPDatabase,
-  IDBPTransaction,
-  openDB,
-  StoreNames,
-} from 'idb';
+import type { DBSchema, IDBPDatabase, IDBPTransaction, StoreNames } from 'idb';
+import { deleteDB, openDB } from 'idb';
 
-import { DataSeries } from './data-series.js';
-import { DataVersion } from './data-version.js';
-import { DownloadDeleteRecord, DownloadRecord } from './download-types.js';
+import type { DataSeries } from './data-series.js';
+import type { DataVersion } from './data-version.js';
+import type { DownloadDeleteRecord, DownloadRecord } from './download-types.js';
 import { QuotaExceededError } from './quota-exceeded-error.js';
+import type {
+  KanjiStoreRecord,
+  NameStoreRecord,
+  RadicalStoreRecord,
+  WordStoreRecord,
+} from './store-types.js';
 import {
   getStoreIdForKanjiRecord,
   getStoreIdForNameRecord,
   getStoreIdForRadicalRecord,
   getStoreIdForWordRecord,
-  KanjiStoreRecord,
-  NameStoreRecord,
-  RadicalStoreRecord,
   toKanjiStoreRecord,
   toNameStoreRecord,
   toRadicalStoreRecord,
   toWordStoreRecord,
-  WordStoreRecord,
 } from './store-types.js';
 import { stripFields } from './utils.js';
 
@@ -160,7 +156,7 @@ export class JpdictStore {
         _newVersion: number | null,
         transaction: IDBPTransaction<
           JpdictSchema,
-          StoreNames<JpdictSchema>[],
+          Array<StoreNames<JpdictSchema>>,
           'versionchange'
         >
       ) {

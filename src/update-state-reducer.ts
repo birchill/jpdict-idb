@@ -1,6 +1,6 @@
-import { DataSeries } from './data-series.js';
-import { UpdateEvent } from './update-events.js';
-import { UpdateState } from './update-state.js';
+import type { DataSeries } from './data-series.js';
+import type { UpdateEvent } from './update-events.js';
+import type { UpdateState } from './update-state.js';
 
 export type UpdateAction =
   | UpdateEvent

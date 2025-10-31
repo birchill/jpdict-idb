@@ -22,7 +22,7 @@ export class DownloadError extends Error {
   code: DownloadErrorCode;
   url?: string;
 
-  constructor({ code, url }: DownloadErrorOptions, ...params: any[]) {
+  constructor({ code, url }: DownloadErrorOptions, ...params: Array<any>) {
     super(...params);
     Object.setPrototypeOf(this, DownloadError.prototype);
 

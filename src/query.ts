@@ -5,10 +5,11 @@ import {
   type RootComponent,
 } from '@birchill/kanji-component-string-utils';
 import { kanaToHiragana } from '@birchill/normal-jp';
-import { IDBPDatabase, IDBPTransaction, openDB, StoreNames } from 'idb';
+import type { IDBPDatabase, IDBPTransaction, StoreNames } from 'idb';
+import { openDB } from 'idb';
 
-import { JpdictSchema } from './store.js';
-import {
+import type { JpdictSchema } from './store.js';
+import type {
   KanjiStoreRecord,
   NameStoreRecord,
   RadicalStoreRecord,
@@ -16,13 +17,10 @@ import {
 } from './store-types.js';
 import { getTokens } from './tokenizer.js';
 import { stripFields } from './utils.js';
-import {
-  MatchMode,
-  toWordResult,
-  toWordResultFromGlossLookup,
-} from './to-word-result.js';
+import type { MatchMode } from './to-word-result.js';
+import { toWordResult, toWordResultFromGlossLookup } from './to-word-result.js';
 import { getPriority, sortWordResults } from './word-result-sorting.js';
-import { CrossReference } from './words.js';
+import type { CrossReference } from './words.js';
 import type {
   KanjiComponentInfo,
   KanjiResult,
@@ -70,7 +68,7 @@ function open(): Promise<IDBPDatabase<JpdictSchema> | null> {
       _newVersion: number | null,
       transaction: IDBPTransaction<
         JpdictSchema,
-        StoreNames<JpdictSchema>[],
+        Array<StoreNames<JpdictSchema>>,
         'versionchange'
       >
     ) {
@@ -847,7 +845,9 @@ function* iterateComponents(
 // This is only needed until Safari supports `Iterator.from`.
 function some<T>(iter: Iterable<T>, predicate: (item: T) => boolean): boolean {
   for (const item of iter) {
-    if (predicate(item)) return true;
+    if (predicate(item)) {
+      return true;
+    }
   }
   return false;
 }
