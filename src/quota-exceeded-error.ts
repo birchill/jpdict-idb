@@ -1,5 +1,5 @@
 export class QuotaExceededError extends Error {
-  constructor(...params: any[]) {
+  constructor(...params: Array<any>) {
     super(...params);
     Object.setPrototypeOf(this, QuotaExceededError.prototype);
 

@@ -11,7 +11,7 @@ import {
   getWordsWithGloss,
   getWordsWithKanji,
 } from './query.js';
-import { NameResult, WordResult } from './result-types.js';
+import type { NameResult, WordResult } from './result-types.js';
 
 const VERSION_INFO = {
   kanji: {

@@ -3,7 +3,8 @@ import chaiLike from 'chai-like';
 import fetchMock from 'fetch-mock';
 
 import { AbortError } from './abort-error.js';
-import { download, DownloadEvent } from './download.js';
+import type { DownloadEvent } from './download.js';
+import { download } from './download.js';
 import { DownloadError } from './download-error.js';
 import { clearCachedVersionInfo } from './download-version-info.js';
 import { isObject } from './is-object.js';
@@ -1338,7 +1339,11 @@ class DrainError extends Error {
   error: unknown;
   events: Array<DownloadEvent>;
 
-  constructor(error: unknown, events: Array<DownloadEvent>, ...params: any[]) {
+  constructor(
+    error: unknown,
+    events: Array<DownloadEvent>,
+    ...params: Array<any>
+  ) {
     super(...params);
     Object.setPrototypeOf(this, DrainError.prototype);
 

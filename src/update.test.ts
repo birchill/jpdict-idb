@@ -1,11 +1,11 @@
 import { assert } from 'chai';
 import fetchMock from 'fetch-mock';
 
-import { DataVersion } from './data-version.js';
-import { CurrentVersion } from './download.js';
+import type { DataVersion } from './data-version.js';
+import type { CurrentVersion } from './download.js';
 import { clearCachedVersionInfo } from './download-version-info.js';
 import { JpdictStore } from './store.js';
-import { ProgressEvent, UpdateEvent } from './update-events.js';
+import type { ProgressEvent, UpdateEvent } from './update-events.js';
 import { update } from './update.js';
 
 const KANJI_VERSION_1_0_0 = {

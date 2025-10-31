@@ -1,4 +1,4 @@
-import { ExtendedSense } from './result-types.js';
+import type { ExtendedSense } from './result-types.js';
 
 export interface PosGroup<Sense> {
   pos: Array<string>;
