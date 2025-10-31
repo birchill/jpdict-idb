@@ -3,10 +3,10 @@ import chaiDateTime from 'chai-datetime';
 import fetchMock from 'fetch-mock';
 import sinon from 'sinon';
 
-import { AbortError } from './abort-error';
-import { JpdictIdb } from './database';
-import { DownloadError } from './download-error';
-import { clearCachedVersionInfo } from './download-version-info';
+import { AbortError } from './abort-error.js';
+import { JpdictIdb } from './database.js';
+import { DownloadError } from './download-error.js';
+import { clearCachedVersionInfo } from './download-version-info.js';
 
 use(chaiDateTime);
 

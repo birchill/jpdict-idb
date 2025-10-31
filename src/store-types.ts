@@ -9,10 +9,10 @@ import {
   RadicalDownloadRecord,
   WordDownloadDeleteRecord,
   WordDownloadRecord,
-} from './download-types';
-import { hasHiragana } from './japanese';
-import { Overwrite } from './type-helpers';
-import { KanjiMeta, ReadingMeta } from './words';
+} from './download-types.js';
+import { hasHiragana } from './japanese.js';
+import { Overwrite } from './type-helpers.js';
+import { KanjiMeta, ReadingMeta } from './words.js';
 
 // ----------------------------------------------------------------------------
 //

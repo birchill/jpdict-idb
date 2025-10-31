@@ -1,6 +1,6 @@
-import { AbortError } from './abort-error';
-import { DownloadError } from './download-error';
-import { isObject } from './is-object';
+import { AbortError } from './abort-error.js';
+import { DownloadError } from './download-error.js';
+import { isObject } from './is-object.js';
 
 export function isAbortError(e: unknown): e is AbortError {
   return isObject(e) && 'name' in e && e.name === 'AbortError';

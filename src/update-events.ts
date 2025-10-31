@@ -1,4 +1,4 @@
-import { DataVersion } from './data-version';
+import { DataVersion } from './data-version.js';
 
 export type UpdateStartEvent = {
   type: 'updatestart';

@@ -1,4 +1,4 @@
-import { ExtendedSense } from './result-types';
+import { ExtendedSense } from './result-types.js';
 
 export interface PosGroup<Sense> {
   pos: Array<string>;
@@ -23,7 +23,7 @@ export function groupSenses<Sense extends ExtendedSense>(
       (previousPos && sense.pos && sense.pos.includes(previousPos)) ||
       (!previousPos && groups.length && (!sense.pos || !sense.pos.length))
     ) {
-      groups[groups.length - 1].senses.push(dropPos(sense, previousPos));
+      groups[groups.length - 1]!.senses.push(dropPos(sense, previousPos));
     } else {
       // If there was no match, start a new group
       const thisPos = sense.pos?.length ? sense.pos[0] : undefined;
@@ -36,7 +36,7 @@ export function groupSenses<Sense extends ExtendedSense>(
   // Having done the initial grouping, see if there are any additional POS that
   // are common to all senses that we can hoist to the group heading.
   for (const group of groups) {
-    let commonPos = group.senses[0].pos;
+    let commonPos = group.senses[0]?.pos;
     if (!commonPos) {
       continue;
     }
@@ -58,7 +58,7 @@ export function groupSenses<Sense extends ExtendedSense>(
 
   // Hoist any common misc readings
   for (const group of groups) {
-    let commonMisc = group.senses[0].misc;
+    let commonMisc = group.senses[0]?.misc;
     if (!commonMisc) {
       continue;
     }

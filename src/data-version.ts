@@ -1,4 +1,4 @@
-import { PartInfo } from './part-info';
+import { PartInfo } from './part-info.js';
 
 export interface DataVersion {
   major: number;

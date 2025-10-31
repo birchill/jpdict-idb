@@ -7,29 +7,29 @@ import {
 import { kanaToHiragana } from '@birchill/normal-jp';
 import { IDBPDatabase, IDBPTransaction, openDB, StoreNames } from 'idb';
 
-import { JpdictSchema } from './store';
+import { JpdictSchema } from './store.js';
 import {
   KanjiStoreRecord,
   NameStoreRecord,
   RadicalStoreRecord,
   WordStoreRecord,
-} from './store-types';
-import { getTokens } from './tokenizer';
-import { stripFields } from './utils';
+} from './store-types.js';
+import { getTokens } from './tokenizer.js';
+import { stripFields } from './utils.js';
 import {
   MatchMode,
   toWordResult,
   toWordResultFromGlossLookup,
-} from './to-word-result';
-import { getPriority, sortWordResults } from './word-result-sorting';
-import { CrossReference } from './words';
-import {
+} from './to-word-result.js';
+import { getPriority, sortWordResults } from './word-result-sorting.js';
+import { CrossReference } from './words.js';
+import type {
   KanjiComponentInfo,
   KanjiResult,
   NameResult,
   RelatedKanji,
   WordResult,
-} from './result-types';
+} from './result-types.js';
 
 // Database query methods
 //
@@ -432,7 +432,7 @@ async function lookUpGlosses(
     // add any results that match on "standard" etc. (but we should add such
     // results if our search term was "stand" or "stan" or "standa" etc.).
     const fullMatchOnFirstToken =
-      tokens.length > 1 && record[indexName].includes(tokens[0]);
+      tokens.length > 1 && record[indexName].includes(tokens[0]!);
     if (!fullMatchOnFirstToken && hasFullMatchOnFirstToken) {
       break;
     }
@@ -552,9 +552,9 @@ export async function getKanji({
     ...record,
     c: String.fromCodePoint(record.c),
     m_lang: record.m_lang || lang,
-    rad: radicalResults[i],
-    comp: componentResults[i],
-    cf: relatedResults[i],
+    rad: radicalResults[i]!,
+    comp: componentResults[i]!,
+    cf: relatedResults[i]!,
   }));
 }
 
@@ -881,14 +881,14 @@ function getComponentInfo({
   if (matchingRadicals?.length) {
     let radical: Readonly<RadicalComponentInfo> | null = null;
     if (matchingRadicals.length === 1) {
-      radical = matchingRadicals[0];
+      radical = matchingRadicals[0]!;
     } else if (matchingRadicals.length > 1) {
       const filtered = variant
         ? matchingRadicals.filter((radical) => radical.id === variant)
         : matchingRadicals.filter((radical) => radical.id.indexOf('-') === -1);
 
       if (filtered.length) {
-        radical = filtered[0];
+        radical = filtered[0]!;
       } else {
         logWarningMessage(
           `Couldn't find radical record for variant ${variant}`
@@ -929,7 +929,8 @@ function getComponentInfo({
   }
 
   // Katakana components
-  if (c.codePointAt(0)! >= 0x30a1 && c.codePointAt(0)! <= 0x30fa) {
+  const codepoint = c.codePointAt(0)!;
+  if (codepoint >= 0x30a1 && codepoint <= 0x30fa) {
     // NOTE: If we ever support languages that are not roman-based, or
     // where it doesn't make sense to convert katakana into a roman
     // equivalent we should detect that here.
@@ -943,7 +944,7 @@ function getComponentInfo({
         m_lang: lang,
       };
     } else {
-      const asRoman = katakanaToRoman[c.codePointAt(0)! - 0x30a1][1];
+      const asRoman = katakanaToRoman[codepoint - 0x30a1]![1];
       // NOTE: We only currently deal with a very limited number of
       // languages where it seems legitimate to write 片仮名 as
       // "katakana" (as best I can tell).

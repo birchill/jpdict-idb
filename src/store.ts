@@ -7,10 +7,10 @@ import {
   StoreNames,
 } from 'idb';
 
-import { DataSeries } from './data-series';
-import { DataVersion } from './data-version';
-import { DownloadDeleteRecord, DownloadRecord } from './download-types';
-import { QuotaExceededError } from './quota-exceeded-error';
+import { DataSeries } from './data-series.js';
+import { DataVersion } from './data-version.js';
+import { DownloadDeleteRecord, DownloadRecord } from './download-types.js';
+import { QuotaExceededError } from './quota-exceeded-error.js';
 import {
   getStoreIdForKanjiRecord,
   getStoreIdForNameRecord,
@@ -24,8 +24,8 @@ import {
   toRadicalStoreRecord,
   toWordStoreRecord,
   WordStoreRecord,
-} from './store-types';
-import { stripFields } from './utils';
+} from './store-types.js';
+import { stripFields } from './utils.js';
 
 interface DataVersionRecord extends DataVersion {
   id: 1 | 2 | 3 | 4;

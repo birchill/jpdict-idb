@@ -1,6 +1,6 @@
-import { DataSeries } from './data-series';
-import { JpdictIdb } from './database';
-import { uuid } from './uuid';
+import { DataSeries } from './data-series.js';
+import { JpdictIdb } from './database.js';
+import { uuid } from './uuid.js';
 
 const dbToUuid: Map<JpdictIdb, string> = new Map();
 

@@ -1,21 +1,21 @@
 import * as s from 'superstruct';
 
-import { DataSeries } from './data-series';
-import { DataVersion } from './data-version';
-import { DownloadError } from './download-error';
-import { getVersionInfo } from './download-version-info';
+import { DataSeries } from './data-series.js';
+import { DataVersion } from './data-version.js';
+import { DownloadError } from './download-error.js';
+import { getVersionInfo } from './download-version-info.js';
 import {
   getErrorMessage,
   isAbortError,
   isDownloadError,
-} from './error-parsing';
-import { fetchWithTimeout } from './fetch';
-import { isObject } from './is-object';
-import { ljsonStreamIterator } from './ljson-stream';
-import { PartInfo } from './part-info';
-import { stripFields } from './utils';
-import { safeInteger } from './validation-helpers';
-import { compareVersions, VersionNumber } from './version-number';
+} from './error-parsing.js';
+import { fetchWithTimeout } from './fetch.js';
+import { isObject } from './is-object.js';
+import { ljsonStreamIterator } from './ljson-stream.js';
+import { PartInfo } from './part-info.js';
+import { stripFields } from './utils.js';
+import { safeInteger } from './validation-helpers.js';
+import { compareVersions, VersionNumber } from './version-number.js';
 
 // Produces an async interator of DownloadEvents
 

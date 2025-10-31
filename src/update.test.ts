@@ -1,12 +1,12 @@
 import { assert } from 'chai';
 import fetchMock from 'fetch-mock';
 
-import { DataVersion } from './data-version';
-import { CurrentVersion } from './download';
-import { clearCachedVersionInfo } from './download-version-info';
-import { JpdictStore } from './store';
-import { ProgressEvent, UpdateEvent } from './update-events';
-import { update } from './update';
+import { DataVersion } from './data-version.js';
+import { CurrentVersion } from './download.js';
+import { clearCachedVersionInfo } from './download-version-info.js';
+import { JpdictStore } from './store.js';
+import { ProgressEvent, UpdateEvent } from './update-events.js';
+import { update } from './update.js';
 
 const KANJI_VERSION_1_0_0 = {
   kanji: {
@@ -266,7 +266,7 @@ describe('update', function () {
 
     const result = await store._getKanji([13314, 13318]);
     assert.lengthOf(result, 1);
-    assert.equal(result[0].c, 13318);
+    assert.equal(result[0]?.c, 13318);
   });
 
   it('should produce progress events', async () => {
