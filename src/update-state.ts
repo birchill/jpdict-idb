@@ -1,5 +1,5 @@
-import { DataSeries } from './data-series';
-import { DataVersion } from './data-version';
+import { DataSeries } from './data-series.js';
+import { DataVersion } from './data-version.js';
 
 // Last time we checked, if ever, we were up-to-date.
 // - The `lastCheck` value specifies when we last checked.

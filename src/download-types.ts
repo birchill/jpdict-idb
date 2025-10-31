@@ -1,11 +1,11 @@
 import * as s from 'superstruct';
 
-import { DataSeries } from './data-series';
-import { KanjiMiscInfo, KanjiReading, KanjiRecord, Radical } from './kanji';
-import { NameRecord, NameTranslation } from './names';
-import { RadicalRecord } from './radicals';
-import { Overwrite } from './type-helpers';
-import { safeInteger } from './validation-helpers';
+import { DataSeries } from './data-series.js';
+import { KanjiMiscInfo, KanjiReading, KanjiRecord, Radical } from './kanji.js';
+import { NameRecord, NameTranslation } from './names.js';
+import { RadicalRecord } from './radicals.js';
+import { Overwrite } from './type-helpers.js';
+import { safeInteger } from './validation-helpers.js';
 import {
   Accent,
   CrossReference,
@@ -14,7 +14,7 @@ import {
   ReadingMeta,
   WordRecord,
   WordSense,
-} from './words';
+} from './words.js';
 
 // ----------------------------------------------------------------------------
 //

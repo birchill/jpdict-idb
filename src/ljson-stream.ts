@@ -1,10 +1,10 @@
-import { AbortError } from './abort-error';
-import { DownloadError } from './download-error';
+import { AbortError } from './abort-error.js';
+import { DownloadError } from './download-error.js';
 import {
   getErrorMessage,
   isAbortError,
   isDownloadError,
-} from './error-parsing';
+} from './error-parsing.js';
 
 export async function* ljsonStreamIterator({
   stream,
@@ -81,7 +81,7 @@ export async function* ljsonStreamIterator({
     // We don't know if the last line is actually the last line of the
     // input or not until we get done: true so we just assume it is
     // a partial line for now.
-    buffer = lines.length ? lines.splice(lines.length - 1, 1)[0] : '';
+    buffer = lines.length ? lines.splice(lines.length - 1, 1)[0]! : '';
 
     for (const line of lines) {
       if (signal.aborted) {

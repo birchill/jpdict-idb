@@ -1,7 +1,7 @@
-import { KanjiMiscInfo, KanjiReading } from './kanji';
-import { NameRecord } from './names';
-import { Overwrite, Resolve } from './type-helpers';
-import { GlossType, KanjiMeta, ReadingMeta, WordSense } from './words';
+import { KanjiMiscInfo, KanjiReading } from './kanji.js';
+import { NameRecord } from './names.js';
+import { Overwrite, Resolve } from './type-helpers.js';
+import { GlossType, KanjiMeta, ReadingMeta, WordSense } from './words.js';
 
 // -------------------------------------------------------------------------
 //

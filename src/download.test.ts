@@ -2,11 +2,11 @@ import { assert, Assertion, use } from 'chai';
 import chaiLike from 'chai-like';
 import fetchMock from 'fetch-mock';
 
-import { AbortError } from './abort-error';
-import { download, DownloadEvent } from './download';
-import { DownloadError } from './download-error';
-import { clearCachedVersionInfo } from './download-version-info';
-import { isObject } from './is-object';
+import { AbortError } from './abort-error.js';
+import { download, DownloadEvent } from './download.js';
+import { DownloadError } from './download-error.js';
+import { clearCachedVersionInfo } from './download-version-info.js';
+import { isObject } from './is-object.js';
 
 use(chaiLike);
 

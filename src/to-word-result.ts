@@ -6,9 +6,9 @@ import {
   ExtendedSense,
   Gloss,
   WordResult,
-} from './result-types';
-import { WordStoreRecord } from './store-types';
-import { stripFields } from './utils';
+} from './result-types.js';
+import { WordStoreRecord } from './store-types.js';
+import { stripFields } from './utils.js';
 import {
   BITS_PER_GLOSS_TYPE,
   CrossReference,
@@ -18,7 +18,7 @@ import {
   ReadingMeta,
   WordRecord,
   WordSense,
-} from './words';
+} from './words.js';
 
 export type MatchMode =
   | 'lexeme'
@@ -335,7 +335,7 @@ function getMatchMetadata(
 
         case 'kanji':
           {
-            const index = [...record.k![i]].indexOf(search);
+            const index = [...record.k![i]!].indexOf(search);
             kanjiMatchRanges.push([i, index, index + 1]);
           }
           break;
@@ -624,7 +624,7 @@ function expandGlosses(
   const gt = sense.gt || 0;
   const typeMask = (1 << BITS_PER_GLOSS_TYPE) - 1;
   const glossTypeAtIndex = (i: number): GlossType => {
-    return GlossTypes[(gt >> (i * BITS_PER_GLOSS_TYPE)) & typeMask];
+    return GlossTypes[(gt >> (i * BITS_PER_GLOSS_TYPE)) & typeMask] || 'none';
   };
 
   return sense.g.map((gloss, i) => {
@@ -639,7 +639,7 @@ function expandGlosses(
     }
 
     let range: MatchedRangeForGloss | undefined;
-    while (matchedRanges.length && matchedRanges[0][0] <= i) {
+    while (matchedRanges.length && matchedRanges[0]![0] <= i) {
       range = matchedRanges.shift();
     }
     if (range) {

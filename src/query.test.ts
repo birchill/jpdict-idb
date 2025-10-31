@@ -1,8 +1,8 @@
 import { assert } from 'chai';
 import fetchMock from 'fetch-mock';
 
-import { JpdictFullTextDatabase } from './database-fulltext';
-import { clearCachedVersionInfo } from './download-version-info';
+import { JpdictFullTextDatabase } from './database-fulltext.js';
+import { clearCachedVersionInfo } from './download-version-info.js';
 import {
   getKanji,
   getNames,
@@ -10,8 +10,8 @@ import {
   getWordsByCrossReference,
   getWordsWithGloss,
   getWordsWithKanji,
-} from './query';
-import { NameResult, WordResult } from './result-types';
+} from './query.js';
+import { NameResult, WordResult } from './result-types.js';
 
 const VERSION_INFO = {
   kanji: {
@@ -192,7 +192,7 @@ describe('query', function () {
     await db.update({ series: 'kanji', lang: 'en' });
 
     const result = await getKanji({ kanji: ['通'], lang: 'en' });
-    assert.deepEqual(result[0].comp, [
+    assert.deepEqual(result[0]?.comp, [
       {
         c: 'マ',
         na: ['マ'],
@@ -454,7 +454,7 @@ describe('query', function () {
 
     const result = await getKanji({ kanji: ['構', '留'], lang: 'en' });
 
-    assert.deepEqual(result[0].cf, [
+    assert.deepEqual(result[0]?.cf, [
       {
         c: '講',
         r: { py: ['jiang3'], on: ['コウ'] },
@@ -463,7 +463,7 @@ describe('query', function () {
         misc: { sc: 17, gr: 5, freq: 653, jlpt: 2, kk: 6 },
       },
     ]);
-    assert.deepEqual(result[1].cf, [
+    assert.deepEqual(result[1]?.cf, [
       {
         c: '貿',
         r: { py: ['mao4'], on: ['ボウ'] },
@@ -719,7 +719,7 @@ describe('query', function () {
     // The first record should be something with the reading 'かき', NOT some
     // thing that matched on a kanji entry beginning with かき.
     const firstRecord = result[0];
-    assert.isTrue(firstRecord.r.some((r) => r.ent === 'かき'));
+    assert.isTrue(firstRecord?.r.some((r) => r.ent === 'かき'));
   });
 
   it('should fetch words by kana-equivalence', async () => {

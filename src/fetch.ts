@@ -1,5 +1,5 @@
-import { DownloadError } from './download-error';
-import { isAbortError } from './error-parsing';
+import { DownloadError } from './download-error.js';
+import { isAbortError } from './error-parsing.js';
 
 // Utility function for fetch that allows setting a timeout as well as taking an
 // AbortController so that the callee can abort the request before that point

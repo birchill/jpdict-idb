@@ -3,9 +3,9 @@ import chaiDateTime from 'chai-datetime';
 import fetchMock from 'fetch-mock';
 import sinon from 'sinon';
 
-import { JpdictIdb } from './database';
-import { clearCachedVersionInfo } from './download-version-info';
-import { cancelUpdateWithRetry, updateWithRetry } from './update-with-retry';
+import { JpdictIdb } from './database.js';
+import { clearCachedVersionInfo } from './download-version-info.js';
+import { cancelUpdateWithRetry, updateWithRetry } from './update-with-retry.js';
 
 use(chaiDateTime);
 
@@ -158,9 +158,9 @@ describe('updateWithRetry', function () {
     });
 
     assert.lengthOf(errors, 1);
-    assert.equal(errors[0].error.name, 'DownloadError');
+    assert.equal(errors[0]!.error.name, 'DownloadError');
 
-    const { nextRetry, retryCount } = errors[0];
+    const { nextRetry, retryCount } = errors[0]!;
     assert.instanceOf(nextRetry, Date);
     // If this turns out to be flaky, we shoud work out how to use sinon fake
     // timers properly.
@@ -269,14 +269,14 @@ describe('updateWithRetry', function () {
 
     assert.lengthOf(errors, 3);
 
-    assert.equal(errors[0].error.name, 'DownloadError');
-    assert.strictEqual(errors[0].retryCount, 0);
+    assert.equal(errors[0]?.error.name, 'DownloadError');
+    assert.strictEqual(errors[0]?.retryCount, 0);
 
-    assert.equal(errors[1].error.name, 'DownloadError');
-    assert.strictEqual(errors[1].retryCount, 1);
+    assert.equal(errors[1]?.error.name, 'DownloadError');
+    assert.strictEqual(errors[1]?.retryCount, 1);
 
-    assert.equal(errors[2].error.name, 'OfflineError');
-    assert.strictEqual(errors[2].retryCount, undefined);
+    assert.equal(errors[2]?.error.name, 'OfflineError');
+    assert.strictEqual(errors[2]?.retryCount, undefined);
   });
 
   it('should coalesce overlapping requests', async () => {
@@ -563,10 +563,10 @@ describe('updateWithRetry', function () {
     assert.lengthOf(errors, 3);
 
     // The first two failures should have increasing retry intervals
-    assert.isBelow(errors[0].retryInterval!, errors[1].retryInterval!);
+    assert.isBelow(errors[0]!.retryInterval!, errors[1]!.retryInterval!);
     // The third failure should have a less (or equal) interval to the second
     // one
-    assert.isAtMost(errors[2].retryInterval!, errors[1].retryInterval!);
+    assert.isAtMost(errors[2]!.retryInterval!, errors[1]!.retryInterval!);
 
     // The retry count should be reset too
     assert.deepEqual(

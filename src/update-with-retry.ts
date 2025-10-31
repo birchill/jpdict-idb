@@ -1,13 +1,13 @@
-import { DataSeries, MajorDataSeries } from './data-series';
-import { ChangeCallback, ChangeTopic, JpdictIdb } from './database';
-import { DownloadError } from './download-error';
-import { OfflineError } from './offline-error';
+import { DataSeries, MajorDataSeries } from './data-series.js';
+import { ChangeCallback, ChangeTopic, JpdictIdb } from './database.js';
+import { DownloadError } from './download-error.js';
+import { OfflineError } from './offline-error.js';
 import {
   cancelIdleCallback,
   requestIdleCallback,
-} from './request-idle-callback';
-import { getUpdateKey } from './update-key';
-import { UpdatingUpdateState } from './update-state';
+} from './request-idle-callback.js';
+import { getUpdateKey } from './update-key.js';
+import { UpdatingUpdateState } from './update-state.js';
 
 export type UpdateCompleteCallback = () => void;
 export type UpdateErrorCallback = (params: {

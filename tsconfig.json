@@ -12,15 +12,19 @@
       "es2018.promise",
       "esnext.asynciterable"
     ],
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "noImplicitAny": true,
     "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
+    "outDir": "dist",
     "pretty": true,
-    "rootDir": "./src",
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es2019"
+    "strictNullChecks": true,
+    "target": "es2020"
   },
   "exclude": ["node_modules", "dist"]
 }

@@ -1,4 +1,4 @@
-import { DownloadError } from './download-error';
+import { DownloadError } from './download-error.js';
 
 // A flattened representation of error information suitable for postMessaging.
 //

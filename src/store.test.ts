@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import { JpdictStore } from './store';
+import { JpdictStore } from './store.js';
 
 describe('store', () => {
   it('should handle multiple simultaneous opens', async () => {

@@ -1,4 +1,4 @@
-export { AbortError } from './abort-error';
+export { AbortError } from './abort-error.js';
 export {
   type DataSeries,
   type MajorDataSeries,
@@ -6,22 +6,26 @@ export {
   allMajorDataSeries,
   isDataSeries,
   isMajorDataSeries,
-} from './data-series';
-export type { DataSeriesState } from './data-series-state';
-export type { DataVersion } from './data-version';
-export { type ChangeCallback, type ChangeTopic, JpdictIdb } from './database';
-export { JpdictFullTextDatabase } from './database-fulltext';
-export { DownloadError, type DownloadErrorCode } from './download-error';
-export { clearCachedVersionInfo } from './download-version-info';
-export { groupSenses, type PosGroup } from './grouping';
+} from './data-series.js';
+export type { DataSeriesState } from './data-series-state.js';
+export type { DataVersion } from './data-version.js';
+export {
+  type ChangeCallback,
+  type ChangeTopic,
+  JpdictIdb,
+} from './database.js';
+export { JpdictFullTextDatabase } from './database-fulltext.js';
+export { DownloadError, type DownloadErrorCode } from './download-error.js';
+export { clearCachedVersionInfo } from './download-version-info.js';
+export { groupSenses, type PosGroup } from './grouping.js';
 export {
   type NameTranslation,
   type NameType,
   asNameType,
   isNameType,
-} from './names';
-export { OfflineError } from './offline-error';
-export type { PartInfo } from './part-info';
+} from './names.js';
+export { OfflineError } from './offline-error.js';
+export type { PartInfo } from './part-info.js';
 export {
   getKanji,
   getNames,
@@ -29,7 +33,7 @@ export {
   getWordsByCrossReference,
   getWordsWithGloss,
   getWordsWithKanji,
-} from './query';
+} from './query.js';
 export type {
   ExpandedRadical,
   Gloss,
@@ -37,22 +41,22 @@ export type {
   NameResult,
   RelatedKanji,
   WordResult,
-} from './result-types';
+} from './result-types.js';
 export {
   type UpdateErrorState,
   toUpdateErrorState,
-} from './update-error-state';
+} from './update-error-state.js';
 export type {
   CheckingUpdateState,
   IdleUpdateState,
   UpdateState,
-} from './update-state';
+} from './update-state.js';
 export {
   cancelUpdateWithRetry,
   type UpdateCompleteCallback,
   type UpdateErrorCallback,
   updateWithRetry,
-} from './update-with-retry';
+} from './update-with-retry.js';
 export {
   type Accent,
   type CrossReference,
@@ -83,4 +87,4 @@ export {
   GlossTypes,
   GLOSS_TYPE_MAX,
   BITS_PER_GLOSS_TYPE,
-} from './words';
+} from './words.js';

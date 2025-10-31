@@ -1,14 +1,14 @@
 import * as s from 'superstruct';
 
-import { AbortError } from './abort-error';
-import { DownloadError } from './download-error';
+import { AbortError } from './abort-error.js';
+import { DownloadError } from './download-error.js';
 import {
   getErrorMessage,
   isAbortError,
   isDownloadError,
-} from './error-parsing';
-import { fetchWithTimeout } from './fetch';
-import { safeInteger } from './validation-helpers';
+} from './error-parsing.js';
+import { fetchWithTimeout } from './fetch.js';
+import { safeInteger } from './validation-helpers.js';
 
 export type VersionInfo = s.Infer<typeof VersionInfoStruct>;
 
@@ -181,12 +181,12 @@ function getCurrentVersionInfo(
     return null;
   }
 
-  if (!(majorVersion in versionInfoFile[series])) {
+  if (!(majorVersion in versionInfoFile[series]!)) {
     throw new DownloadError(
       { code: 'MajorVersionNotFound' },
       `No ${majorVersion}.x version information for ${series} data`
     );
   }
 
-  return versionInfoFile[series][majorVersion];
+  return versionInfoFile[series]![majorVersion]!;
 }
