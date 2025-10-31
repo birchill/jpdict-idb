@@ -107,19 +107,9 @@ export const GLOSS_TYPE_MAX = GlossTypes.length;
 export const BITS_PER_GLOSS_TYPE = Math.floor(Math.log2(GLOSS_TYPE_MAX)) + 1;
 
 export type CrossReference =
-  | {
-      k: string;
-      sense?: number;
-    }
-  | {
-      r: string;
-      sense?: number;
-    }
-  | {
-      k: string;
-      r: string;
-      sense?: number;
-    };
+  | { k: string; sense?: number }
+  | { r: string; sense?: number }
+  | { k: string; r: string; sense?: number };
 
 export type LangSource = {
   // undefined = 'en'

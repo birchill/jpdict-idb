@@ -1,8 +1,4 @@
-export type VersionNumber = {
-  major: number;
-  minor: number;
-  patch: number;
-};
+export type VersionNumber = { major: number; minor: number; patch: number };
 
 export function compareVersions(
   a: Readonly<VersionNumber>,

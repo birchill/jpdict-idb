@@ -88,11 +88,6 @@
       "eslint --fix"
     ]
   },
-  "prettier": {
-    "singleQuote": true,
-    "trailingComma": "es5",
-    "bracketSpacing": true
-  },
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"

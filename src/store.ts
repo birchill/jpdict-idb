@@ -68,40 +68,20 @@ export interface JpdictSchema extends DBSchema {
   radicals: {
     key: string;
     value: RadicalStoreRecord;
-    indexes: {
-      r: number;
-      b: string;
-      k: string;
-    };
+    indexes: { r: number; b: string; k: string };
   };
   names: {
     key: number;
     value: NameStoreRecord;
-    indexes: {
-      k: Array<string>;
-      r: Array<string>;
-      h: Array<string>;
-    };
+    indexes: { k: Array<string>; r: Array<string>; h: Array<string> };
   };
-  version: {
-    key: number;
-    value: DataVersionRecord;
-  };
+  version: { key: number; value: DataVersionRecord };
 }
 
 export type RecordUpdate<T extends DataSeries> =
-  | {
-      mode: 'add';
-      record: DownloadRecord<T>;
-    }
-  | {
-      mode: 'change';
-      record: DownloadRecord<T>;
-    }
-  | {
-      mode: 'delete';
-      record: DownloadDeleteRecord<T>;
-    };
+  | { mode: 'add'; record: DownloadRecord<T> }
+  | { mode: 'change'; record: DownloadRecord<T> }
+  | { mode: 'delete'; record: DownloadDeleteRecord<T> };
 
 export class JpdictStore {
   private state: 'idle' | 'opening' | 'open' | 'error' | 'deleting' = 'idle';
@@ -175,9 +155,7 @@ export class JpdictStore {
           radicalsTable.createIndex('b', 'b');
           radicalsTable.createIndex('k', 'k');
 
-          db.createObjectStore<'version'>('version', {
-            keyPath: 'id',
-          });
+          db.createObjectStore<'version'>('version', { keyPath: 'id' });
         }
         if (oldVersion < 2) {
           const namesTable = db.createObjectStore<'names'>('names', {

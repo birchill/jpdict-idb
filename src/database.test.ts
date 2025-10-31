@@ -21,20 +21,10 @@ const VERSION_INFO = {
     },
   },
   radicals: {
-    '4': {
-      major: 4,
-      minor: 0,
-      patch: 0,
-      dateOfCreation: '2019-09-06',
-    },
+    '4': { major: 4, minor: 0, patch: 0, dateOfCreation: '2019-09-06' },
   },
   names: {
-    '3': {
-      major: 3,
-      minor: 0,
-      patch: 0,
-      dateOfCreation: '2020-08-22',
-    },
+    '3': { major: 3, minor: 0, patch: 0, dateOfCreation: '2020-08-22' },
   },
 };
 

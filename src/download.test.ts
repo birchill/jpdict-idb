@@ -92,11 +92,7 @@ const downloadWordsV1From110 = () => {
     majorVersion: 1,
     series: 'words',
     signal: abortController.signal,
-    currentVersion: {
-      major: 1,
-      minor: 1,
-      patch: 0,
-    },
+    currentVersion: { major: 1, minor: 1, patch: 0 },
   });
 };
 
@@ -327,17 +323,10 @@ describe('download', () => {
         record: {
           c: '㐂',
           m: [],
-          misc: {
-            sc: 6,
-          },
+          misc: { sc: 6 },
           r: {},
-          rad: {
-            x: 1,
-          },
-          refs: {
-            halpern_njecd: 2028,
-            nelson_c: 265,
-          },
+          rad: { x: 1 },
+          refs: { halpern_njecd: 2028, nelson_c: 265 },
         },
       },
       {
@@ -353,13 +342,9 @@ describe('download', () => {
             'to turn around',
             'to turn the body',
           ],
-          misc: {
-            sc: 6,
-          },
+          misc: { sc: 6 },
           r: {},
-          rad: {
-            x: 4,
-          },
+          rad: { x: 4 },
           refs: {},
         },
       },
@@ -533,10 +518,7 @@ describe('download', () => {
     const events = await drainEvents(downloadWordsV1());
 
     assert.deepEqual(events, [
-      {
-        type: 'downloadstart',
-        files: 3,
-      },
+      { type: 'downloadstart', files: 3 },
       {
         type: 'filestart',
         totalRecords: 2,
@@ -544,10 +526,7 @@ describe('download', () => {
           major: 1,
           minor: 1,
           patch: 2,
-          partInfo: {
-            part: 1,
-            parts: 3,
-          },
+          partInfo: { part: 1, parts: 3 },
           dateOfCreation: '2022-04-05',
           lang: 'en',
         },
@@ -562,11 +541,7 @@ describe('download', () => {
             {
               g: ['repetition mark in katakana'],
               pos: ['unc'],
-              xref: [
-                {
-                  k: '一の字点',
-                },
-              ],
+              xref: [{ k: '一の字点' }],
               gt: 1,
             },
           ],
@@ -579,17 +554,11 @@ describe('download', () => {
           id: 1000010,
           r: ['ヾ'],
           s: [
-            {
-              g: ['voiced repetition mark in katakana'],
-              pos: ['unc'],
-              gt: 1,
-            },
+            { g: ['voiced repetition mark in katakana'], pos: ['unc'], gt: 1 },
           ],
         },
       },
-      {
-        type: 'fileend',
-      },
+      { type: 'fileend' },
       {
         type: 'filestart',
         totalRecords: 2,
@@ -597,10 +566,7 @@ describe('download', () => {
           major: 1,
           minor: 1,
           patch: 2,
-          partInfo: {
-            part: 2,
-            parts: 3,
-          },
+          partInfo: { part: 2, parts: 3 },
           dateOfCreation: '2022-04-05',
           lang: 'en',
         },
@@ -611,13 +577,7 @@ describe('download', () => {
         record: {
           id: 1000020,
           r: ['ゝ'],
-          s: [
-            {
-              g: ['repetition mark in hiragana'],
-              pos: ['unc'],
-              gt: 1,
-            },
-          ],
+          s: [{ g: ['repetition mark in hiragana'], pos: ['unc'], gt: 1 }],
         },
       },
       {
@@ -627,17 +587,11 @@ describe('download', () => {
           id: 1000030,
           r: ['ゞ'],
           s: [
-            {
-              g: ['voiced repetition mark in hiragana'],
-              pos: ['unc'],
-              gt: 1,
-            },
+            { g: ['voiced repetition mark in hiragana'], pos: ['unc'], gt: 1 },
           ],
         },
       },
-      {
-        type: 'fileend',
-      },
+      { type: 'fileend' },
       {
         type: 'filestart',
         totalRecords: 1,
@@ -645,10 +599,7 @@ describe('download', () => {
           major: 1,
           minor: 1,
           patch: 2,
-          partInfo: {
-            part: 3,
-            parts: 3,
-          },
+          partInfo: { part: 3, parts: 3 },
           dateOfCreation: '2022-04-05',
           lang: 'en',
         },
@@ -660,20 +611,11 @@ describe('download', () => {
           id: 1000040,
           k: ['〃'],
           r: ['おなじ', 'おなじく'],
-          s: [
-            {
-              g: ['ditto mark'],
-              pos: ['n'],
-            },
-          ],
+          s: [{ g: ['ditto mark'], pos: ['n'] }],
         },
       },
-      {
-        type: 'fileend',
-      },
-      {
-        type: 'downloadend',
-      },
+      { type: 'fileend' },
+      { type: 'downloadend' },
     ]);
   });
 
@@ -702,43 +644,17 @@ describe('download', () => {
       { type: 'downloadstart', files: 2 },
       {
         type: 'filestart',
-        version: {
-          major: 1,
-          minor: 1,
-          patch: 1,
-          dateOfCreation: '2022-04-05',
-        },
+        version: { major: 1, minor: 1, patch: 1, dateOfCreation: '2022-04-05' },
       },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000020 },
-      },
-      {
-        type: 'record',
-        mode: 'change',
-        record: { id: 1000030 },
-      },
-      {
-        type: 'record',
-        mode: 'delete',
-        record: { id: 1000050 },
-      },
+      { type: 'record', mode: 'add', record: { id: 1000020 } },
+      { type: 'record', mode: 'change', record: { id: 1000030 } },
+      { type: 'record', mode: 'delete', record: { id: 1000050 } },
       { type: 'fileend' },
       {
         type: 'filestart',
-        version: {
-          major: 1,
-          minor: 1,
-          patch: 2,
-          dateOfCreation: '2022-04-05',
-        },
+        version: { major: 1, minor: 1, patch: 2, dateOfCreation: '2022-04-05' },
       },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000040 },
-      },
+      { type: 'record', mode: 'add', record: { id: 1000040 } },
       { type: 'fileend' },
       { type: 'downloadend' },
     ]);
@@ -888,10 +804,7 @@ describe('download', () => {
           major: 1,
           minor: 1,
           patch: 0,
-          partInfo: {
-            part: 1,
-            parts: 3,
-          },
+          partInfo: { part: 1, parts: 3 },
         },
       }),
       { wrapError: true }
@@ -908,16 +821,8 @@ describe('download', () => {
           partInfo: { part: 2, parts: 3 },
         },
       },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000020 },
-      },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000030 },
-      },
+      { type: 'record', mode: 'add', record: { id: 1000020 } },
+      { type: 'record', mode: 'add', record: { id: 1000030 } },
       { type: 'fileend' },
       {
         type: 'filestart',
@@ -928,54 +833,16 @@ describe('download', () => {
           partInfo: { part: 3, parts: 3 },
         },
       },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000040 },
-      },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000050 },
-      },
+      { type: 'record', mode: 'add', record: { id: 1000040 } },
+      { type: 'record', mode: 'add', record: { id: 1000050 } },
       { type: 'fileend' },
-      {
-        type: 'filestart',
-        version: {
-          major: 1,
-          minor: 1,
-          patch: 1,
-        },
-      },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000060 },
-      },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000090 },
-      },
+      { type: 'filestart', version: { major: 1, minor: 1, patch: 1 } },
+      { type: 'record', mode: 'add', record: { id: 1000060 } },
+      { type: 'record', mode: 'add', record: { id: 1000090 } },
       { type: 'fileend' },
-      {
-        type: 'filestart',
-        version: {
-          major: 1,
-          minor: 1,
-          patch: 2,
-        },
-      },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000100 },
-      },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000110 },
-      },
+      { type: 'filestart', version: { major: 1, minor: 1, patch: 2 } },
+      { type: 'record', mode: 'add', record: { id: 1000100 } },
+      { type: 'record', mode: 'add', record: { id: 1000110 } },
       { type: 'fileend' },
       { type: 'downloadend' },
     ]);
@@ -1018,10 +885,7 @@ describe('download', () => {
           major: 1,
           minor: 1,
           patch: 0,
-          partInfo: {
-            part: 1,
-            parts: 3,
-          },
+          partInfo: { part: 1, parts: 3 },
         },
       })
     );
@@ -1038,16 +902,8 @@ describe('download', () => {
           partInfo: { part: 1, parts: 3 },
         },
       },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000000 },
-      },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000010 },
-      },
+      { type: 'record', mode: 'add', record: { id: 1000000 } },
+      { type: 'record', mode: 'add', record: { id: 1000010 } },
       { type: 'fileend' },
       {
         type: 'filestart',
@@ -1058,16 +914,8 @@ describe('download', () => {
           partInfo: { part: 2, parts: 3 },
         },
       },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000020 },
-      },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000030 },
-      },
+      { type: 'record', mode: 'add', record: { id: 1000020 } },
+      { type: 'record', mode: 'add', record: { id: 1000030 } },
       { type: 'fileend' },
       {
         type: 'filestart',
@@ -1078,11 +926,7 @@ describe('download', () => {
           partInfo: { part: 3, parts: 3 },
         },
       },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { id: 1000040 },
-      },
+      { type: 'record', mode: 'add', record: { id: 1000040 } },
       { type: 'fileend' },
       { type: 'downloadend' },
     ]);
@@ -1103,11 +947,7 @@ describe('download', () => {
           majorVersion: 1,
           series: 'kanji',
           signal: abortController.signal,
-          currentVersion: {
-            major: 1,
-            minor: 0,
-            patch: 2,
-          },
+          currentVersion: { major: 1, minor: 0, patch: 2 },
         }),
         { wrapError: true }
       );
@@ -1164,19 +1004,8 @@ describe('download', () => {
     assert.likeEqual(events, [
       { type: 'reset' },
       { type: 'downloadstart', files: 1 },
-      {
-        type: 'filestart',
-        version: {
-          major: 1,
-          minor: 2,
-          patch: 3,
-        },
-      },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { c: '㐂' },
-      },
+      { type: 'filestart', version: { major: 1, minor: 2, patch: 3 } },
+      { type: 'record', mode: 'add', record: { c: '㐂' } },
       { type: 'fileend' },
       { type: 'downloadend' },
     ]);
@@ -1230,19 +1059,8 @@ describe('download', () => {
     assert.likeEqual(events, [
       { type: 'reset' },
       { type: 'downloadstart', files: 1 },
-      {
-        type: 'filestart',
-        version: {
-          major: 2,
-          minor: 3,
-          patch: 4,
-        },
-      },
-      {
-        type: 'record',
-        mode: 'add',
-        record: { c: '㐂' },
-      },
+      { type: 'filestart', version: { major: 2, minor: 3, patch: 4 } },
+      { type: 'record', mode: 'add', record: { c: '㐂' } },
       { type: 'fileend' },
       { type: 'downloadend' },
     ]);

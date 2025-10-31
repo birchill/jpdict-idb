@@ -1,22 +1,12 @@
 import type { DataVersion } from './data-version.js';
 
-export type UpdateStartEvent = {
-  type: 'updatestart';
-};
+export type UpdateStartEvent = { type: 'updatestart' };
 
-export type UpdateEndEvent = {
-  type: 'updateend';
-};
+export type UpdateEndEvent = { type: 'updateend' };
 
-export type FileStartEvent = {
-  type: 'filestart';
-  version: DataVersion;
-};
+export type FileStartEvent = { type: 'filestart'; version: DataVersion };
 
-export type FileEndEvent = {
-  type: 'fileend';
-  version: DataVersion;
-};
+export type FileEndEvent = { type: 'fileend'; version: DataVersion };
 
 export type ProgressEvent = {
   type: 'progress';

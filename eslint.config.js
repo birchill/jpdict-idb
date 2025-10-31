@@ -8,9 +8,7 @@ export default [
   ...tseslint.configs.recommended,
   {
     languageOptions: {
-      globals: {
-        ...globals.browser,
-      },
+      globals: { ...globals.browser },
       parser: tsParser,
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -69,8 +67,6 @@ export default [
   },
   {
     files: ['*.js', '*.ts'],
-    languageOptions: {
-      globals: { ...globals.nodeBuiltin },
-    },
+    languageOptions: { globals: { ...globals.nodeBuiltin } },
   },
 ];

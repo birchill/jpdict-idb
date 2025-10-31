@@ -3,10 +3,7 @@ import type { DataVersion } from './data-version.js';
 
 // Last time we checked, if ever, we were up-to-date.
 // - The `lastCheck` value specifies when we last checked.
-export type IdleUpdateState = {
-  type: 'idle';
-  lastCheck: Date | null;
-};
+export type IdleUpdateState = { type: 'idle'; lastCheck: Date | null };
 
 // We are still downloading the version metadata so we don't know yet whether
 // or not we are up-to-date.
