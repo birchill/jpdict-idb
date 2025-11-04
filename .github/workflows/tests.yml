@@ -35,7 +35,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run tests (Chrome)
-        run: pnpm test
+        run: pnpm test --browser chromium
 
       - name: Run tests (Firefox)
         run: pnpm test --browser firefox

@@ -1,6 +1,14 @@
-import { assert, Assertion, use } from 'chai';
-import chaiLike from 'chai-like';
 import fetchMock from 'fetch-mock';
+import {
+  afterAll,
+  afterEach,
+  assert,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from 'vitest';
 
 import { AbortError } from './abort-error.js';
 import type { DownloadEvent } from './download.js';
@@ -8,26 +16,6 @@ import { download } from './download.js';
 import { DownloadError } from './download-error.js';
 import { clearCachedVersionInfo } from './download-version-info.js';
 import { isObject } from './is-object.js';
-
-use(chaiLike);
-
-declare global {
-  /* eslint @typescript-eslint/no-namespace: 0 */
-  namespace Chai {
-    interface Assert {
-      likeEqual(expected: any, actual: any): void;
-    }
-  }
-}
-
-assert.likeEqual = function (
-  actual: any,
-  expected: any,
-  message?: string | undefined
-) {
-  const test = new Assertion(actual, message, assert, true);
-  test.like(expected);
-};
 
 const KANJI_VERSION_1_0_0 = {
   kanji: {
@@ -97,11 +85,11 @@ const downloadWordsV1From110 = () => {
 };
 
 describe('download', () => {
-  before(() => {
+  beforeAll(() => {
     fetchMock.mockGlobal();
   });
 
-  after(() => {
+  afterAll(() => {
     fetchMock.unmockGlobal();
   });
 
@@ -640,7 +628,7 @@ describe('download', () => {
 
     const events = await drainEvents(downloadWordsV1From110());
 
-    assert.likeEqual(events, [
+    expect(events).toMatchObject([
       { type: 'downloadstart', files: 2 },
       {
         type: 'filestart',
@@ -810,7 +798,7 @@ describe('download', () => {
       { wrapError: true }
     );
 
-    assert.likeEqual(events, [
+    expect(events).toMatchObject([
       { type: 'downloadstart', files: 4 },
       {
         type: 'filestart',
@@ -890,7 +878,7 @@ describe('download', () => {
       })
     );
 
-    assert.likeEqual(events, [
+    expect(events).toMatchObject([
       { type: 'reset' },
       { type: 'downloadstart', files: 3 },
       {
@@ -1001,7 +989,7 @@ describe('download', () => {
       })
     );
 
-    assert.likeEqual(events, [
+    expect(events).toMatchObject([
       { type: 'reset' },
       { type: 'downloadstart', files: 1 },
       { type: 'filestart', version: { major: 1, minor: 2, patch: 3 } },
@@ -1056,7 +1044,7 @@ describe('download', () => {
       })
     );
 
-    assert.likeEqual(events, [
+    expect(events).toMatchObject([
       { type: 'reset' },
       { type: 'downloadstart', files: 1 },
       { type: 'filestart', version: { major: 2, minor: 3, patch: 4 } },

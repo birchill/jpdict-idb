@@ -1,5 +1,13 @@
-import { assert } from 'chai';
 import fetchMock from 'fetch-mock';
+import {
+  afterAll,
+  afterEach,
+  assert,
+  beforeAll,
+  beforeEach,
+  describe,
+  it,
+} from 'vitest';
 
 import { JpdictFullTextDatabase } from './database-fulltext.js';
 import { clearCachedVersionInfo } from './download-version-info.js';
@@ -34,16 +42,14 @@ const VERSION_INFO = {
   },
 };
 
-describe('query', function () {
+describe('query', { timeout: 15_000 }, function () {
   let db: JpdictFullTextDatabase;
 
-  this.timeout(15000);
-
-  before(() => {
+  beforeAll(() => {
     fetchMock.mockGlobal();
   });
 
-  after(() => {
+  afterAll(() => {
     fetchMock.unmockGlobal();
   });
 

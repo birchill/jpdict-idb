@@ -1,14 +1,20 @@
-import { assert, use } from 'chai';
-import chaiDateTime from 'chai-datetime';
 import fetchMock from 'fetch-mock';
-import sinon from 'sinon';
+import {
+  afterAll,
+  afterEach,
+  assert,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 import { AbortError } from './abort-error.js';
 import { JpdictIdb } from './database.js';
 import { DownloadError } from './download-error.js';
 import { clearCachedVersionInfo } from './download-version-info.js';
-
-use(chaiDateTime);
 
 const VERSION_INFO = {
   kanji: {
@@ -31,11 +37,11 @@ const VERSION_INFO = {
 describe('JpdictIdb', function () {
   let db: JpdictIdb;
 
-  before(() => {
+  beforeAll(() => {
     fetchMock.mockGlobal();
   });
 
-  after(() => {
+  afterAll(() => {
     fetchMock.unmockGlobal();
   });
 
@@ -47,7 +53,7 @@ describe('JpdictIdb', function () {
   afterEach(async () => {
     fetchMock.removeRoutes();
     fetchMock.clearHistory();
-    sinon.restore();
+    vi.resetAllMocks();
     if (db) {
       await db.destroy();
     }
@@ -125,9 +131,11 @@ describe('JpdictIdb', function () {
     assert.isNotNull(db.kanji.updateState.lastCheck);
     assert.deepEqual(db.radicals.updateState.type, 'idle');
     assert.isNotNull(db.radicals.updateState.lastCheck);
-    assert.withinTime(db.kanji.updateState.lastCheck!, updateStart, updateEnd);
-    assert.withinTime(
-      db.radicals.updateState.lastCheck!,
+    expect(db.kanji.updateState.lastCheck!).toBeWithinRange(
+      updateStart,
+      updateEnd
+    );
+    expect(db.radicals.updateState.lastCheck!).toBeWithinRange(
       updateStart,
       updateEnd
     );
@@ -365,8 +373,9 @@ describe('JpdictIdb', function () {
     const constraintError = new Error('Constraint error');
     constraintError.name = 'ConstraintError';
 
-    const stub = sinon.stub(db.store, 'updateDataVersion');
-    stub.throws(constraintError);
+    vi.spyOn(db.store, 'updateDataVersion').mockImplementation(() => {
+      throw constraintError;
+    });
 
     try {
       await db.update({ series: 'kanji', lang: 'en' });
