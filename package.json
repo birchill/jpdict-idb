@@ -87,10 +87,5 @@
     "*.{js,ts}": [
       "eslint --fix"
     ]
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }
