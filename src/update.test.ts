@@ -1,5 +1,13 @@
-import { assert } from 'chai';
 import fetchMock from 'fetch-mock';
+import {
+  afterAll,
+  afterEach,
+  assert,
+  beforeAll,
+  beforeEach,
+  describe,
+  it,
+} from 'vitest';
 
 import type { DataVersion } from './data-version.js';
 import type { CurrentVersion } from './download.js';
@@ -109,11 +117,11 @@ describe('update', function () {
     events.push(event);
   };
 
-  before(() => {
+  beforeAll(() => {
     fetchMock.mockGlobal();
   });
 
-  after(() => {
+  afterAll(() => {
     fetchMock.unmockGlobal();
   });
 

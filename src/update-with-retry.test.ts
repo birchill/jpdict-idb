@@ -1,13 +1,19 @@
-import { assert, use } from 'chai';
-import chaiDateTime from 'chai-datetime';
 import fetchMock from 'fetch-mock';
-import sinon from 'sinon';
+import {
+  afterAll,
+  afterEach,
+  assert,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 import { JpdictIdb } from './database.js';
 import { clearCachedVersionInfo } from './download-version-info.js';
 import { cancelUpdateWithRetry, updateWithRetry } from './update-with-retry.js';
-
-use(chaiDateTime);
 
 const fastSetTimeout = (cb: () => void) => {
   return self.setTimeout(cb, 0);
@@ -34,11 +40,11 @@ const VERSION_INFO = {
 describe('updateWithRetry', function () {
   let db: JpdictIdb;
 
-  before(() => {
+  beforeAll(() => {
     fetchMock.mockGlobal();
   });
 
-  after(() => {
+  afterAll(() => {
     fetchMock.unmockGlobal();
   });
 
@@ -50,7 +56,7 @@ describe('updateWithRetry', function () {
   afterEach(async () => {
     fetchMock.removeRoutes();
     fetchMock.clearHistory();
-    sinon.restore();
+    vi.resetAllMocks();
     if (db) {
       await db.destroy();
     }
@@ -94,9 +100,7 @@ describe('updateWithRetry', function () {
     );
 
     // Force an error to occur
-    sinon.replace(db, 'update', () => {
-      throw new Error('Forced error');
-    });
+    vi.spyOn(db, 'update').mockRejectedValue(new Error('Forced error'));
 
     const retryPromise = new Promise<void>((resolve, reject) => {
       updateWithRetry({
@@ -154,8 +158,7 @@ describe('updateWithRetry', function () {
     assert.instanceOf(nextRetry, Date);
     // If this turns out to be flaky, we shoud work out how to use sinon fake
     // timers properly.
-    assert.withinTime(
-      nextRetry!,
+    expect(nextRetry!).toBeWithinRange(
       new Date(updateStart.getTime() + 1000),
       new Date(updateStart.getTime() + 10 * 1000)
     );
@@ -176,12 +179,7 @@ describe('updateWithRetry', function () {
     );
 
     let isOnline = false;
-
-    sinon.replaceGetter(
-      navigator,
-      'onLine',
-      sinon.fake(() => isOnline)
-    );
+    vi.spyOn(navigator, 'onLine', 'get').mockImplementation(() => isOnline);
 
     let gotOfflineError = false;
 
@@ -218,11 +216,7 @@ describe('updateWithRetry', function () {
     );
 
     let isOnline = true;
-    sinon.replaceGetter(
-      navigator,
-      'onLine',
-      sinon.fake(() => isOnline)
-    );
+    vi.spyOn(navigator, 'onLine', 'get').mockImplementation(() => isOnline);
 
     const errors: Array<{
       error: Error;
@@ -575,9 +569,11 @@ describe('updateWithRetry', function () {
 `
     );
 
-    const stub = sinon.stub(db, 'update');
-    stub.onFirstCall().throws('ConstraintError');
-    stub.onSecondCall().throws('ConstraintError');
+    const constraintError = new Error('Constraint error');
+    constraintError.name = 'ConstraintError';
+    vi.spyOn(db, 'update')
+      .mockRejectedValueOnce(constraintError)
+      .mockRejectedValueOnce(constraintError);
 
     await new Promise<void>((resolve, reject) => {
       updateWithRetry({
@@ -607,8 +603,9 @@ describe('updateWithRetry', function () {
     const constraintError = new Error('Constraint error');
     constraintError.name = 'ConstraintError';
 
-    const stub = sinon.stub(db.store, 'updateSeries');
-    stub.throws(constraintError);
+    vi.spyOn(db.store, 'updateDataVersion').mockImplementation(() => {
+      throw constraintError;
+    });
 
     const errors: Array<Error> = [];
 
