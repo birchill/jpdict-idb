@@ -34,15 +34,8 @@ pnpm build
 pnpm test
 ```
 
-Testing using Firefox / WebKit:
+Testing using a single browser
 
 ```
-pnpm test --browser firefox
-pnpm test --browser webkit
-```
-
-## Publishing
-
-```
-pnpm release-it
+pnpm test --browser chromium|firefox|webkit
 ```
