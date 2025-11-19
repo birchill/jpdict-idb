@@ -48,7 +48,7 @@
     "fetch-mock": "12.6.0",
     "globals": "16.5.0",
     "husky": "9.1.7",
-    "lint-staged": "16.2.6",
+    "lint-staged": "16.2.7",
     "playwright": "1.56.1",
     "prettier": "3.6.2",
     "tsdown": "0.16.5",
