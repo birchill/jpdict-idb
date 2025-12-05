@@ -106,7 +106,7 @@ function waitWithTimeout<T>({
 }: {
   promise: Promise<T>;
   timeout: number;
-  url?: string;
+  url: string;
 }): Promise<T> {
   let timeoutId: number;
 

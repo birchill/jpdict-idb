@@ -13,11 +13,11 @@ export type DownloadErrorCode =
   | 'DatabaseTooOld'
   | 'Timeout';
 
-type DownloadErrorOptions = { code: DownloadErrorCode; url?: string };
+type DownloadErrorOptions = { code: DownloadErrorCode; url: string };
 
 export class DownloadError extends Error {
   code: DownloadErrorCode;
-  url?: string;
+  url: string;
 
   constructor({ code, url }: DownloadErrorOptions, ...params: Array<any>) {
     super(...params);
