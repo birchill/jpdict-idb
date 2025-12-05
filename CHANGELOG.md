@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.2.0](https://github.com/birchill/jpdict-idb/compare/v3.1.0...v3.2.0) (2025-12-05)
+
+
+### Features
+
+* include the cause along with download errors ([c6c4e48](https://github.com/birchill/jpdict-idb/commit/c6c4e4825d1093d604912f97084aea4de1b92f95))
+* make sure the URL is always set in `DownloadError` ([8df67ec](https://github.com/birchill/jpdict-idb/commit/8df67ec4fff3c6e16f872b1fc0514edc5892ec37))
+
+
+### Bug Fixes
+
+* make return type of isAbortError slightly more accurate ([948c681](https://github.com/birchill/jpdict-idb/commit/948c681e99452c65761dc442af65370c9596a27b))
+
 ## [3.1.0](https://github.com/birchill/jpdict-idb/compare/v3.0.0...v3.1.0) (2025-04-03)
 
 ### Features
