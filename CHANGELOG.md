@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/birchill/jpdict-idb/compare/v3.2.0...v3.2.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* fix ESM output filenames ([a03b9c6](https://github.com/birchill/jpdict-idb/commit/a03b9c652d62d67f8cc9296c91c6868ae42d5910))
+
 ## [3.2.0](https://github.com/birchill/jpdict-idb/compare/v3.1.0...v3.2.0) (2025-12-05)
 
 
