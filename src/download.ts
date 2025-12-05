@@ -353,7 +353,8 @@ async function* getEvents({
 
     throw new DownloadError(
       { code: 'DatabaseFileNotFound', url },
-      `Database file ${url} not accessible (${getErrorMessage(e)})`
+      `Database file ${url} not accessible (${getErrorMessage(e)})`,
+      { cause: e }
     );
   }
 

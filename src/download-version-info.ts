@@ -94,7 +94,8 @@ async function getVersionInfoFile({
 
     throw new DownloadError(
       { code: 'VersionFileNotAccessible', url },
-      `Version file ${url} not accessible (${getErrorMessage(e)})`
+      `Version file ${url} not accessible (${getErrorMessage(e)})`,
+      { cause: e }
     );
   }
 
@@ -118,7 +119,8 @@ async function getVersionInfoFile({
       { code: 'VersionFileInvalid', url },
       `Invalid version object: ${
         getErrorMessage(e) || '(No detailed error message)'
-      }`
+      }`,
+      { cause: e }
     );
   }
 
@@ -165,7 +167,8 @@ function parseVersionInfoFile(rawVersionInfoFile: unknown): VersionInfoFile {
   if (error) {
     throw new DownloadError(
       { code: 'VersionFileInvalid' },
-      `Version file was invalid: ${error}`
+      `Version file was invalid: ${error.message}`,
+      { cause: error }
     );
   }
 

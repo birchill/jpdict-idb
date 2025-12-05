@@ -25,7 +25,7 @@ export async function* ljsonStreamIterator({
   const parseLine = (line: string): any => {
     try {
       return JSON.parse(line);
-    } catch {
+    } catch (e) {
       try {
         reader.releaseLock();
       } catch {
@@ -33,7 +33,8 @@ export async function* ljsonStreamIterator({
       }
       throw new DownloadError(
         { code: 'DatabaseFileInvalidJSON', url },
-        `Could not parse JSON in database file: ${line}`
+        `Could not parse JSON in database file: ${line}`,
+        { cause: e }
       );
     }
   };
@@ -59,7 +60,8 @@ export async function* ljsonStreamIterator({
 
       throw new DownloadError(
         { code: 'DatabaseFileNotAccessible', url },
-        `Could not read database file (${getErrorMessage(e)})`
+        `Could not read database file (${getErrorMessage(e)})`,
+        { cause: e }
       );
     }
 

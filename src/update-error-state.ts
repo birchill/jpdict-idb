@@ -1,4 +1,4 @@
-import { DownloadError } from './download-error.js';
+import { isDownloadError } from './error-parsing.js';
 
 // A flattened representation of error information suitable for postMessaging.
 //
@@ -26,8 +26,8 @@ export function toUpdateErrorState({
   return {
     name: error.name,
     message: error.message,
-    code: error instanceof DownloadError ? error.code : undefined,
-    url: error instanceof DownloadError ? error.url : undefined,
+    code: isDownloadError(error) ? error.code : undefined,
+    url: isDownloadError(error) ? error.url : undefined,
     nextRetry,
     retryCount,
   };
