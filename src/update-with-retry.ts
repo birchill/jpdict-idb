@@ -1,6 +1,6 @@
 import type { DataSeries, MajorDataSeries } from './data-series.js';
 import type { ChangeCallback, ChangeTopic, JpdictIdb } from './database.js';
-import { DownloadError } from './download-error.js';
+import { isDownloadError } from './error-parsing.js';
 import { OfflineError } from './offline-error.js';
 import {
   cancelIdleCallback,
@@ -133,8 +133,7 @@ function runUpdate({
       let suppressError = false;
 
       // Retry network errors at decreasing intervals
-      const isNetworkError = e instanceof DownloadError;
-      if (isNetworkError) {
+      if (isDownloadError(e)) {
         const scheduleResult = maybeScheduleRetry({
           db,
           lang,
