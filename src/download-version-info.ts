@@ -26,8 +26,8 @@ export async function getVersionInfo({
   majorVersion: number;
   timeout: number;
   signal?: AbortSignal;
-}): Promise<VersionInfo> {
-  const versionInfoFile = await getVersionInfoFile({
+}): Promise<{ info: VersionInfo; url: string }> {
+  const { file: versionInfoFile, url } = await getVersionInfoFile({
     baseUrl,
     lang,
     timeout,
@@ -35,19 +35,20 @@ export async function getVersionInfo({
   });
 
   // Extract the appropriate database version information
-  const dbVersionInfo = getCurrentVersionInfo(
+  const dbVersionInfo = getCurrentVersionInfo({
     versionInfoFile,
     series,
-    majorVersion
-  );
+    majorVersion,
+    url,
+  });
   if (!dbVersionInfo) {
     throw new DownloadError(
-      { code: 'VersionFileInvalid' },
+      { code: 'VersionFileInvalid', url },
       `Invalid version object: the requested series, ${series} was not available in this language ('${lang}')`
     );
   }
 
-  return dbVersionInfo;
+  return { info: dbVersionInfo, url };
 }
 
 export function clearCachedVersionInfo() {
@@ -57,7 +58,7 @@ export function clearCachedVersionInfo() {
 const CACHE_TIMEOUT = 3_000 * 60; // Cache version file contents for 3 minutes
 
 let cachedVersionInfo:
-  | { lang: string; versionInfoFile: VersionInfoFile; accessTime: number }
+  | { url: string; versionInfoFile: VersionInfoFile; accessTime: number }
   | undefined;
 
 async function getVersionInfoFile({
@@ -70,19 +71,19 @@ async function getVersionInfoFile({
   lang: string;
   timeout: number;
   signal?: AbortSignal;
-}): Promise<VersionInfoFile> {
+}): Promise<{ file: VersionInfoFile; url: string }> {
+  const url = `${baseUrl}jpdict/reader/version-${lang}.json`;
   if (
-    cachedVersionInfo?.lang === lang &&
+    cachedVersionInfo?.url === url &&
     cachedVersionInfo.accessTime > Date.now() - CACHE_TIMEOUT
   ) {
-    return cachedVersionInfo.versionInfoFile;
+    return { file: cachedVersionInfo.versionInfoFile, url };
   }
+
   cachedVersionInfo = undefined;
   const accessTime = Date.now();
 
   let rawVersionInfoFile;
-
-  const url = `${baseUrl}jpdict/reader/version-${lang}.json`;
 
   let response;
   try {
@@ -128,11 +129,11 @@ async function getVersionInfoFile({
     throw new AbortError();
   }
 
-  const versionInfoFile = parseVersionInfoFile(rawVersionInfoFile);
+  const versionInfoFile = parseVersionInfoFile(rawVersionInfoFile, url);
 
-  cachedVersionInfo = { lang, versionInfoFile, accessTime };
+  cachedVersionInfo = { url, versionInfoFile, accessTime };
 
-  return versionInfoFile;
+  return { file: versionInfoFile, url };
 }
 
 const VersionInfoStruct = s.type({
@@ -151,10 +152,13 @@ const VersionInfoFileStruct = s.record(
 
 type VersionInfoFile = s.Infer<typeof VersionInfoFileStruct>;
 
-function parseVersionInfoFile(rawVersionInfoFile: unknown): VersionInfoFile {
+function parseVersionInfoFile(
+  rawVersionInfoFile: unknown,
+  url: string
+): VersionInfoFile {
   if (!rawVersionInfoFile) {
     throw new DownloadError(
-      { code: 'VersionFileInvalid' },
+      { code: 'VersionFileInvalid', url },
       'Empty version info file'
     );
   }
@@ -166,7 +170,7 @@ function parseVersionInfoFile(rawVersionInfoFile: unknown): VersionInfoFile {
 
   if (error) {
     throw new DownloadError(
-      { code: 'VersionFileInvalid' },
+      { code: 'VersionFileInvalid', url },
       `Version file was invalid: ${error.message}`,
       { cause: error }
     );
@@ -175,18 +179,24 @@ function parseVersionInfoFile(rawVersionInfoFile: unknown): VersionInfoFile {
   return versionInfoFile;
 }
 
-function getCurrentVersionInfo(
-  versionInfoFile: VersionInfoFile,
-  series: string,
-  majorVersion: number
-): VersionInfo | null {
+function getCurrentVersionInfo({
+  versionInfoFile,
+  series,
+  majorVersion,
+  url,
+}: {
+  versionInfoFile: VersionInfoFile;
+  series: string;
+  majorVersion: number;
+  url: string;
+}): VersionInfo | null {
   if (!(series in versionInfoFile)) {
     return null;
   }
 
   if (!(majorVersion in versionInfoFile[series]!)) {
     throw new DownloadError(
-      { code: 'MajorVersionNotFound' },
+      { code: 'MajorVersionNotFound', url },
       `No ${majorVersion}.x version information for ${series} data`
     );
   }

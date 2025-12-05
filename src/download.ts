@@ -103,7 +103,7 @@ export async function* download({
   lang,
   signal,
 }: DownloadOptions): AsyncIterableIterator<DownloadEvent> {
-  const versionInfo = await getVersionInfo({
+  const { info: versionInfo, url: versionFileUrl } = await getVersionInfo({
     baseUrl: BASE_URL,
     series,
     lang,
@@ -115,6 +115,7 @@ export async function* download({
   const { files, type } = getDownloadList({
     currentVersion,
     latestVersion: versionInfo,
+    versionFileUrl,
   });
 
   if (type === 'reset' && currentVersion) {
@@ -145,6 +146,7 @@ type DownloadFileSpec =
 function getDownloadList({
   currentVersion,
   latestVersion,
+  versionFileUrl,
 }: {
   currentVersion?: CurrentVersion;
   latestVersion: {
@@ -153,6 +155,7 @@ function getDownloadList({
     patch: number;
     parts?: number;
   };
+  versionFileUrl: string;
 }): { type: 'reset' | 'update'; files: Array<DownloadFileSpec> } {
   // Check the local database is not ahead of what we're about to download
   //
@@ -164,7 +167,7 @@ function getDownloadList({
     const versionToString = ({ major, minor, patch }: VersionNumber) =>
       `${major}.${minor}.${patch}`;
     throw new DownloadError(
-      { code: 'DatabaseTooOld' },
+      { code: 'DatabaseTooOld', url: versionFileUrl },
       `Database version (${versionToString(
         latestVersion
       )}) is older than the current version (${versionToString(
