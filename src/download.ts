@@ -486,5 +486,12 @@ async function* getEvents({
     }
   }
 
+  if (!headerRead) {
+    throw new DownloadError(
+      { code: 'DatabaseFileHeaderMissing', url },
+      'Expected database header but got end of stream'
+    );
+  }
+
   yield { type: 'fileend' };
 }
