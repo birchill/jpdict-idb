@@ -137,6 +137,10 @@ async function doUpdate<Series extends DataSeries>({
 
       case 'fileend':
         {
+          if (!currentFileVersion) {
+            throw new Error('Received fileend event before filestart');
+          }
+
           // Save remaining batched items
           if (updates.length) {
             await store.updateSeries({ series, updates });
@@ -147,7 +151,7 @@ async function doUpdate<Series extends DataSeries>({
           //
           // If this is the last part in a multi-part series, however, don't
           // write the part info.
-          const versionToWrite = currentFileVersion!;
+          const versionToWrite = currentFileVersion;
           if (
             versionToWrite.partInfo &&
             versionToWrite.partInfo.part === versionToWrite.partInfo.parts

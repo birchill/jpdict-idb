@@ -360,6 +360,20 @@ describe('download', () => {
     }
   });
 
+  it('should fail if the stream ends before the header appears', async () => {
+    fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
+    fetchMock.route('end:kanji/en/1.0.0.jsonl', '');
+
+    try {
+      await drainEvents(downloadKanjiV1(), { wrapError: true });
+      assert.fail('Should have thrown an exception');
+    } catch (e) {
+      const [downloadError, events] = parseDrainError(e);
+      assert.strictEqual(downloadError.code, 'DatabaseFileHeaderMissing');
+      assert.deepEqual(events, [{ type: 'downloadstart', files: 1 }]);
+    }
+  });
+
   it('should fail if the header appears mid-stream', async () => {
     fetchMock.route('end:version-en.json', KANJI_VERSION_1_0_0);
     fetchMock.route(
