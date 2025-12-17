@@ -51,7 +51,7 @@
     "lint-staged": "16.2.7",
     "playwright": "1.57.0",
     "prettier": "3.7.4",
-    "tsdown": "0.18.0",
+    "tsdown": "0.18.1",
     "tslib": "2.8.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.50.0",
