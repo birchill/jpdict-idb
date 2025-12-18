@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.2](https://github.com/birchill/jpdict-idb/compare/v3.2.1...v3.2.2) (2025-12-18)
+
+
+### Bug Fixes
+
+* guard missing file headers ([ccd2ee6](https://github.com/birchill/jpdict-idb/commit/ccd2ee65c5508687e190e32b2fa778400a74fdd1))
+
 ## [3.2.1](https://github.com/birchill/jpdict-idb/compare/v3.2.0...v3.2.1) (2025-12-05)
 
 
