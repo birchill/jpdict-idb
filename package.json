@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
-    "@types/node": "22.19.8",
+    "@types/node": "22.19.9",
     "@typescript-eslint/parser": "8.54.0",
     "@vitest/browser-playwright": "4.0.18",
     "eslint": "9.39.2",
