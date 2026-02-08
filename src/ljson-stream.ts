@@ -71,7 +71,6 @@ export async function* ljsonStreamIterator({
       buffer += decoder.decode();
       if (buffer) {
         yield parseLine(buffer);
-        buffer = '';
       }
 
       return;
