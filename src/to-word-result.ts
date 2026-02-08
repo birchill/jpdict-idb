@@ -419,7 +419,7 @@ function getMatchMetadataForCrossRefLookup(
   let kanjiMatchRanges: Array<MatchedHeadwordRange> = [];
   let kanaMatches = 0;
   let kanaMatchRanges: Array<MatchedHeadwordRange> = [];
-  let senseMatches = 0;
+  let senseMatches: number;
 
   const xRefK = (xref as any).k as string | undefined;
   const xRefR = (xref as any).r as string | undefined;
