@@ -7,7 +7,8 @@
     "build": "tsdown",
     "test": "vitest run",
     "prepublishOnly": "tsdown",
-    "prepare": "husky"
+    "prepare": "husky",
+    "ci:publish": "pnpm changeset publish"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
     "superstruct": "^2.0.2"
   },
   "devDependencies": {
+    "@changesets/cli": "2.30.0",
     "@eslint/js": "10.0.1",
     "@types/node": "22.19.15",
     "@typescript-eslint/parser": "8.58.0",
