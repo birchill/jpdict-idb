@@ -16,6 +16,9 @@ export type KanjiReading = {
   kun?: Array<string>;
   na?: Array<string>;
   py?: Array<string>;
+  kr?: Array<string>;
+  kh?: Array<string>;
+  vi?: Array<string>;
 };
 
 export type Radical = { x: number; nelson?: number; name?: Array<string> };

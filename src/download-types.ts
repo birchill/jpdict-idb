@@ -190,6 +190,9 @@ const ReadingsStruct: s.Describe<KanjiReading> = s.type({
   kun: s.optional(s.array(s.string())),
   na: s.optional(s.array(s.string())),
   py: s.optional(s.array(s.string())),
+  kr: s.optional(s.array(s.string())),
+  kh: s.optional(s.array(s.string())),
+  vi: s.optional(s.array(s.string())),
 });
 
 const RadicalStruct: s.Describe<Radical> = s.type({
