@@ -1,31 +1,33 @@
 # Changelog
 
-## [3.2.2](https://github.com/birchill/jpdict-idb/compare/v3.2.1...v3.2.2) (2025-12-18)
+## 3.3.0
 
+### Minor Changes
+
+- 1ce8028: Added Korean kanja and Vietnamese kanji readings
+
+## [3.2.2](https://github.com/birchill/jpdict-idb/compare/v3.2.1...v3.2.2) (2025-12-18)
 
 ### Bug Fixes
 
-* guard missing file headers ([ccd2ee6](https://github.com/birchill/jpdict-idb/commit/ccd2ee65c5508687e190e32b2fa778400a74fdd1))
+- guard missing file headers ([ccd2ee6](https://github.com/birchill/jpdict-idb/commit/ccd2ee65c5508687e190e32b2fa778400a74fdd1))
 
 ## [3.2.1](https://github.com/birchill/jpdict-idb/compare/v3.2.0...v3.2.1) (2025-12-05)
 
-
 ### Bug Fixes
 
-* fix ESM output filenames ([a03b9c6](https://github.com/birchill/jpdict-idb/commit/a03b9c652d62d67f8cc9296c91c6868ae42d5910))
+- fix ESM output filenames ([a03b9c6](https://github.com/birchill/jpdict-idb/commit/a03b9c652d62d67f8cc9296c91c6868ae42d5910))
 
 ## [3.2.0](https://github.com/birchill/jpdict-idb/compare/v3.1.0...v3.2.0) (2025-12-05)
 
-
 ### Features
 
-* include the cause along with download errors ([c6c4e48](https://github.com/birchill/jpdict-idb/commit/c6c4e4825d1093d604912f97084aea4de1b92f95))
-* make sure the URL is always set in `DownloadError` ([8df67ec](https://github.com/birchill/jpdict-idb/commit/8df67ec4fff3c6e16f872b1fc0514edc5892ec37))
-
+- include the cause along with download errors ([c6c4e48](https://github.com/birchill/jpdict-idb/commit/c6c4e4825d1093d604912f97084aea4de1b92f95))
+- make sure the URL is always set in `DownloadError` ([8df67ec](https://github.com/birchill/jpdict-idb/commit/8df67ec4fff3c6e16f872b1fc0514edc5892ec37))
 
 ### Bug Fixes
 
-* make return type of isAbortError slightly more accurate ([948c681](https://github.com/birchill/jpdict-idb/commit/948c681e99452c65761dc442af65370c9596a27b))
+- make return type of isAbortError slightly more accurate ([948c681](https://github.com/birchill/jpdict-idb/commit/948c681e99452c65761dc442af65370c9596a27b))
 
 ## [3.1.0](https://github.com/birchill/jpdict-idb/compare/v3.0.0...v3.1.0) (2025-04-03)
 
