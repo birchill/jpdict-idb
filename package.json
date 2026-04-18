@@ -46,7 +46,7 @@
     "@types/node": "22.19.17",
     "@typescript-eslint/parser": "8.58.2",
     "@vitest/browser-playwright": "4.1.4",
-    "eslint": "10.2.0",
+    "eslint": "10.2.1",
     "fetch-mock": "12.6.0",
     "globals": "17.5.0",
     "husky": "9.1.7",
