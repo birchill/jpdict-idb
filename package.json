@@ -30,9 +30,6 @@
     }
   },
   "homepage": "https://github.com/birchill/jpdict-idb#readme",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org"
-  },
   "dependencies": {
     "@birchill/json-equalish": "^1.1.2",
     "@birchill/kanji-component-string-utils": "^2.0.0",
@@ -62,12 +59,8 @@
   "engines": {
     "pnpm": ">=11"
   },
-  "lint-staged": {
-    "*.{js,ts,md}": [
-      "prettier --write"
-    ],
-    "*.{js,ts}": [
-      "eslint --fix"
-    ]
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "engines": {}
   }
 }
