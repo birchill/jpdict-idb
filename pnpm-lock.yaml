@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@birchill/json-equalish':
-        specifier: ^1.1.2
-        version: 1.1.2
+        specifier: ^2.0.0
+        version: 2.0.0
       '@birchill/kanji-component-string-utils':
         specifier: ^2.0.0
         version: 2.0.0
@@ -124,8 +124,8 @@ packages:
     resolution: {integrity: sha512-p7/ABylAYlexb31wtRdIfH9L9A0Z2T/9H6zAqzqndkY2PLkvNNc580wGhp/gGKN4Sp9sQvSkhc6Oga8/O+wTyw==}
     engines: {node: ^22.18.0 || >=24.11.0}
 
-  '@birchill/json-equalish@1.1.2':
-    resolution: {integrity: sha512-oXsOtXbuxai0iq8bXZKa0S2AkGEEhigu2WcZUbYwRbv4EtHJvT6jqSg5kNtWeI+6frv7ixIbJbuWP6AbNtj7Sw==}
+  '@birchill/json-equalish@2.0.0':
+    resolution: {integrity: sha512-InEUiyKSXHr18AXmSXTfE4L2Wuw117jpsS9pa+misCjXu1hAU1piZ1YOzUoMj4nmBp4+Zr57/ucNjT2gQcE2xQ==}
 
   '@birchill/kanji-component-string-utils@2.0.0':
     resolution: {integrity: sha512-Rc8+GspPfTmN/TEZaibp0UrkqDDa15fY5ssV/FAT1wnD5PFq6VWxOQUKhKbV4dej+smTtZxw29kMbkzghmLCHw==}
@@ -1838,7 +1838,7 @@ snapshots:
       '@babel/helper-string-parser': 8.0.0-rc.6
       '@babel/helper-validator-identifier': 8.0.0-rc.6
 
-  '@birchill/json-equalish@1.1.2': {}
+  '@birchill/json-equalish@2.0.0': {}
 
   '@birchill/kanji-component-string-utils@2.0.0': {}
 
