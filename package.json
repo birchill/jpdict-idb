@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/birchill/jpdict-idb#readme",
   "dependencies": {
-    "@birchill/json-equalish": "^1.1.2",
+    "@birchill/json-equalish": "^2.0.0",
     "@birchill/kanji-component-string-utils": "^2.0.0",
     "@birchill/normal-jp": "^1.5.2",
     "idb": "^8.0.0",
