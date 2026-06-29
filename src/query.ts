@@ -779,15 +779,15 @@ async function getComponentsForKanji({
 
     for (const component of components) {
       const compInfo:
-        | (KanjiComponentInfo & { sub?: Array<KanjiComponentInfo> })
-        | null = getComponentInfo({
-        component,
-        kanjiMap,
-        radicalCheck: hasExplicitRadical ? !!component.is_rad : record.rad.x,
-        radicalMap,
-        lang,
-        logWarningMessage,
-      });
+        (KanjiComponentInfo & { sub?: Array<KanjiComponentInfo> }) | null =
+        getComponentInfo({
+          component,
+          kanjiMap,
+          radicalCheck: hasExplicitRadical ? !!component.is_rad : record.rad.x,
+          radicalMap,
+          lang,
+          logWarningMessage,
+        });
       if (!compInfo) {
         continue;
       }
