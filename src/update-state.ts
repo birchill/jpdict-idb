@@ -35,6 +35,4 @@ export type UpdatingUpdateState = {
 };
 
 export type UpdateState =
-  | IdleUpdateState
-  | CheckingUpdateState
-  | UpdatingUpdateState;
+  IdleUpdateState | CheckingUpdateState | UpdatingUpdateState;

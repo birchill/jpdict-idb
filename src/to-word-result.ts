@@ -588,8 +588,7 @@ function mergeMeta<MetaType extends KanjiMeta | ReadingMeta, MergedType>(
         ? metaArray[i]!
         : undefined;
     const matchRange = matchRanges.find((item) => item[0] === i)?.slice(1) as
-      | [number, number]
-      | undefined;
+      [number, number] | undefined;
     result.push(merge(key, match, matchRange, meta));
   }
 
