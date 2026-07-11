@@ -58,8 +58,8 @@ importers:
         specifier: 1.61.1
         version: 1.61.1
       prettier:
-        specifier: 3.9.4
-        version: 3.9.4
+        specifier: 3.9.5
+        version: 3.9.5
       tsdown:
         specifier: 0.22.4
         version: 0.22.4(typescript@6.0.3)
@@ -1465,8 +1465,8 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  prettier@3.9.4:
-    resolution: {integrity: sha512-yWG/o/4oJfo036EKAfK6ACAoDOfHeRHx4tuxkfBZiauURiaSmYwlpOr5LQqKtIkRD2z1PLteme2WoxEnj4tHTg==}
+  prettier@3.9.5:
+    resolution: {integrity: sha512-/FVl766LpUfB5vXgCYOYa0MeV/441Ia99AeICQIQFTY/Nw0roZwULcXpku5i1/m5kt/baz+s4Zogspd839HSMg==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -2827,6 +2827,10 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.4
 
+  fdir@6.5.0(picomatch@4.0.5):
+    optionalDependencies:
+      picomatch: 4.0.5
+
   fetch-mock@12.6.0:
     dependencies:
       '@types/glob-to-regexp': 0.4.4
@@ -3119,7 +3123,7 @@ snapshots:
 
   prettier@2.8.8: {}
 
-  prettier@3.9.4: {}
+  prettier@3.9.5: {}
 
   punycode@2.3.1: {}
 
@@ -3377,8 +3381,8 @@ snapshots:
   vite@7.1.12(@types/node@24.13.3)(yaml@2.9.0):
     dependencies:
       esbuild: 0.25.8
-      fdir: 6.5.0(picomatch@4.0.4)
-      picomatch: 4.0.4
+      fdir: 6.5.0(picomatch@4.0.5)
+      picomatch: 4.0.5
       postcss: 8.5.6
       rollup: 4.52.5
       tinyglobby: 0.2.17
