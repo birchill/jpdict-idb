@@ -250,7 +250,7 @@ describe('JpdictIdb', function () {
     // Check exception
     assert.isTrue(
       isVersionFileNotFoundError(exception),
-      `Should have thrown a VersionFileNotFound exception. Got: ${exception}`
+      `Should have thrown a VersionFileNotFound exception. Got: ${String(exception)}`
     );
 
     // Check update state

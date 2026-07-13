@@ -126,7 +126,7 @@ export class JpdictStore {
 
     this.state = 'opening';
 
-    /* eslint @typescript-eslint/no-this-alias: 0 */
+    // oxlint-disable-next-line typescript/no-this-alias
     const self = this;
 
     this.openPromise = openDB<JpdictSchema>('jpdict', 4, {

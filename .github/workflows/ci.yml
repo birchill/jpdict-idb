@@ -42,8 +42,8 @@ jobs:
 
       - name: Lint
         run: |-
-          pnpm eslint src "*.js" "*.ts"
-          pnpm prettier --check src "*.js" "*.ts"
+          pnpm lint
+          pnpm prettier --check src "*.ts"
 
       - name: Install Playwright
         if: github.event_name == 'pull_request'

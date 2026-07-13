@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "builtin": true,
+    "browser": true
+  },
+  "rules": {
+    "curly": "error",
+    "no-constant-condition": ["error", { "checkLoops": false }],
+    "no-empty-function": "off",
+    "no-prototype-builtins": "off",
+    "no-unused-expressions": ["error", { "allowTernary": true }],
+    "no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
+    "prefer-const": ["error", { "destructuring": "all" }],
+    "typescript/array-type": ["error", { "default": "generic" }],
+    "typescript/consistent-type-imports": ["error", { "prefer": "type-imports" }],
+    "typescript/no-explicit-any": "off",
+    "typescript/no-floating-promises": ["warn", { "ignoreIIFE": false }],
+    "typescript/no-misused-promises": ["warn", { "checksVoidReturn": false }],
+    "typescript/no-misused-spread": [
+      "error",
+      { "allow": [{ "from": "lib", "name": "string" }] }
+    ],
+    "typescript/no-non-null-assertion": "off"
+  },
+  "overrides": [
+    {
+      "files": ["tsdown.config.ts", "vitest.config.ts"],
+      "env": { "node": true }
+    }
+  ]
+}

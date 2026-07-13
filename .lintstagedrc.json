@@ -1,1 +1,1 @@
-{ "*.{js,ts,md}": ["prettier --write"], "*.{js,ts}": ["eslint --fix"] }
+{ "*.{js,ts,md}": ["prettier --write"], "*.{js,ts}": ["oxlint --type-aware --fix"] }
