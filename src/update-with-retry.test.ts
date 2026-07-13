@@ -318,9 +318,9 @@ describe('updateWithRetry', function () {
 
     // Wait for the first invocation to error
 
-    let firstInvocation;
+    let firstInvocation!: Promise<void>;
     const firstError = new Promise((firstErrorResolve) => {
-      firstInvocation = new Promise((_, reject) => {
+      firstInvocation = new Promise<void>((_, reject) => {
         updateWithRetry({
           db,
           lang: 'en',
@@ -376,9 +376,9 @@ describe('updateWithRetry', function () {
 
     // Wait for the first invocation to error
 
-    let firstInvocation;
+    let firstInvocation!: Promise<void>;
     const firstError = new Promise((firstErrorResolve) => {
-      firstInvocation = new Promise((_, reject) => {
+      firstInvocation = new Promise<void>((_, reject) => {
         updateWithRetry({
           db,
           lang: 'en',

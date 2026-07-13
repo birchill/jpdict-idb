@@ -575,7 +575,7 @@ function mergeMeta<MetaType extends KanjiMeta | ReadingMeta, MergedType>(
   merge: (
     key: string,
     match: boolean,
-    matchRange?: [start: number, end: number] | undefined,
+    matchRange?: [start: number, end: number],
     meta?: MetaType
   ) => MergedType
 ): Array<MergedType> {

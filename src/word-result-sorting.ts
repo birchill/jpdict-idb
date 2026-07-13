@@ -159,7 +159,7 @@ export function getPriority(result: WordResult): number {
 // Having a bounded range like this makes it easier to combine this value with
 // other metrics when sorting.
 function getPrioritySum(priorities: Array<string>): number {
-  const scores = priorities.map(getPriorityScore).sort().reverse();
+  const scores = priorities.map(getPriorityScore).sort((a, b) => b - a);
   return scores.length
     ? scores[0]! +
         scores
