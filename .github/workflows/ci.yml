@@ -62,10 +62,15 @@ jobs:
         run: pnpm test --browser webkit
 
       # Temporary until setup-node action comes with npm version that contains
-      # OIDC setup by default
+      # OIDC setup by default.
+      # Pinned below npm 12: its `npm view --json` now always returns an array
+      # instead of a bare object, which breaks @changesets/cli's publish
+      # precheck (it misreads already-published versions as unpublished and
+      # crashes retrying the publish). Bump past 11 once @changesets/cli
+      # supports the new shape.
       - name: Update npm
         if: github.repository == 'birchill/jpdict-idb' && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: npm update -g npm
+        run: npm install -g npm@11
 
       - name: Create/update pull request or publish
         if: github.repository == 'birchill/jpdict-idb' && github.ref == 'refs/heads/main' && github.event_name == 'push'
