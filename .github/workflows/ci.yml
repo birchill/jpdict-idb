@@ -28,7 +28,7 @@ jobs:
           # (upstream bug pnpm/pnpm#12959, fix not yet merged).
           version: 11.13.0
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           cache: pnpm
           node-version: 24
