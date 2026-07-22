@@ -1,13 +1,8 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "oxc"],
-  "categories": {
-    "correctness": "error"
-  },
-  "env": {
-    "builtin": true,
-    "browser": true
-  },
+  "plugins": ["eslint", "oxc", "typescript", "unicorn"],
+  "categories": { "correctness": "error" },
+  "env": { "builtin": true, "browser": true },
   "rules": {
     "curly": "error",
     "no-constant-condition": ["error", { "checkLoops": false }],
@@ -20,7 +15,10 @@
     ],
     "prefer-const": ["error", { "destructuring": "all" }],
     "typescript/array-type": ["error", { "default": "generic" }],
-    "typescript/consistent-type-imports": ["error", { "prefer": "type-imports" }],
+    "typescript/consistent-type-imports": [
+      "error",
+      { "prefer": "type-imports" }
+    ],
     "typescript/no-explicit-any": "off",
     "typescript/no-floating-promises": ["warn", { "ignoreIIFE": false }],
     "typescript/no-misused-promises": ["warn", { "checksVoidReturn": false }],
