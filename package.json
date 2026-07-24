@@ -44,7 +44,7 @@
     "@vitest/browser-playwright": "4.1.10",
     "fetch-mock": "12.6.0",
     "husky": "9.1.7",
-    "lint-staged": "17.1.0",
+    "lint-staged": "17.2.0",
     "oxlint": "1.74.0",
     "oxlint-tsgolint": "7.0.2001",
     "playwright": "1.61.1",
