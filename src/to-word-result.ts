@@ -117,7 +117,7 @@ function makeWordResult(
       (key, match, matchRange, meta) => {
         const result: ExtendedKanjiEntry = {
           ent: key,
-          ...(meta ? stripFields(meta, ['bv', 'bg']) : undefined),
+          ...(meta ? stripFields(meta, ['bv', 'bg', 'bvl', 'bgl']) : undefined),
           match,
         };
 
@@ -126,9 +126,10 @@ function makeWordResult(
         //
         // We need to extract any such levels and store them in the `wk` field.
         //
-        // Likewise for Bunpro levels which need to be combined with an `bv` /
-        // `bg` fields since these contain the original source text for a fuzzy
-        // match.
+        // Likewise for Bunpro levels which need to be combined with the `bv` /
+        // `bg` fields, which contain the original source text for a fuzzy
+        // match, and the `bvl` / `bgl` fields, which contain the slug to use
+        // when linking to Bunpro.
         let wk: number | undefined;
         let bv: number | undefined;
         let bg: number | undefined;
@@ -174,14 +175,16 @@ function makeWordResult(
         if (typeof bv === 'number') {
           result.bv = Object.assign(
             { l: bv },
-            meta?.bv ? { src: meta?.bv } : undefined
+            meta?.bv ? { src: meta?.bv } : undefined,
+            meta?.bvl ? { slug: meta?.bvl } : undefined
           );
         }
 
         if (typeof bg === 'number') {
           result.bg = Object.assign(
             { l: bg },
-            meta?.bg ? { src: meta?.bg } : undefined
+            meta?.bg ? { src: meta?.bg } : undefined,
+            meta?.bgl ? { slug: meta?.bgl } : undefined
           );
         }
 
@@ -199,7 +202,7 @@ function makeWordResult(
       (key, match, matchRange, meta) => {
         const result: ExtendedKanaEntry = {
           ent: key,
-          ...(meta ? stripFields(meta, ['bv', 'bg']) : undefined),
+          ...(meta ? stripFields(meta, ['bv', 'bg', 'bvl', 'bgl']) : undefined),
           match,
         };
 
@@ -235,14 +238,16 @@ function makeWordResult(
         if (typeof bv === 'number') {
           result.bv = Object.assign(
             { l: bv },
-            meta?.bv ? { src: meta?.bv } : undefined
+            meta?.bv ? { src: meta?.bv } : undefined,
+            meta?.bvl ? { slug: meta?.bvl } : undefined
           );
         }
 
         if (typeof bg === 'number') {
           result.bg = Object.assign(
             { l: bg },
-            meta?.bg ? { src: meta?.bg } : undefined
+            meta?.bg ? { src: meta?.bg } : undefined,
+            meta?.bgl ? { slug: meta?.bgl } : undefined
           );
         }
 

@@ -32,6 +32,8 @@ const KanjiMetaSchema: s.Describe<KanjiMeta> = s.type({
   p: s.optional(s.array(s.string())),
   bv: s.optional(s.string()),
   bg: s.optional(s.string()),
+  bvl: s.optional(s.string()),
+  bgl: s.optional(s.string()),
 });
 
 const AccentSchema: s.Describe<Accent> = s.type({
@@ -46,6 +48,8 @@ const ReadingMetaSchema: s.Describe<ReadingMeta> = s.type({
   a: s.optional(s.union([s.min(safeInteger(), 0), s.array(AccentSchema)])),
   bv: s.optional(s.string()),
   bg: s.optional(s.string()),
+  bvl: s.optional(s.string()),
+  bgl: s.optional(s.string()),
 });
 
 // The following typing is because Describe struggles with union types
