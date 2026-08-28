@@ -868,7 +868,7 @@ describe('query', { timeout: 15_000 }, function () {
     fetchMock.route(
       'end:words/en/2.0.0.jsonl',
       `{"type":"header","version":{"major":2,"minor":0,"patch":0,"databaseVersion":"n/a","dateOfCreation":"2020-08-22"},"records":1,"format":"full"}
-{"id":1610740,"k":["違いない","違い無い"],"km":[{"p":["i1","bv4","bg3"],"bg":"に違いない"}],"r":["ちがいない"],"rm":[{"p":["i1"],"a":4}],"s":[{"g":["sure","no mistaking it","for certain","without doubt"],"pos":["exp","adj-i"],"inf":"oft. as に違いない"}]}
+{"id":1610740,"k":["違いない","違い無い"],"km":[{"p":["i1","bv4","bg3"],"bg":"に違いない","bvl":"違いない-dup"}],"r":["ちがいない"],"rm":[{"p":["i1"],"a":4}],"s":[{"g":["sure","no mistaking it","for certain","without doubt"],"pos":["exp","adj-i"],"inf":"oft. as に違いない"}]}
 `
     );
 
@@ -883,7 +883,7 @@ describe('query', { timeout: 15_000 }, function () {
             ent: '違いない',
             p: ['i1'],
             match: true,
-            bv: { l: 4 },
+            bv: { l: 4, slug: '違いない-dup' },
             bg: { l: 3, src: 'に違いない' },
             matchRange: [0, 4],
           },

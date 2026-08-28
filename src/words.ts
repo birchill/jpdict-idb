@@ -29,6 +29,16 @@ export type KanjiMeta = {
 
   // Bunpro grammar fuzzy match source text
   bg?: string;
+
+  // The slug to use when linking to the Bunpro page, for the terms whose URL is
+  // not simply the term itself (額 lives at /vocabs/額-ひたい). Separate per deck
+  // type, as with bv / bg, since a headword can be in both a vocab and a
+  // grammar deck and those are different pages.
+  //
+  // Absent when the link can be built from bv / bg, or failing that from the
+  // headword itself.
+  bvl?: string;
+  bgl?: string;
 };
 
 export type ReadingMeta = {
@@ -55,6 +65,11 @@ export type ReadingMeta = {
 
   // Bunpro grammar fuzzy match source text
   bg?: string;
+
+  // As with KanjiMeta: the slug to use when linking to the Bunpro page, per deck
+  // type.
+  bvl?: string;
+  bgl?: string;
 };
 
 export type Accent = {

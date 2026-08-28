@@ -24,11 +24,12 @@ export type ExtendedKanjiEntry = Resolve<
     // indicates the range of characters that matched.
     matchRange?: [start: number, end: number];
   } & Overwrite<
-    KanjiMeta,
+    // bvl / bgl are folded into bv / bg below as `slug`.
+    Omit<KanjiMeta, 'bvl' | 'bgl'>,
     {
       wk?: number;
-      bv?: { l: number; src?: string };
-      bg?: { l: number; src?: string };
+      bv?: { l: number; src?: string; slug?: string };
+      bg?: { l: number; src?: string; slug?: string };
     }
   >
 >;
@@ -41,11 +42,12 @@ export type ExtendedKanaEntry = Resolve<
     // indicates the range of characters that matched.
     matchRange?: [start: number, end: number];
   } & Overwrite<
-    ReadingMeta,
+    // bvl / bgl are folded into bv / bg below as `slug`.
+    Omit<ReadingMeta, 'bvl' | 'bgl'>,
     {
       wk?: number;
-      bv?: { l: number; src?: string };
-      bg?: { l: number; src?: string };
+      bv?: { l: number; src?: string; slug?: string };
+      bg?: { l: number; src?: string; slug?: string };
     }
   >
 >;
