@@ -2,6 +2,7 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["eslint", "oxc", "typescript", "unicorn"],
   "categories": { "correctness": "error" },
+  "options": { "typeAware": true },
   "env": { "builtin": true, "browser": true },
   "rules": {
     "curly": "error",
@@ -9,10 +10,7 @@
     "no-empty-function": "off",
     "no-prototype-builtins": "off",
     "no-unused-expressions": ["error", { "allowTernary": true }],
-    "no-unused-vars": [
-      "error",
-      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
-    ],
+    "no-unused-vars": "off",
     "prefer-const": ["error", { "destructuring": "all" }],
     "typescript/array-type": ["error", { "default": "generic" }],
     "typescript/consistent-type-imports": [
@@ -26,7 +24,11 @@
       "error",
       { "allow": [{ "from": "lib", "name": "string" }] }
     ],
-    "typescript/no-non-null-assertion": "off"
+    "typescript/no-non-null-assertion": "off",
+    "typescript/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ]
   },
   "overrides": [
     {
