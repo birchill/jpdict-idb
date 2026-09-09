@@ -5,7 +5,7 @@
   "author": "Brian Birtles",
   "scripts": {
     "build": "tsdown",
-    "lint": "oxlint --type-aware .",
+    "lint": "oxlint .",
     "test": "vitest run",
     "prepublishOnly": "tsdown",
     "prepare": "husky",
