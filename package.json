@@ -46,7 +46,7 @@
     "husky": "9.1.7",
     "nano-staged": "1.0.2",
     "oxlint": "1.83.0",
-    "oxlint-tsgolint": "7.0.2001",
+    "oxlint-tsgolint": "7.0.2002",
     "playwright": "1.63.0",
     "prettier": "3.9.6",
     "tsdown": "0.23.0",
