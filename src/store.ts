@@ -222,7 +222,7 @@ export class JpdictStore {
     return this.db!;
   }
 
-  async close() {
+  async close(): Promise<void> {
     if (this.state === 'idle') {
       return;
     }
@@ -240,7 +240,7 @@ export class JpdictStore {
     this.state = 'idle';
   }
 
-  async destroy() {
+  async destroy(): Promise<void> {
     if (this.state !== 'idle') {
       await this.close();
     }
@@ -259,7 +259,7 @@ export class JpdictStore {
     this.state = 'idle';
   }
 
-  async clearSeries(series: DataSeries) {
+  async clearSeries(series: DataSeries): Promise<void> {
     const db = await this.open();
 
     const tx = db.transaction([series, 'version'], 'readwrite');
@@ -310,7 +310,7 @@ export class JpdictStore {
   }: {
     series: DataSeries;
     version: DataVersion;
-  }) {
+  }): Promise<void> {
     await this.open();
 
     try {
@@ -332,7 +332,7 @@ export class JpdictStore {
   }: {
     series: T;
     updates: Array<RecordUpdate<T>>;
-  }) {
+  }): Promise<void> {
     await this.open();
 
     const tx = this.db!.transaction(series, 'readwrite', {

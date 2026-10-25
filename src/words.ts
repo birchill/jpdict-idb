@@ -118,8 +118,9 @@ export type WordSense = {
 
 export const GlossTypes = ['none', 'expl', 'lit', 'fig', 'tm'] as const;
 export type GlossType = (typeof GlossTypes)[number];
-export const GLOSS_TYPE_MAX = GlossTypes.length;
-export const BITS_PER_GLOSS_TYPE = Math.floor(Math.log2(GLOSS_TYPE_MAX)) + 1;
+export const GLOSS_TYPE_MAX: (typeof GlossTypes)['length'] = GlossTypes.length;
+export const BITS_PER_GLOSS_TYPE: number =
+  Math.floor(Math.log2(GLOSS_TYPE_MAX)) + 1;
 
 export type CrossReference =
   | { k: string; sense?: number }

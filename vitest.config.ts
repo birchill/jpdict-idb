@@ -1,7 +1,8 @@
+import type { ViteUserConfig } from 'vitest/config';
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 
-export default defineConfig({
+const config: ViteUserConfig = defineConfig({
   test: {
     browser: {
       enabled: true,
@@ -15,3 +16,5 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
   },
 });
+
+export default config;

@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
     "alwaysStrict": true,
+    "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "inlineSources": true,
+    "isolatedDeclarations": true,
     "lib": [
       "dom",
       "dom.iterable",
