@@ -10,7 +10,14 @@ import {
 import { fetchWithTimeout } from './fetch.js';
 import { safeInteger } from './validation-helpers.js';
 
-export type VersionInfo = s.Infer<typeof VersionInfoStruct>;
+export type VersionInfo = {
+  major: number;
+  minor: number;
+  patch: number;
+  parts?: number | undefined;
+  databaseVersion?: string | undefined;
+  dateOfCreation: string;
+};
 
 export async function getVersionInfo({
   baseUrl,
@@ -51,7 +58,7 @@ export async function getVersionInfo({
   return { info: dbVersionInfo, url };
 }
 
-export function clearCachedVersionInfo() {
+export function clearCachedVersionInfo(): void {
   cachedVersionInfo = undefined;
 }
 
@@ -136,7 +143,7 @@ async function getVersionInfoFile({
   return { file: versionInfoFile, url };
 }
 
-const VersionInfoStruct = s.type({
+const VersionInfoStruct: s.Describe<VersionInfo> = s.type({
   major: s.min(safeInteger(), 1),
   minor: s.min(safeInteger(), 0),
   patch: s.min(safeInteger(), 0),

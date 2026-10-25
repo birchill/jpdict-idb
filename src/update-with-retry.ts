@@ -62,7 +62,7 @@ export function updateWithRetry({
   onUpdateComplete?: UpdateCompleteCallback;
   onUpdateError?: UpdateErrorCallback;
   updateNow?: boolean;
-}) {
+}): void {
   startUpdate({
     db,
     lang,
@@ -211,7 +211,7 @@ export function cancelUpdateWithRetry({
 }: {
   db: JpdictIdb;
   series: MajorDataSeries;
-}) {
+}): void {
   resetUpdate({ db, series });
 }
 

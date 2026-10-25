@@ -336,7 +336,7 @@ export function validateDownloadRecord<Series extends DataSeries>({
 }: {
   series: Series;
   record: unknown;
-}) {
+}): [Error, undefined] | [undefined, DownloadRecord<Series>] {
   return validateDownloadRecordMapping[series](record);
 }
 
@@ -369,6 +369,6 @@ export function validateDownloadDeleteRecord<Series extends DataSeries>({
 }: {
   series: Series;
   record: unknown;
-}) {
+}): [Error, undefined] | [undefined, DownloadDeleteRecord<Series>] {
   return validateDownloadDeleteRecordMapping[series](record);
 }

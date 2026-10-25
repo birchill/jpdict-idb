@@ -107,7 +107,7 @@ export class JpdictIdb {
     })();
   }
 
-  get ready() {
+  get ready(): Promise<any> {
     return this.readyPromise;
   }
 
@@ -117,7 +117,7 @@ export class JpdictIdb {
   //
   // -------------------------------------------------------------------------
 
-  async destroy() {
+  async destroy(): Promise<void> {
     try {
       await this.ready;
     } catch {
@@ -149,7 +149,7 @@ export class JpdictIdb {
     this.notifyChanged('deleted');
   }
 
-  async deleteSeries(series: MajorDataSeries) {
+  async deleteSeries(series: MajorDataSeries): Promise<void> {
     if (this.inProgressUpdates[series]) {
       this.cancelUpdate(series);
     }
@@ -169,14 +169,14 @@ export class JpdictIdb {
   //
   // -------------------------------------------------------------------------
 
-  addChangeListener(callback: ChangeCallback) {
+  addChangeListener(callback: ChangeCallback): void {
     if (this.changeListeners.indexOf(callback) !== -1) {
       return;
     }
     this.changeListeners.push(callback);
   }
 
-  removeChangeListener(callback: ChangeCallback) {
+  removeChangeListener(callback: ChangeCallback): void {
     const index = this.changeListeners.indexOf(callback);
     if (index === -1) {
       return;
@@ -197,7 +197,13 @@ export class JpdictIdb {
   //
   // -------------------------------------------------------------------------
 
-  async update({ series, lang }: { series: MajorDataSeries; lang: string }) {
+  async update({
+    series,
+    lang,
+  }: {
+    series: MajorDataSeries;
+    lang: string;
+  }): Promise<void> {
     // Check for an existing update
     const existingUpdate = this.inProgressUpdates[series];
     if (existingUpdate && existingUpdate.lang === lang) {
@@ -408,7 +414,7 @@ export class JpdictIdb {
   //
   // -------------------------------------------------------------------------
 
-  get isVerbose() {
+  get isVerbose(): boolean {
     return this.verbose;
   }
 }
