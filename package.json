@@ -41,7 +41,7 @@
   "devDependencies": {
     "@changesets/cli": "3.0.3",
     "@types/node": "24.19.2",
-    "@vitest/browser-playwright": "5.0.5",
+    "@vitest/browser-playwright": "5.1.1",
     "fetch-mock": "12.6.0",
     "husky": "9.1.7",
     "nano-staged": "1.0.2",
@@ -52,7 +52,7 @@
     "tsdown": "0.23.7",
     "tslib": "2.9.1",
     "typescript": "7.0.2",
-    "vitest": "5.0.5"
+    "vitest": "5.1.1"
   },
   "engines": {
     "pnpm": ">=11"
